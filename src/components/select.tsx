@@ -49,6 +49,13 @@ export function Select({
   triggerProps,
   ...rootProps
 }: SelectProps) {
+  const triggerAccessibleNameProps =
+    ariaLabel !== undefined
+      ? { "aria-label": ariaLabel }
+      : ariaLabelledBy !== undefined
+        ? { "aria-labelledby": ariaLabelledBy }
+        : {};
+
   return (
     <SelectPrimitive.Root items={options} {...rootProps}>
       <div data-greyui-component="select" className={`greyui-select-field ${className}`.trim()}>
@@ -57,8 +64,7 @@ export function Select({
         ) : null}
         <SelectPrimitive.Trigger
           className="greyui-select-trigger"
-          aria-label={ariaLabel}
-          aria-labelledby={ariaLabelledBy}
+          {...triggerAccessibleNameProps}
           {...triggerProps}
         >
           <SelectPrimitive.Value placeholder={placeholder} />
