@@ -5,6 +5,7 @@ A single-page Vite site that imports the library directly from `../src` so every
 ```bash
 npm run dev:docs
 npm run build:docs
+npm run verify:docs
 npm run deploy:docs
 ```
 

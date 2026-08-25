@@ -23,7 +23,11 @@ export function RadioGroup({ className = "", options, ...props }: RadioGroupProp
       {...props}
     >
       {options.map((option) => (
-        <label className="greyui-control-label" key={option.value}>
+        <label
+          className="greyui-control-label"
+          data-disabled={option.disabled ? "" : undefined}
+          key={option.value}
+        >
           <Radio.Root className="greyui-radio" value={option.value} disabled={option.disabled}>
             <Radio.Indicator className="greyui-radio-indicator" />
           </Radio.Root>

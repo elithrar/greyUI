@@ -10,18 +10,32 @@ export interface CheckboxProps extends RootProps {
   label?: ReactNode;
 }
 
-export function Checkbox({ className = "", label, children, ...props }: CheckboxProps) {
+export function Checkbox({
+  className = "",
+  disabled = false,
+  label,
+  children,
+  ...props
+}: CheckboxProps) {
   const control = (
     <CheckboxPrimitive.Root
       data-greyui-component="checkbox"
       className={`greyui-checkbox ${className}`.trim()}
+      disabled={disabled}
       {...props}
     >
-      <CheckboxPrimitive.Indicator className="greyui-checkbox-indicator">✓</CheckboxPrimitive.Indicator>
+      <CheckboxPrimitive.Indicator className="greyui-checkbox-indicator">
+        ✓
+      </CheckboxPrimitive.Indicator>
       {children}
     </CheckboxPrimitive.Root>
   );
 
   if (label === undefined) return control;
-  return <label className="greyui-control-label">{control}<span>{label}</span></label>;
+  return (
+    <label className="greyui-control-label" data-disabled={disabled ? "" : undefined}>
+      {control}
+      <span>{label}</span>
+    </label>
+  );
 }

@@ -8,16 +8,40 @@ export interface SelectOption {
 }
 
 type RootProps = Omit<ComponentProps<typeof SelectPrimitive.Root>, "items" | "children">;
+type TriggerProps = Omit<
+  ComponentProps<typeof SelectPrimitive.Trigger>,
+  "aria-label" | "aria-labelledby" | "children" | "className"
+>;
 
-export interface SelectProps extends RootProps {
+interface SelectCommonProps {
   className?: string;
-  label?: ReactNode;
   options: readonly SelectOption[];
   placeholder?: ReactNode;
-  triggerProps?: Omit<ComponentProps<typeof SelectPrimitive.Trigger>, "className" | "children">;
+  triggerProps?: TriggerProps;
 }
 
+type SelectAccessibleName =
+  | {
+      label: ReactNode;
+      "aria-label"?: string;
+      "aria-labelledby"?: string;
+    }
+  | {
+      label?: undefined;
+      "aria-label": string;
+      "aria-labelledby"?: string;
+    }
+  | {
+      label?: undefined;
+      "aria-label"?: string;
+      "aria-labelledby": string;
+    };
+
+export type SelectProps = RootProps & SelectCommonProps & SelectAccessibleName;
+
 export function Select({
+  "aria-label": ariaLabel,
+  "aria-labelledby": ariaLabelledBy,
   className = "",
   label,
   options,
@@ -25,17 +49,34 @@ export function Select({
   triggerProps,
   ...rootProps
 }: SelectProps) {
+  const triggerAccessibleNameProps =
+    ariaLabel !== undefined
+      ? { "aria-label": ariaLabel }
+      : ariaLabelledBy !== undefined
+        ? { "aria-labelledby": ariaLabelledBy }
+        : {};
+
   return (
     <SelectPrimitive.Root items={options} {...rootProps}>
       <div data-greyui-component="select" className={`greyui-select-field ${className}`.trim()}>
-        {label !== undefined ? <SelectPrimitive.Label className="greyui-field-label">{label}</SelectPrimitive.Label> : null}
-        <SelectPrimitive.Trigger className="greyui-select-trigger" {...triggerProps}>
+        {label !== undefined ? (
+          <SelectPrimitive.Label className="greyui-field-label">{label}</SelectPrimitive.Label>
+        ) : null}
+        <SelectPrimitive.Trigger
+          className="greyui-select-trigger"
+          {...triggerAccessibleNameProps}
+          {...triggerProps}
+        >
           <SelectPrimitive.Value placeholder={placeholder} />
           <SelectPrimitive.Icon className="greyui-select-icon">▾</SelectPrimitive.Icon>
         </SelectPrimitive.Trigger>
       </div>
       <SelectPrimitive.Portal>
-        <SelectPrimitive.Positioner className="greyui-select-positioner" alignItemWithTrigger={false} sideOffset={2}>
+        <SelectPrimitive.Positioner
+          className="greyui-select-positioner"
+          alignItemWithTrigger={false}
+          sideOffset={2}
+        >
           <SelectPrimitive.Popup className="greyui-select-popup">
             <SelectPrimitive.List className="greyui-select-list">
               {options.map((option) => (
@@ -45,7 +86,9 @@ export function Select({
                   value={option.value}
                   disabled={option.disabled}
                 >
-                  <SelectPrimitive.ItemIndicator className="greyui-select-item-indicator">✓</SelectPrimitive.ItemIndicator>
+                  <SelectPrimitive.ItemIndicator className="greyui-select-item-indicator">
+                    ✓
+                  </SelectPrimitive.ItemIndicator>
                   <SelectPrimitive.ItemText>{option.label}</SelectPrimitive.ItemText>
                 </SelectPrimitive.Item>
               ))}

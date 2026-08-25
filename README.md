@@ -4,14 +4,18 @@ greyUI is a standalone BeOS R5 / Haiku-inspired React component library derived 
 
 It preserves WorkbenchOS's compact Swiss-style typography, neutral grey panels, beveled controls, white document surfaces, blue selection state, and yellow active tabs. Interactive compound components use Base UI for keyboard, focus, positioning, and ARIA behavior.
 
-## Install
+The source repository is public. npm publishing is intentionally disabled for now with `"private": true`; the 1.0 source API is available here without implying a registry release.
+
+## Use from source
 
 ```bash
-npm install react react-dom
-# add @elithrar/greyui from the private repository/workspace
+git clone https://github.com/elithrar/greyUI.git
+cd greyUI
+npm install
+npm run build
 ```
 
-The package is private for now. Consume it from this repository or a workspace and import the stylesheet once:
+For a local workspace, build greyUI first, then depend on the repository path and import the stylesheet once:
 
 ```tsx
 import { Button, Input, Window } from "@elithrar/greyui";
@@ -30,18 +34,26 @@ import "@elithrar/greyui/styles.css";
 
 ## Development
 
+Oxc is the project-wide lint and formatting toolchain.
+
 ```bash
 npm install
-npm run check
+npm run format       # oxfmt
+npm run lint         # oxlint
+npm run typecheck
+npm test
+npm run check        # formatting + lint + types + tests
 npm run build
-npm run dev:docs
 ```
+
+CI runs the same checks, builds both the library and docs, performs a package dry run, and validates the Workers Static Assets deployment configuration.
 
 ## Docs / Workers Static Assets
 
 The single-page docs site lives entirely under `docs/`.
 
 ```bash
+npm run dev:docs
 npm run build:docs
 npm run deploy:docs
 ```

@@ -3,19 +3,32 @@ import { AlertDialog as AlertDialogPrimitive } from "@base-ui/react/alert-dialog
 
 export const AlertDialogRoot = AlertDialogPrimitive.Root;
 
-type TriggerProps = Omit<ComponentProps<typeof AlertDialogPrimitive.Trigger>, "className"> & { className?: string };
+type TriggerProps = Omit<ComponentProps<typeof AlertDialogPrimitive.Trigger>, "className"> & {
+  className?: string;
+};
 export function AlertDialogTrigger({ className = "", ...props }: TriggerProps) {
-  return <AlertDialogPrimitive.Trigger className={`greyui-button ${className}`.trim()} {...props} />;
+  return (
+    <AlertDialogPrimitive.Trigger className={`greyui-button ${className}`.trim()} {...props} />
+  );
 }
 
-type PopupProps = Omit<ComponentProps<typeof AlertDialogPrimitive.Popup>, "className" | "children"> & {
+type PopupProps = Omit<
+  ComponentProps<typeof AlertDialogPrimitive.Popup>,
+  "className" | "children"
+> & {
   className?: string;
   children?: ReactNode;
   title: ReactNode;
   description?: ReactNode;
 };
 
-export function AlertDialogPopup({ className = "", title, description, children, ...props }: PopupProps) {
+export function AlertDialogPopup({
+  className = "",
+  title,
+  description,
+  children,
+  ...props
+}: PopupProps) {
   return (
     <AlertDialogPrimitive.Portal>
       <AlertDialogPrimitive.Backdrop className="greyui-dialog-backdrop" />
@@ -26,7 +39,9 @@ export function AlertDialogPopup({ className = "", title, description, children,
           {...props}
         >
           <div className="greyui-window-tab">
-            <AlertDialogPrimitive.Title className="greyui-window-title">{title}</AlertDialogPrimitive.Title>
+            <AlertDialogPrimitive.Title className="greyui-window-title">
+              {title}
+            </AlertDialogPrimitive.Title>
           </div>
           <div className="greyui-dialog-body">
             {description !== undefined ? (

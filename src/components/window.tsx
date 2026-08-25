@@ -1,6 +1,6 @@
-import type { ButtonHTMLAttributes, HTMLAttributes, ReactNode } from "react";
+import type { ButtonHTMLAttributes, ComponentPropsWithoutRef, ReactNode } from "react";
 
-export interface WindowProps extends HTMLAttributes<HTMLDivElement> {
+export interface WindowProps extends Omit<ComponentPropsWithoutRef<"div">, "title"> {
   title: ReactNode;
   active?: boolean;
   controls?: ReactNode;
@@ -15,44 +15,59 @@ export function Window({
   ...props
 }: WindowProps) {
   return (
-    <section
+    <div
       data-greyui-component="window"
       data-active={active ? "true" : "false"}
       className={`greyui-window ${className}`.trim()}
       {...props}
     >
-      <header className="greyui-window-tab">
+      <div className="greyui-window-tab">
         <span className="greyui-window-title">{title}</span>
         {controls !== undefined ? <span className="greyui-window-controls">{controls}</span> : null}
-      </header>
+      </div>
       <div className="greyui-window-body">{children}</div>
-    </section>
+    </div>
   );
 }
 
-export interface WindowWidgetProps extends ButtonHTMLAttributes<HTMLButtonElement> {
+export interface WindowWidgetProps extends Omit<
+  ButtonHTMLAttributes<HTMLButtonElement>,
+  "aria-label" | "type"
+> {
   label: string;
 }
 
 export function WindowWidget({ label, className = "", ...props }: WindowWidgetProps) {
   return (
     <button
+      {...props}
       type="button"
       aria-label={label}
       className={`greyui-window-widget ${className}`.trim()}
-      {...props}
     >
       <span aria-hidden="true" />
     </button>
   );
 }
 
-export interface MenuBarProps extends HTMLAttributes<HTMLElement> {}
+export type MenuBarProps = ComponentPropsWithoutRef<"div">;
 export function MenuBar({ className = "", ...props }: MenuBarProps) {
-  return <nav data-greyui-component="menu-bar" className={`greyui-menubar ${className}`.trim()} {...props} />;
+  return (
+    <div
+      data-greyui-component="menu-bar"
+      className={`greyui-menubar ${className}`.trim()}
+      {...props}
+    />
+  );
 }
 
-export interface StatusBarProps extends HTMLAttributes<HTMLElement> {}
+export type StatusBarProps = ComponentPropsWithoutRef<"div">;
 export function StatusBar({ className = "", ...props }: StatusBarProps) {
-  return <footer data-greyui-component="status-bar" className={`greyui-statusbar ${className}`.trim()} {...props} />;
+  return (
+    <div
+      data-greyui-component="status-bar"
+      className={`greyui-statusbar ${className}`.trim()}
+      {...props}
+    />
+  );
 }

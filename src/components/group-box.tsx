@@ -1,6 +1,6 @@
-import type { HTMLAttributes, ReactNode } from "react";
+import type { ComponentPropsWithoutRef, ReactNode } from "react";
 
-export interface GroupBoxProps extends Omit<HTMLAttributes<HTMLElement>, "title"> {
+export interface GroupBoxProps extends Omit<ComponentPropsWithoutRef<"section">, "title"> {
   title: ReactNode;
 }
 
@@ -11,7 +11,7 @@ export function GroupBox({ className = "", title, children, ...props }: GroupBox
       className={`greyui-groupbox ${className}`.trim()}
       {...props}
     >
-      <div className="greyui-groupbox-title">{title}</div>
+      <h3 className="greyui-groupbox-title">{title}</h3>
       <div className="greyui-groupbox-body">{children}</div>
     </section>
   );

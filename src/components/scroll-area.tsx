@@ -14,7 +14,9 @@ export function ScrollArea({ className = "", children, ...props }: RootProps) {
       {...props}
     >
       <ScrollAreaPrimitive.Viewport className="greyui-scroll-viewport">
-        <ScrollAreaPrimitive.Content className="greyui-scroll-content">{children}</ScrollAreaPrimitive.Content>
+        <ScrollAreaPrimitive.Content className="greyui-scroll-content">
+          {children}
+        </ScrollAreaPrimitive.Content>
       </ScrollAreaPrimitive.Viewport>
       <ScrollAreaPrimitive.Scrollbar className="greyui-scrollbar" orientation="vertical">
         <ScrollAreaPrimitive.Thumb className="greyui-scrollbar-thumb" />
