@@ -11,6 +11,7 @@ body {
   background: var(--greyui-desktop);
   color: var(--greyui-text);
   font-family: var(--greyui-font-ui);
+  font-size: var(--greyui-font-size);
 }
 button,
 input,
@@ -35,6 +36,7 @@ pre {
 }
 
 .docs-main {
+  min-width: 0;
   width: min(980px, calc(100% - 190px));
   margin: 0 auto 0 max(24px, calc((100vw - 1160px) / 2));
   padding: 28px 0 80px;
@@ -157,6 +159,7 @@ pre {
 }
 
 .docs-demo {
+  min-width: 0;
   border: 1px solid var(--greyui-border-dark);
   background: var(--greyui-panel);
   box-shadow: inset 1px 1px var(--greyui-border-light);
@@ -174,6 +177,7 @@ pre {
   font-size: 11px;
 }
 .docs-demo-canvas {
+  min-width: 0;
   padding: 18px;
 }
 .docs-code {
@@ -188,18 +192,21 @@ pre {
 }
 .docs-row {
   display: flex;
+  min-width: 0;
   flex-wrap: wrap;
   align-items: center;
   gap: 9px;
 }
 .docs-stack {
   display: flex;
+  min-width: 0;
   flex-direction: column;
   align-items: flex-start;
   gap: 6px;
 }
 .docs-field {
   display: grid;
+  min-width: 0;
   gap: 4px;
 }
 .docs-field > span {
@@ -210,11 +217,14 @@ pre {
 }
 .docs-selection-grid {
   display: grid;
+  min-width: 0;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 26px;
 }
 .docs-dialog-actions {
   display: flex;
+  min-width: 0;
+  flex-wrap: wrap;
   justify-content: flex-end;
   gap: 8px;
 }
@@ -236,6 +246,7 @@ pre {
 }
 .docs-window-pair {
   display: grid;
+  min-width: 0;
   grid-template-columns: 1fr 1fr;
   gap: 28px;
   align-items: start;
@@ -247,6 +258,7 @@ pre {
 
 .docs-token-grid {
   display: grid;
+  min-width: 0;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   border: 1px solid var(--greyui-border-dark);
   background: #fff;
@@ -308,6 +320,12 @@ pre {
   }
 }
 
+@media (max-width: 768px) {
+  .docs-window-pair {
+    grid-template-columns: 1fr;
+  }
+}
+
 @media (max-width: 620px) {
   .docs-grid-2,
   .docs-principles,
@@ -327,5 +345,18 @@ pre {
   }
   .docs-hero h1 {
     font-size: 32px;
+  }
+  .docs-demo-canvas {
+    padding: 12px;
+  }
+  .docs-grid-2 > *,
+  .docs-principles > *,
+  .docs-selection-grid > *,
+  .docs-window-pair > *,
+  .docs-token-grid > * {
+    min-width: 0;
+  }
+  .docs-dialog-actions > .greyui-button {
+    flex: 1 1 auto;
   }
 }

@@ -87,14 +87,14 @@
   align-items: center;
   justify-content: center;
   gap: 0.35rem;
-  min-height: 30px;
+  min-height: 1.85rem;
   padding: 0.2rem 0.85rem;
   border: 1px solid var(--greyui-border-dark);
   border-radius: 0;
   background: var(--greyui-control);
   box-shadow: var(--greyui-bevel-outset);
   color: var(--greyui-text);
-  font-weight: 600;
+  font-weight: 400;
   cursor: pointer;
   user-select: none;
   white-space: nowrap;
@@ -117,7 +117,8 @@
 
 .greyui-button:focus-visible {
   border-color: var(--greyui-keyboard-navigation);
-  outline: 0;
+  outline: 1px solid var(--greyui-keyboard-navigation);
+  outline-offset: -3px;
   box-shadow:
     inset 0 0 0 1px var(--greyui-keyboard-navigation),
     var(--greyui-bevel-outset);
@@ -136,7 +137,7 @@
 }
 
 .greyui-button[data-size="sm"] {
-  min-height: 26px;
+  min-height: 1.65rem;
   padding: 0.12rem 0.6rem;
   font-size: var(--greyui-font-size-small);
 }
@@ -167,7 +168,7 @@
 .greyui-input {
   display: block;
   width: 100%;
-  min-height: 30px;
+  min-height: 1.85rem;
   box-sizing: border-box;
   padding: 0.25rem 0.45rem;
   border: 1px solid var(--greyui-border-dark);
@@ -175,8 +176,8 @@
   background: var(--greyui-document);
   box-shadow: var(--greyui-bevel-inset);
   color: var(--greyui-text);
-  font-family: var(--greyui-font-mono);
-  font-size: 0.8rem;
+  font-family: var(--greyui-font-ui);
+  font-size: var(--greyui-font-size);
 }
 
 .greyui-input:focus-visible {
@@ -307,8 +308,9 @@
 .greyui-select-field {
   display: inline-block;
   min-width: 150px;
+  max-width: 100%;
   font-family: var(--greyui-font-ui);
-  font-size: 0.8rem;
+  font-size: var(--greyui-font-size);
 }
 
 .greyui-select-trigger {
@@ -317,7 +319,7 @@
   align-items: center;
   gap: 0.75rem;
   width: 100%;
-  min-height: 30px;
+  min-height: 1.85rem;
   box-sizing: border-box;
   padding: 0.25rem 0.45rem;
   border: 1px solid var(--greyui-border-dark);
@@ -330,7 +332,11 @@
   cursor: pointer;
 }
 
-.greyui-select-trigger:focus-visible,
+.greyui-select-trigger:focus-visible {
+  outline: 1px solid var(--greyui-keyboard-navigation);
+  outline-offset: -3px;
+}
+
 .greyui-select-item:focus-visible {
   outline: 2px solid var(--greyui-selection);
   outline-offset: 0;
@@ -342,7 +348,23 @@
   cursor: not-allowed;
 }
 
+.greyui-select-trigger > :first-child {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 .greyui-select-icon {
+  display: grid;
+  width: 0.6rem;
+  height: 0.4rem;
+  place-items: center;
+  font-size: 0;
+}
+
+.greyui-select-arrow {
+  display: block;
   width: 0;
   height: 0;
   border-right: 0.3rem solid transparent;
@@ -375,7 +397,10 @@
   max-width: min(28rem, calc(100vw - 2rem));
   max-height: min(320px, var(--available-height, 320px));
   overflow: auto;
+  box-sizing: border-box;
   padding: 2px;
+  border-color: var(--greyui-border-darker);
+  box-shadow: var(--greyui-bevel-outset), var(--greyui-popup-shadow);
 }
 
 .greyui-select-list {
@@ -411,11 +436,13 @@
 }
 
 .greyui-tabs {
+  min-width: 0;
   font-family: var(--greyui-font-ui);
 }
 
 .greyui-tabs-list {
   display: flex;
+  min-width: 0;
   flex-wrap: wrap;
   align-items: center;
   gap: 0.35rem;
@@ -425,14 +452,14 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-height: 30px;
+  min-height: 1.85rem;
   padding: 0.2rem 0.85rem;
   border: 1px solid var(--greyui-border-dark);
   border-radius: 0;
   background: var(--greyui-control);
   box-shadow: var(--greyui-bevel-outset);
   color: var(--greyui-text);
-  font-weight: 600;
+  font-weight: 400;
   cursor: pointer;
 }
 
@@ -448,7 +475,8 @@
 
 .greyui-tab:focus-visible {
   border-color: var(--greyui-keyboard-navigation);
-  outline: 0;
+  outline: 1px solid var(--greyui-keyboard-navigation);
+  outline-offset: -3px;
   box-shadow:
     inset 0 0 0 1px var(--greyui-keyboard-navigation),
     var(--greyui-bevel-outset);
@@ -466,30 +494,40 @@
 }
 
 .greyui-tab-panel {
+  min-width: 0;
   padding: 0.75rem 0 0;
   outline: none;
 }
 
 .greyui-menu-trigger {
   min-height: var(--greyui-menubar-height);
-  padding: 0.08rem 0.36rem;
+  box-sizing: border-box;
+  padding: 0.1rem 0.35rem;
   border: 0;
   background: transparent;
   color: inherit;
-  font: inherit;
+  font: 400 var(--greyui-font-size) / 1.5 var(--greyui-font-ui);
   cursor: pointer;
 }
 
 .greyui-menu-trigger[data-popup-open],
-.greyui-menu-trigger:hover,
+.greyui-menu-trigger:hover {
+  background: rgb(255 255 255 / 15%);
+  color: inherit;
+}
+
 .greyui-menu-trigger:focus-visible {
-  background: var(--greyui-selection);
-  color: var(--greyui-selection-text);
-  outline: none;
+  background: rgb(255 255 255 / 15%);
+  color: inherit;
+  outline: 1px solid var(--greyui-keyboard-navigation);
+  outline-offset: -3px;
 }
 
 .greyui-menu-popup {
   min-width: 9.75rem;
+  max-width: min(28rem, calc(100vw - 2rem));
+  box-sizing: border-box;
+  overflow-x: hidden;
   padding: 0.12rem 0;
 }
 
@@ -504,6 +542,8 @@
   font: inherit;
   text-align: left;
   white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
   outline: none;
   cursor: pointer;
 }
@@ -525,8 +565,10 @@
 }
 
 .greyui-popover {
-  max-width: 280px;
+  max-width: min(280px, calc(100vw - 2rem));
+  box-sizing: border-box;
   padding: 0.65rem;
+  overflow-wrap: anywhere;
 }
 
 .greyui-popover-title {
@@ -541,10 +583,13 @@
 }
 
 .greyui-tooltip {
+  max-width: min(280px, calc(100vw - 1rem));
+  box-sizing: border-box;
   padding: 0.2rem 0.35rem;
   border-color: var(--greyui-border-darker);
   background: #fffbc4;
   box-shadow: 1px 1px 2px rgb(0 0 0 / 18%);
+  overflow-wrap: anywhere;
 }
 
 .greyui-dialog-backdrop {
@@ -558,23 +603,52 @@
   position: fixed;
   z-index: 2001;
   inset: 0;
-  display: grid;
-  place-items: center;
-  padding: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: auto;
+  padding: max(16px, env(safe-area-inset-top, 0px)) max(16px, env(safe-area-inset-right, 0px))
+    max(16px, env(safe-area-inset-bottom, 0px)) max(16px, env(safe-area-inset-left, 0px));
 }
 
 .greyui-dialog {
+  flex: 0 0 auto;
   width: min(440px, calc(100vw - 32px));
+  max-width: 100%;
+  box-sizing: border-box;
+  margin: auto;
+  border: 1px solid var(--greyui-border-darker);
+  background: var(--greyui-panel);
+  box-shadow: 3px 3px 8px rgb(0 0 0 / 25%);
+  color: var(--greyui-text);
+  font-family: var(--greyui-font-ui);
+  font-size: var(--greyui-font-size);
+  line-height: 1.5;
+}
+
+.greyui-dialog[data-greyui-component="alert-dialog"] {
+  width: min(24rem, calc(100vw - 32px));
+}
+
+.greyui-dialog-tabbar {
+  padding: 0.25rem 0.55rem;
+  border-bottom: 1px solid var(--greyui-tab-active-dark);
+  background: var(--greyui-tab-gradient-active);
+  font-family: var(--greyui-font-ui);
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
+.greyui-dialog-title {
+  margin: 0;
+  font: inherit;
 }
 
 .greyui-dialog-body {
-  position: relative;
-  z-index: 2;
-  margin: 2px 0 0;
+  min-width: 0;
   padding: 0.75rem;
-  border: 1px solid var(--greyui-border-dark);
   background: var(--greyui-panel);
-  box-shadow: var(--greyui-bevel-inset);
+  overflow-wrap: anywhere;
 }
 
 .greyui-dialog-description {
@@ -585,6 +659,9 @@
 }
 
 .greyui-groupbox {
+  min-width: 0;
+  max-width: 100%;
+  box-sizing: border-box;
   padding: 0.55rem 0.6rem 0.6rem;
   border: 1px solid var(--greyui-control-border);
   background: var(--greyui-panel);
@@ -600,6 +677,7 @@
 
 .greyui-groupbox-body {
   display: grid;
+  min-width: 0;
   gap: 0.45rem;
 }
 
@@ -613,6 +691,7 @@
   box-shadow: var(--greyui-bevel-outset);
   font-size: 0.72rem;
   font-weight: 600;
+  overflow-wrap: anywhere;
 }
 
 .greyui-badge[data-tone="accent"] {
@@ -647,6 +726,7 @@
 }
 
 .greyui-table-wrap {
+  min-width: 0;
   max-width: 100%;
   overflow: auto;
   border: 1px solid var(--greyui-border-dark);
@@ -690,6 +770,7 @@
 .greyui-scroll-area {
   min-width: 0;
   min-height: 0;
+  max-width: 100%;
 }
 
 .greyui-scroll-viewport {
@@ -845,6 +926,8 @@
   display: grid;
   isolation: isolate;
   min-width: 0;
+  max-width: 100%;
+  box-sizing: border-box;
   padding: var(--greyui-tab-height) 3px 3px;
   border: 0;
   background: transparent;
@@ -934,6 +1017,7 @@
   border: 0;
   background: transparent;
   color: var(--greyui-text);
+  font: inherit;
   cursor: pointer;
 }
 
@@ -947,11 +1031,16 @@
   border-left: 1px solid rgb(0 0 0 / 28%);
 }
 
-.greyui-window-widget:hover,
-.greyui-window-widget:focus-visible {
+.greyui-window-widget:hover {
   background: rgb(0 0 0 / 6%);
   outline: 1px solid var(--greyui-selection);
   outline-offset: -1px;
+}
+
+.greyui-window-widget:focus-visible {
+  background: transparent;
+  outline: 1px solid var(--greyui-keyboard-navigation);
+  outline-offset: -3px;
 }
 
 .greyui-window-widget > span {
@@ -989,6 +1078,7 @@
 .greyui-window-body {
   position: relative;
   z-index: 2;
+  min-width: 0;
   min-height: 0;
   border: 1px solid var(--greyui-border-dark);
   background: var(--greyui-panel);
@@ -1006,7 +1096,14 @@
   display: flex;
   align-items: center;
   gap: 0.05rem;
-  min-height: var(--greyui-menubar-height);
+  height: var(--greyui-menubar-height);
+  min-height: 0;
+  box-sizing: border-box;
+  min-width: 0;
+  overflow-x: auto;
+  overflow-y: hidden;
+  overscroll-behavior-inline: contain;
+  scrollbar-width: none;
   margin: -1px -1px 0;
   padding: 0 0.18rem;
   border: 1px solid var(--greyui-border-dark);
@@ -1014,11 +1111,31 @@
   box-shadow: inset 1px 1px 0 var(--greyui-border-light);
   font-family: var(--greyui-font-ui);
   font-size: var(--greyui-font-size);
+  white-space: nowrap;
+}
+
+.greyui-menubar::-webkit-scrollbar {
+  display: none;
+}
+
+.greyui-menubar .greyui-menu-trigger {
+  padding: 0.08rem 0.36rem;
+  color: var(--greyui-text);
+  font: inherit;
+}
+
+.greyui-menubar .greyui-menu-trigger[data-popup-open],
+.greyui-menubar .greyui-menu-trigger:hover,
+.greyui-menubar .greyui-menu-trigger:focus-visible {
+  background: var(--greyui-selection);
+  color: var(--greyui-selection-text);
+  outline: none;
 }
 
 .greyui-statusbar {
   display: flex;
   align-items: center;
+  min-width: 0;
   min-height: 23px;
   margin: 0 -1px -1px;
   padding: 0.2rem 0.45rem;
@@ -1031,8 +1148,16 @@
 
 .greyui-segmented-control {
   display: inline-flex;
+  max-width: 100%;
+  overflow-x: auto;
+  overscroll-behavior-inline: contain;
+  scrollbar-width: none;
   border: 1px solid var(--greyui-border-dark);
   box-shadow: var(--greyui-bevel-outset);
+}
+
+.greyui-segmented-control::-webkit-scrollbar {
+  display: none;
 }
 
 .greyui-segmented-control > .greyui-button {
@@ -1063,7 +1188,101 @@
   }
 }
 
-@media (pointer: coarse), (max-width: 680px) {
+@media (max-width: 768px), (pointer: coarse) and (max-width: 1024px) {
+  .greyui-window {
+    width: 100%;
+    padding: 0;
+    border: 1px solid var(--greyui-border-dark);
+    background: var(--greyui-panel);
+    box-shadow: var(--greyui-bevel-outset);
+  }
+
+  .greyui-window::before {
+    display: none;
+  }
+
+  .greyui-window[data-active="false"] {
+    box-shadow: var(--greyui-bevel-outset);
+  }
+
+  .greyui-window-tab {
+    position: static;
+    width: 100%;
+    max-width: none;
+    min-height: 0;
+    align-items: stretch;
+    border: 0;
+    border-bottom: 1px solid var(--greyui-tab-active-dark);
+    border-radius: 0;
+    box-shadow: none;
+  }
+
+  .greyui-window[data-active="false"] .greyui-window-tab {
+    border-color: var(--greyui-tab-inactive-dark);
+    box-shadow: none;
+  }
+
+  .greyui-window-title {
+    order: 0;
+    flex: 1 1 auto;
+    min-width: 0;
+    max-width: none;
+    padding: 0.45rem 0.65rem;
+    font-size: 0.82rem;
+  }
+
+  .greyui-window-widget {
+    order: 1;
+    width: 24px;
+    min-height: 0;
+  }
+
+  .greyui-window-widget[data-kind="close"] {
+    order: 1;
+    border-right: 0;
+    border-left: 1px solid rgb(0 0 0 / 28%);
+  }
+
+  .greyui-window-widget[data-kind="zoom"] {
+    display: none;
+  }
+
+  .greyui-window-body {
+    border: 0;
+    box-shadow: none;
+  }
+
+  .greyui-window-body > .greyui-menubar {
+    margin: 0;
+    border-top: 0;
+    border-right: 0;
+    border-left: 0;
+  }
+
+  .greyui-window-body > .greyui-statusbar {
+    margin: 0;
+    border-right: 0;
+    border-bottom: 0;
+    border-left: 0;
+  }
+
+  .greyui-dialog {
+    width: min(100%, 440px);
+  }
+
+  .greyui-dialog[data-greyui-component="alert-dialog"] {
+    width: min(100%, 24rem);
+  }
+
+  .greyui-dialog-tabbar {
+    cursor: default;
+  }
+
+  .greyui-menu-item,
+  .greyui-select-item {
+    min-height: 28px;
+  }
+
   :where(.greyui-scroll-viewport, .greyui-table-wrap) {
     scrollbar-width: thin;
   }

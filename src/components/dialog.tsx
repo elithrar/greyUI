@@ -30,18 +30,11 @@ export function DialogPopup({
       <DialogPrimitive.Viewport className="greyui-dialog-viewport">
         <DialogPrimitive.Popup
           data-greyui-component="dialog"
-          className={`greyui-window greyui-dialog ${className}`.trim()}
+          className={`greyui-dialog ${className}`.trim()}
           {...props}
         >
-          <div className="greyui-window-tab">
-            <DialogPrimitive.Title className="greyui-window-title">{title}</DialogPrimitive.Title>
-            <DialogPrimitive.Close
-              className="greyui-window-widget"
-              data-kind="close"
-              aria-label="Close"
-            >
-              <span aria-hidden="true" />
-            </DialogPrimitive.Close>
+          <div className="greyui-dialog-tabbar">
+            <DialogPrimitive.Title className="greyui-dialog-title">{title}</DialogPrimitive.Title>
           </div>
           <div className="greyui-dialog-body">
             {description !== undefined ? (

@@ -35,11 +35,11 @@ export function AlertDialogPopup({
       <AlertDialogPrimitive.Viewport className="greyui-dialog-viewport">
         <AlertDialogPrimitive.Popup
           data-greyui-component="alert-dialog"
-          className={`greyui-window greyui-dialog ${className}`.trim()}
+          className={`greyui-dialog ${className}`.trim()}
           {...props}
         >
-          <div className="greyui-window-tab">
-            <AlertDialogPrimitive.Title className="greyui-window-title">
+          <div className="greyui-dialog-tabbar">
+            <AlertDialogPrimitive.Title className="greyui-dialog-title">
               {title}
             </AlertDialogPrimitive.Title>
           </div>

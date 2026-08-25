@@ -434,8 +434,21 @@ function App() {
                   }
                 >
                   <MenuBar>
-                    <Button size="sm">File</Button>
-                    <Button size="sm">Edit</Button>
+                    <Menu.Root>
+                      <Menu.Trigger>File</Menu.Trigger>
+                      <Menu.Popup>
+                        <Menu.Item>About Preferences</Menu.Item>
+                        <Menu.Separator />
+                        <Menu.Item>Close</Menu.Item>
+                      </Menu.Popup>
+                    </Menu.Root>
+                    <Menu.Root>
+                      <Menu.Trigger>Edit</Menu.Trigger>
+                      <Menu.Popup>
+                        <Menu.Item>Undo</Menu.Item>
+                        <Menu.Item>Redo</Menu.Item>
+                      </Menu.Popup>
+                    </Menu.Root>
                   </MenuBar>
                   <div className="docs-window-example-body">Active window content</div>
                   <StatusBar>Ready</StatusBar>

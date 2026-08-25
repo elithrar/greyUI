@@ -1,6 +1,15 @@
 import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import { afterEach, describe, expect, it } from "vitest";
-import { Button, ScrollArea, Select, Tabs, Window, WindowWidget } from "../src";
+import {
+  AlertDialog,
+  Button,
+  Dialog,
+  ScrollArea,
+  Select,
+  Tabs,
+  Window,
+  WindowWidget,
+} from "../src";
 
 afterEach(cleanup);
 
@@ -72,6 +81,20 @@ describe("accessibility contracts", () => {
     expect(screen.getByRole("combobox", { name: "Theme" })).not.toBeNull();
   });
 
+  it("renders one explicit Select arrow without Base UI fallback text", () => {
+    const { container } = render(
+      <Select
+        aria-label="Theme"
+        defaultValue="beos"
+        options={[{ value: "beos", label: "BeOS R5" }]}
+      />,
+    );
+
+    const icon = container.querySelector(".greyui-select-icon");
+    expect(icon?.textContent).toBe("");
+    expect(icon?.querySelectorAll(".greyui-select-arrow")).toHaveLength(1);
+  });
+
   it("switches tab panels without custom keyboard code", () => {
     render(
       <Tabs
@@ -91,5 +114,30 @@ describe("accessibility contracts", () => {
     render(<Window title={<span>Preferences</span>}>Content</Window>);
 
     expect(screen.getByText("Preferences")).not.toBeNull();
+  });
+
+  it("uses dedicated dialog chrome instead of a window tab and widget", () => {
+    render(
+      <Dialog.Root defaultOpen>
+        <Dialog.Popup title="Enable edit mode">Content</Dialog.Popup>
+      </Dialog.Root>,
+    );
+
+    const dialog = screen.getByRole("dialog", { name: "Enable edit mode" });
+    expect(dialog.classList.contains("greyui-window")).toBe(false);
+    expect(dialog.querySelector(".greyui-dialog-tabbar")).not.toBeNull();
+    expect(dialog.querySelector(".greyui-window-widget")).toBeNull();
+  });
+
+  it("uses the same dedicated chrome for alert dialogs", () => {
+    render(
+      <AlertDialog.Root defaultOpen>
+        <AlertDialog.Popup title="Discard changes?">Content</AlertDialog.Popup>
+      </AlertDialog.Root>,
+    );
+
+    const dialog = screen.getByRole("alertdialog", { name: "Discard changes?" });
+    expect(dialog.classList.contains("greyui-window")).toBe(false);
+    expect(dialog.querySelector(".greyui-dialog-tabbar")).not.toBeNull();
   });
 });
