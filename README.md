@@ -2,7 +2,11 @@
 
 greyUI is a standalone BeOS R5 / Haiku-inspired React component library derived from WorkbenchOS. Base UI provides keyboard, focus, positioning, and ARIA behavior for compound controls.
 
-The source is public, but the package is not published to npm (`"private": true`).
+## Install
+
+```bash
+npm install @elithrar/greyui
+```
 
 ## Use locally
 

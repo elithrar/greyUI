@@ -1,7 +1,6 @@
 {
   "name": "@elithrar/greyui",
-  "version": "1.0.0",
-  "private": true,
+  "version": "0.1.0",
   "description": "BeOS R5 / Haiku-inspired React component library extracted from WorkbenchOS.",
   "license": "UNLICENSED",
   "repository": {
@@ -22,6 +21,9 @@
       "import": "./dist/grey-ui.js"
     },
     "./styles.css": "./dist/grey-ui.css"
+  },
+  "publishConfig": {
+    "access": "public"
   },
   "scripts": {
     "build": "vite build && npm run build:types",
