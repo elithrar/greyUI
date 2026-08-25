@@ -6,10 +6,20 @@ type RootProps = Omit<ComponentProps<typeof ScrollAreaPrimitive.Root>, "classNam
   children?: ReactNode;
 };
 
-export function ScrollArea({ className = "", children, ...props }: RootProps) {
+export interface ScrollAreaProps extends RootProps {
+  stableGutter?: boolean;
+}
+
+export function ScrollArea({
+  className = "",
+  children,
+  stableGutter = false,
+  ...props
+}: ScrollAreaProps) {
   return (
     <ScrollAreaPrimitive.Root
       data-greyui-component="scroll-area"
+      data-stable-gutter={stableGutter ? "true" : undefined}
       className={`greyui-scroll-area ${className}`.trim()}
       {...props}
     >
@@ -18,13 +28,6 @@ export function ScrollArea({ className = "", children, ...props }: RootProps) {
           {children}
         </ScrollAreaPrimitive.Content>
       </ScrollAreaPrimitive.Viewport>
-      <ScrollAreaPrimitive.Scrollbar className="greyui-scrollbar" orientation="vertical">
-        <ScrollAreaPrimitive.Thumb className="greyui-scrollbar-thumb" />
-      </ScrollAreaPrimitive.Scrollbar>
-      <ScrollAreaPrimitive.Scrollbar className="greyui-scrollbar" orientation="horizontal">
-        <ScrollAreaPrimitive.Thumb className="greyui-scrollbar-thumb" />
-      </ScrollAreaPrimitive.Scrollbar>
-      <ScrollAreaPrimitive.Corner className="greyui-scrollbar-corner" />
     </ScrollAreaPrimitive.Root>
   );
 }

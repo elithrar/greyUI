@@ -68,7 +68,7 @@ export function Select({
           {...triggerProps}
         >
           <SelectPrimitive.Value placeholder={placeholder} />
-          <SelectPrimitive.Icon className="greyui-select-icon">▾</SelectPrimitive.Icon>
+          <SelectPrimitive.Icon className="greyui-select-icon" aria-hidden="true" />
         </SelectPrimitive.Trigger>
       </div>
       <SelectPrimitive.Portal>

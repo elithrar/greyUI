@@ -25,8 +25,13 @@ pre {
 .docs-desktop {
   min-height: 100vh;
   background:
-    repeating-linear-gradient(0deg, rgb(255 255 255 / 3%) 0 1px, transparent 1px 3px),
-    var(--greyui-desktop);
+    var(--greyui-desktop-pattern),
+    linear-gradient(
+      180deg,
+      var(--greyui-desktop-light) 0%,
+      var(--greyui-desktop) 45%,
+      var(--greyui-desktop-dark) 100%
+    );
 }
 
 .docs-main {

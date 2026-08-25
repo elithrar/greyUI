@@ -4,12 +4,20 @@ export type ButtonVariant = "secondary" | "primary" | "destructive";
 export type ButtonSize = "sm" | "md";
 
 export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
+  defaultAction?: boolean;
   variant?: ButtonVariant;
   size?: ButtonSize;
 }
 
 export const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button(
-  { className = "", variant = "secondary", size = "md", type = "button", ...props },
+  {
+    className = "",
+    defaultAction = false,
+    variant = "secondary",
+    size = "md",
+    type = "button",
+    ...props
+  },
   ref,
 ) {
   return (
@@ -17,6 +25,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button
       ref={ref}
       type={type}
       data-greyui-component="button"
+      data-default={defaultAction ? "true" : undefined}
       data-variant={variant}
       data-size={size}
       className={`greyui-button ${className}`.trim()}

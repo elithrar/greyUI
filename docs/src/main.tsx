@@ -82,7 +82,7 @@ function App() {
         <aside className="docs-deskbar" aria-label="Documentation navigation">
           <div className="docs-deskbar-top">
             <strong>greyUI</strong>
-            <Badge tone="accent">1.0</Badge>
+            <Badge tone="accent">0.1.1</Badge>
           </div>
           <div className="docs-deskbar-handle" aria-hidden="true" />
           <nav>
@@ -104,8 +104,8 @@ function App() {
             title="greyUI — Component Reference"
             controls={
               <>
-                <WindowWidget label="Zoom" />
-                <WindowWidget label="Close" />
+                <WindowWidget kind="close" label="Close" />
+                <WindowWidget kind="zoom" label="Zoom" />
               </>
             }
             className="docs-hero-window"
@@ -117,7 +117,7 @@ function App() {
                   <Menu.Item>Clone source</Menu.Item>
                   <Menu.Item>Copy clone command</Menu.Item>
                   <Menu.Separator />
-                  <Menu.Item disabled>Publish 1.0…</Menu.Item>
+                  <Menu.Item disabled>Publish 0.1.1…</Menu.Item>
                 </Menu.Popup>
               </Menu.Root>
               <Menu.Root>
@@ -141,7 +141,7 @@ function App() {
                 <code>git clone https://github.com/elithrar/greyUI.git</code>
               </GroupBox>
             </div>
-            <StatusBar>1.0 core set · ESM · CSS tokens · Workers Static Assets docs</StatusBar>
+            <StatusBar>0.1.1 · ESM · CSS tokens · WorkbenchOS-aligned controls</StatusBar>
           </Window>
 
           <Section
@@ -152,7 +152,7 @@ function App() {
             <div className="docs-principles">
               <GroupBox title="Visual language">
                 <ul>
-                  <li>Yellow active tabs; grey inactive tabs.</li>
+                  <li>Yellow active window tabs; grey inactive window tabs.</li>
                   <li>Outset bevels for controls, inset bevels for fields.</li>
                   <li>White only for documents, inputs, tables and source panes.</li>
                   <li>Swiss/Helvetica-style 12 px UI typography.</li>
@@ -177,12 +177,14 @@ function App() {
             <Demo
               title="Variants"
               code={
-                '<Button>Cancel</Button>\n<Button variant="primary">Apply</Button>\n<Button variant="destructive">Delete</Button>'
+                '<Button>Cancel</Button>\n<Button defaultAction variant="primary">Apply</Button>\n<Button variant="destructive">Delete</Button>'
               }
             >
               <div className="docs-row">
                 <Button>Cancel</Button>
-                <Button variant="primary">Apply</Button>
+                <Button defaultAction variant="primary">
+                  Apply
+                </Button>
                 <Button variant="destructive">Delete</Button>
                 <Button disabled>Disabled</Button>
                 <Button size="sm">Small</Button>
@@ -270,7 +272,7 @@ function App() {
           <Section
             id="tabs"
             title="Tabs"
-            intro="Tabs use the same yellow-active/grey-inactive convention as WorkbenchOS window chrome, but remain a standard tablist semantically."
+            intro="WorkbenchOS view tabs are compact beveled buttons. The active view becomes an inset white document surface while window tabs keep the yellow/grey focus convention."
           >
             <Demo title="Related views">
               <Tabs
@@ -404,7 +406,7 @@ function App() {
                 </Table>
               </Demo>
               <Demo title="Scroll area">
-                <ScrollArea className="docs-scroll-demo">
+                <ScrollArea className="docs-scroll-demo" stableGutter>
                   <div className="docs-scroll-content">
                     {Array.from({ length: 18 }, (_, index) => (
                       <div key={index}>Tracker row {String(index + 1).padStart(2, "0")}</div>
@@ -422,7 +424,15 @@ function App() {
           >
             <Demo title="Active and inactive windows">
               <div className="docs-window-pair">
-                <Window title="Preferences" controls={<WindowWidget label="Close" />}>
+                <Window
+                  title="Preferences"
+                  controls={
+                    <>
+                      <WindowWidget kind="close" label="Close" />
+                      <WindowWidget kind="zoom" label="Zoom" />
+                    </>
+                  }
+                >
                   <MenuBar>
                     <Button size="sm">File</Button>
                     <Button size="sm">Edit</Button>
@@ -430,7 +440,11 @@ function App() {
                   <div className="docs-window-example-body">Active window content</div>
                   <StatusBar>Ready</StatusBar>
                 </Window>
-                <Window title="Tracker" active={false} controls={<WindowWidget label="Close" />}>
+                <Window
+                  title="Tracker"
+                  active={false}
+                  controls={<WindowWidget kind="close" label="Close" />}
+                >
                   <div className="docs-window-example-body">
                     Inactive chrome keeps the same geometry.
                   </div>
@@ -450,8 +464,8 @@ function App() {
                 ["--greyui-panel", "#d8d8d8"],
                 ["--greyui-control", "#dedede"],
                 ["--greyui-document", "#ffffff"],
-                ["--greyui-selection", "#4779b0"],
-                ["--greyui-border-dark", "#7a7a7a"],
+                ["--greyui-selection", "#6698cb"],
+                ["--greyui-border-dark", "#808080"],
               ].map(([name, value]) => (
                 <div className="docs-token" key={name}>
                   <span className="docs-swatch" style={{ background: value }} />
@@ -463,7 +477,7 @@ function App() {
           </Section>
 
           <footer className="docs-footer">
-            greyUI 1.0 · WorkbenchOS visual language · Base UI behavior
+            greyUI 0.1.1 · WorkbenchOS visual language · Base UI behavior
           </footer>
         </main>
       </div>

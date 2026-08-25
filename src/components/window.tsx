@@ -34,15 +34,22 @@ export interface WindowWidgetProps extends Omit<
   ButtonHTMLAttributes<HTMLButtonElement>,
   "aria-label" | "type"
 > {
+  kind?: "close" | "zoom";
   label: string;
 }
 
-export function WindowWidget({ label, className = "", ...props }: WindowWidgetProps) {
+export function WindowWidget({
+  kind = "close",
+  label,
+  className = "",
+  ...props
+}: WindowWidgetProps) {
   return (
     <button
       {...props}
       type="button"
       aria-label={label}
+      data-kind={kind}
       className={`greyui-window-widget ${className}`.trim()}
     >
       <span aria-hidden="true" />

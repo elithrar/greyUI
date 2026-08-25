@@ -35,7 +35,11 @@ export function DialogPopup({
         >
           <div className="greyui-window-tab">
             <DialogPrimitive.Title className="greyui-window-title">{title}</DialogPrimitive.Title>
-            <DialogPrimitive.Close className="greyui-window-widget" aria-label="Close">
+            <DialogPrimitive.Close
+              className="greyui-window-widget"
+              data-kind="close"
+              aria-label="Close"
+            >
               <span aria-hidden="true" />
             </DialogPrimitive.Close>
           </div>

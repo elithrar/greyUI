@@ -1,6 +1,6 @@
 import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import { afterEach, describe, expect, it } from "vitest";
-import { Button, Select, Tabs, Window, WindowWidget } from "../src";
+import { Button, ScrollArea, Select, Tabs, Window, WindowWidget } from "../src";
 
 afterEach(cleanup);
 
@@ -15,12 +15,32 @@ describe("native control safety", () => {
     expect(screen.getByRole("button", { name: "Apply" }).getAttribute("type")).toBe("button");
   });
 
+  it("marks a default action without leaking styling internals into call sites", () => {
+    render(<Button defaultAction>Apply</Button>);
+
+    expect(screen.getByRole("button", { name: "Apply" }).getAttribute("data-default")).toBe("true");
+  });
+
   it("keeps WindowWidget non-submitting and labeled", () => {
     render(<WindowWidget label="Close" />);
 
     const widget = screen.getByRole("button", { name: "Close" });
     expect(widget.getAttribute("type")).toBe("button");
     expect(widget.getAttribute("aria-label")).toBe("Close");
+    expect(widget.getAttribute("data-kind")).toBe("close");
+  });
+
+  it("keeps ScrollArea behavior props and supports a stable scrollbar gutter", () => {
+    render(<ScrollArea stableGutter>Rows</ScrollArea>);
+
+    const region = screen.getByText("Rows").closest('[data-greyui-component="scroll-area"]');
+    if (region === null) {
+      throw new Error("Expected ScrollArea root");
+    }
+    expect(region.getAttribute("data-greyui-component")).toBe("scroll-area");
+    expect(region.getAttribute("data-stable-gutter")).toBe("true");
+    expect(region.querySelector(".greyui-scroll-viewport")).not.toBeNull();
+    expect(region.querySelector(".greyui-scrollbar")).toBeNull();
   });
 });
 
