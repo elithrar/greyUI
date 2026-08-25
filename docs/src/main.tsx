@@ -82,7 +82,7 @@ function App() {
         <aside className="docs-deskbar" aria-label="Documentation navigation">
           <div className="docs-deskbar-top">
             <strong>greyUI</strong>
-            <Badge tone="accent">0.1.1</Badge>
+            <Badge tone="accent">0.2.0</Badge>
           </div>
           <div className="docs-deskbar-handle" aria-hidden="true" />
           <nav>
@@ -116,8 +116,6 @@ function App() {
                 <Menu.Popup>
                   <Menu.Item>Clone source</Menu.Item>
                   <Menu.Item>Copy clone command</Menu.Item>
-                  <Menu.Separator />
-                  <Menu.Item disabled>Publish 0.1.1…</Menu.Item>
                 </Menu.Popup>
               </Menu.Root>
               <Menu.Root>
@@ -130,40 +128,40 @@ function App() {
             </MenuBar>
             <div className="docs-hero">
               <div>
-                <div className="docs-eyebrow">WorkbenchOS visual system, standalone</div>
+                <div className="docs-eyebrow">BeOS / Haiku UI for React</div>
                 <h1>greyUI</h1>
                 <p>
-                  Compact BeOS R5 / Haiku-inspired React components. The visual language comes from
-                  WorkbenchOS; Base UI provides the behavior for compound interactive controls.
+                  React components styled after BeOS R5 and Haiku. Compound controls use Base UI for
+                  keyboard, focus, and ARIA behavior.
                 </p>
               </div>
               <GroupBox title="Clone source">
                 <code>git clone https://github.com/elithrar/greyUI.git</code>
               </GroupBox>
             </div>
-            <StatusBar>0.1.1 · ESM · CSS tokens · WorkbenchOS-aligned controls</StatusBar>
+            <StatusBar>0.2.0 · ESM · CSS tokens</StatusBar>
           </Window>
 
           <Section
             id="principles"
             title="Principles"
-            intro="System controls first. Neutral panels, inset document surfaces, compact sizing and quiet feedback—not a modern card system wearing a retro skin."
+            intro="Compact controls, neutral panels, white document surfaces, and BeOS-style window chrome."
           >
             <div className="docs-principles">
               <GroupBox title="Visual language">
                 <ul>
-                  <li>Yellow active window tabs; grey inactive window tabs.</li>
-                  <li>Outset bevels for controls, inset bevels for fields.</li>
-                  <li>White only for documents, inputs, tables and source panes.</li>
-                  <li>Swiss/Helvetica-style 12 px UI typography.</li>
+                  <li>Yellow tabs mark active windows; inactive tabs are grey.</li>
+                  <li>Controls use outset bevels; fields use inset bevels.</li>
+                  <li>White backgrounds are reserved for document and editable content.</li>
+                  <li>12 px Helvetica/Arial system typography.</li>
                 </ul>
               </GroupBox>
               <GroupBox title="Component model">
                 <ul>
-                  <li>Native elements for simple controls.</li>
-                  <li>Base UI for focus, keyboard, ARIA and popup positioning.</li>
-                  <li>Data attributes expose state to plain CSS.</li>
-                  <li>Product-specific WorkbenchOS components stay out of core.</li>
+                  <li>Native HTML for simple controls.</li>
+                  <li>Base UI for compound-control behavior and positioning.</li>
+                  <li>Component state is exposed through data attributes.</li>
+                  <li>WorkbenchOS-specific application components are not included.</li>
                 </ul>
               </GroupBox>
             </div>
@@ -172,7 +170,7 @@ function App() {
           <Section
             id="buttons"
             title="Buttons"
-            intro="Small, beveled system actions with a persistent primary/default-action treatment rather than filled brand buttons."
+            intro="Compact beveled buttons. The defaultAction prop adds the default-action outline."
           >
             <Demo
               title="Variants"
@@ -211,7 +209,7 @@ function App() {
           <Section
             id="fields"
             title="Fields"
-            intro="Editable content lives on white inset surfaces so form controls read as content, not panel chrome."
+            intro="Inputs, textareas, and selects use white inset fields."
           >
             <div className="docs-grid-2">
               <Demo title="Input">
@@ -243,7 +241,7 @@ function App() {
           <Section
             id="selection"
             title="Selection controls"
-            intro="The library keeps compact native-system proportions while Base UI manages form state and keyboard behavior."
+            intro="Checkboxes, radios, and switches use compact system-control sizing. Base UI handles state and keyboard behavior."
           >
             <Demo title="Checkbox, radio and switch">
               <div className="docs-selection-grid">
@@ -272,7 +270,7 @@ function App() {
           <Section
             id="tabs"
             title="Tabs"
-            intro="WorkbenchOS view tabs are compact beveled buttons. The active view becomes an inset white document surface while window tabs keep the yellow/grey focus convention."
+            intro="Tabs use beveled triggers and an inset white panel for the active view. Window title tabs use the separate yellow/grey active state."
           >
             <Demo title="Related views">
               <Tabs
@@ -291,7 +289,7 @@ function App() {
                   {
                     value: "advanced",
                     label: "Advanced",
-                    content: <p>Lower-level integration settings.</p>,
+                    content: <p>Integration settings.</p>,
                   },
                 ]}
               />
@@ -301,7 +299,7 @@ function App() {
           <Section
             id="overlays"
             title="Menus & overlays"
-            intro="Menus stay terse and system-like. Popovers, tooltips and dialogs reuse the same panel and window vocabulary instead of introducing separate floating-card styling."
+            intro="Menus, popovers, tooltips, and dialogs share the same panel, border, and bevel styles."
           >
             <Demo title="Interactive overlays">
               <div className="docs-row">
@@ -319,7 +317,7 @@ function App() {
                   <Popover.Trigger>Details…</Popover.Trigger>
                   <Popover.Popup
                     title="Build information"
-                    description="greyUI separates headless behavior from the WorkbenchOS-derived theme."
+                    description="Base UI handles popover behavior; greyUI supplies the theme."
                   >
                     <Popover.Close className="greyui-button" type="button">
                       Close
@@ -329,10 +327,7 @@ function App() {
 
                 <Dialog.Root>
                   <Dialog.Trigger>Open dialog…</Dialog.Trigger>
-                  <Dialog.Popup
-                    title="Enable edit mode"
-                    description="Changes remain local until you explicitly apply them."
-                  >
+                  <Dialog.Popup title="Enable edit mode" description="Apply to save the changes.">
                     <div className="docs-dialog-actions">
                       <Dialog.Close className="greyui-button">Cancel</Dialog.Close>
                       <Dialog.Close className="greyui-button" data-variant="primary">
@@ -359,7 +354,7 @@ function App() {
 
                 <Tooltip.Root>
                   <Tooltip.Trigger className="greyui-button">Hover me</Tooltip.Trigger>
-                  <Tooltip.Popup>BeOS-style tooltip</Tooltip.Popup>
+                  <Tooltip.Popup>Tooltip</Tooltip.Popup>
                 </Tooltip.Root>
               </div>
             </Demo>
@@ -368,7 +363,7 @@ function App() {
           <Section
             id="content"
             title="Content surfaces"
-            intro="Tables and scroll areas are intentionally plain. They exist to display information densely, not to create decorative containers."
+            intro="Tables and scroll areas use dense, undecorated layouts."
           >
             <div className="docs-grid-2">
               <Demo title="Table">
@@ -420,7 +415,7 @@ function App() {
           <Section
             id="window"
             title="Window shell"
-            intro="Window is deliberately a shell rather than a desktop manager. Apps can compose their own menu bar and status bar without pulling WorkbenchOS state or launcher logic into the package."
+            intro="Window provides chrome only: title tab, optional controls, menu bar, content, and status bar. It does not manage desktop state."
           >
             <Demo title="Active and inactive windows">
               <div className="docs-window-pair">
@@ -450,7 +445,7 @@ function App() {
                       </Menu.Popup>
                     </Menu.Root>
                   </MenuBar>
-                  <div className="docs-window-example-body">Active window content</div>
+                  <div className="docs-window-example-body">Active window</div>
                   <StatusBar>Ready</StatusBar>
                 </Window>
                 <Window
@@ -458,9 +453,7 @@ function App() {
                   active={false}
                   controls={<WindowWidget kind="close" label="Close" />}
                 >
-                  <div className="docs-window-example-body">
-                    Inactive chrome keeps the same geometry.
-                  </div>
+                  <div className="docs-window-example-body">Inactive window</div>
                 </Window>
               </div>
             </Demo>
@@ -469,7 +462,7 @@ function App() {
           <Section
             id="tokens"
             title="Design tokens"
-            intro="The default theme mirrors WorkbenchOS’s canonical R5 palette. Override CSS custom properties at a theme boundary without changing component structure."
+            intro="The default theme uses the WorkbenchOS R5 palette. Override these CSS custom properties at a theme boundary."
           >
             <div className="docs-token-grid">
               {[
@@ -489,9 +482,7 @@ function App() {
             </div>
           </Section>
 
-          <footer className="docs-footer">
-            greyUI 0.1.1 · WorkbenchOS visual language · Base UI behavior
-          </footer>
+          <footer className="docs-footer">greyUI 0.2.0 · React 19 · Base UI 1.7</footer>
         </main>
       </div>
     </Tooltip.Provider>
