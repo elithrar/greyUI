@@ -6,6 +6,20 @@
     "suspicious": "warn",
     "perf": "warn"
   },
+  "rules": {
+    "react/react-in-jsx-scope": "off",
+    "react/jsx-uses-react": "off",
+    "import/no-unassigned-import": "off",
+    "jsx-a11y/prefer-tag-over-role": "off"
+  },
+  "settings": {
+    "jsx-a11y": {
+      "components": {
+        "Input": "input",
+        "Textarea": "textarea"
+      }
+    }
+  },
   "env": {
     "browser": true,
     "node": true,
