@@ -1,6 +1,6 @@
 import type { ButtonHTMLAttributes, ComponentPropsWithoutRef, ReactNode } from "react";
 
-export interface WindowProps extends Omit<ComponentPropsWithoutRef<"section">, "title"> {
+export interface WindowProps extends Omit<ComponentPropsWithoutRef<"div">, "title"> {
   title: ReactNode;
   active?: boolean;
   controls?: ReactNode;
@@ -15,18 +15,18 @@ export function Window({
   ...props
 }: WindowProps) {
   return (
-    <section
+    <div
       data-greyui-component="window"
       data-active={active ? "true" : "false"}
       className={`greyui-window ${className}`.trim()}
       {...props}
     >
-      <header className="greyui-window-tab">
+      <div className="greyui-window-tab">
         <span className="greyui-window-title">{title}</span>
         {controls !== undefined ? <span className="greyui-window-controls">{controls}</span> : null}
-      </header>
+      </div>
       <div className="greyui-window-body">{children}</div>
-    </section>
+    </div>
   );
 }
 
@@ -50,10 +50,10 @@ export function WindowWidget({ label, className = "", ...props }: WindowWidgetPr
   );
 }
 
-export type MenuBarProps = ComponentPropsWithoutRef<"nav">;
+export type MenuBarProps = ComponentPropsWithoutRef<"div">;
 export function MenuBar({ className = "", ...props }: MenuBarProps) {
   return (
-    <nav
+    <div
       data-greyui-component="menu-bar"
       className={`greyui-menubar ${className}`.trim()}
       {...props}
@@ -61,10 +61,10 @@ export function MenuBar({ className = "", ...props }: MenuBarProps) {
   );
 }
 
-export type StatusBarProps = ComponentPropsWithoutRef<"footer">;
+export type StatusBarProps = ComponentPropsWithoutRef<"div">;
 export function StatusBar({ className = "", ...props }: StatusBarProps) {
   return (
-    <footer
+    <div
       data-greyui-component="status-bar"
       className={`greyui-statusbar ${className}`.trim()}
       {...props}
