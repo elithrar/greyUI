@@ -16,5 +16,3 @@ export * from "./components/tabs";
 export * from "./components/tooltip";
 export * from "./components/toggle-button";
 export * from "./components/window";
-
-import "./styles.css";
