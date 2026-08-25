@@ -1,11 +1,6 @@
-import type {
-  ButtonHTMLAttributes,
-  ComponentPropsWithoutRef,
-  ReactNode,
-} from "react";
+import type { ButtonHTMLAttributes, ComponentPropsWithoutRef, ReactNode } from "react";
 
-export interface WindowProps
-  extends Omit<ComponentPropsWithoutRef<"section">, "title"> {
+export interface WindowProps extends Omit<ComponentPropsWithoutRef<"section">, "title"> {
   title: ReactNode;
   active?: boolean;
   controls?: ReactNode;
@@ -28,17 +23,17 @@ export function Window({
     >
       <header className="greyui-window-tab">
         <span className="greyui-window-title">{title}</span>
-        {controls !== undefined ? (
-          <span className="greyui-window-controls">{controls}</span>
-        ) : null}
+        {controls !== undefined ? <span className="greyui-window-controls">{controls}</span> : null}
       </header>
       <div className="greyui-window-body">{children}</div>
     </section>
   );
 }
 
-export interface WindowWidgetProps
-  extends Omit<ButtonHTMLAttributes<HTMLButtonElement>, "aria-label" | "type"> {
+export interface WindowWidgetProps extends Omit<
+  ButtonHTMLAttributes<HTMLButtonElement>,
+  "aria-label" | "type"
+> {
   label: string;
 }
 

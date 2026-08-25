@@ -44,12 +44,26 @@ function Demo({ title, children, code }: { title: string; children: ReactNode; c
     <div className="docs-demo">
       <div className="docs-demo-title">{title}</div>
       <div className="docs-demo-canvas">{children}</div>
-      {code ? <pre className="docs-code"><code>{code}</code></pre> : null}
+      {code ? (
+        <pre className="docs-code">
+          <code>{code}</code>
+        </pre>
+      ) : null}
     </div>
   );
 }
 
-function Section({ id, title, intro, children }: { id: string; title: string; intro: ReactNode; children: ReactNode }) {
+function Section({
+  id,
+  title,
+  intro,
+  children,
+}: {
+  id: string;
+  title: string;
+  intro: ReactNode;
+  children: ReactNode;
+}) {
   return (
     <section className="docs-section" id={id}>
       <h2>{title}</h2>
@@ -72,15 +86,28 @@ function App() {
           </div>
           <div className="docs-deskbar-handle" aria-hidden="true" />
           <nav>
-            {sections.map(([id, label]) => <a href={`#${id}`} key={id}>{label}</a>)}
+            {sections.map(([id, label]) => (
+              <a href={`#${id}`} key={id}>
+                {label}
+              </a>
+            ))}
           </nav>
-          <div className="docs-deskbar-footer">React 19<br />Base UI 1.7</div>
+          <div className="docs-deskbar-footer">
+            React 19
+            <br />
+            Base UI 1.7
+          </div>
         </aside>
 
         <main className="docs-main">
           <Window
             title="greyUI — Component Reference"
-            controls={<><WindowWidget label="Zoom" /><WindowWidget label="Close" /></>}
+            controls={
+              <>
+                <WindowWidget label="Zoom" />
+                <WindowWidget label="Close" />
+              </>
+            }
             className="docs-hero-window"
           >
             <MenuBar>
@@ -142,8 +169,17 @@ function App() {
             </div>
           </Section>
 
-          <Section id="buttons" title="Buttons" intro="Small, beveled system actions with a persistent primary/default-action treatment rather than filled brand buttons.">
-            <Demo title="Variants" code={'<Button>Cancel</Button>\n<Button variant="primary">Apply</Button>\n<Button variant="destructive">Delete</Button>'}>
+          <Section
+            id="buttons"
+            title="Buttons"
+            intro="Small, beveled system actions with a persistent primary/default-action treatment rather than filled brand buttons."
+          >
+            <Demo
+              title="Variants"
+              code={
+                '<Button>Cancel</Button>\n<Button variant="primary">Apply</Button>\n<Button variant="destructive">Delete</Button>'
+              }
+            >
               <div className="docs-row">
                 <Button>Cancel</Button>
                 <Button variant="primary">Apply</Button>
@@ -151,20 +187,42 @@ function App() {
                 <Button disabled>Disabled</Button>
                 <Button size="sm">Small</Button>
                 <SegmentedControl aria-label="View mode">
-                  <ToggleButton size="sm" pressed={viewMode === "list"} onClick={() => setViewMode("list")}>List</ToggleButton>
-                  <ToggleButton size="sm" pressed={viewMode === "icons"} onClick={() => setViewMode("icons")}>Icons</ToggleButton>
+                  <ToggleButton
+                    size="sm"
+                    pressed={viewMode === "list"}
+                    onClick={() => setViewMode("list")}
+                  >
+                    List
+                  </ToggleButton>
+                  <ToggleButton
+                    size="sm"
+                    pressed={viewMode === "icons"}
+                    onClick={() => setViewMode("icons")}
+                  >
+                    Icons
+                  </ToggleButton>
                 </SegmentedControl>
               </div>
             </Demo>
           </Section>
 
-          <Section id="fields" title="Fields" intro="Editable content lives on white inset surfaces so form controls read as content, not panel chrome.">
+          <Section
+            id="fields"
+            title="Fields"
+            intro="Editable content lives on white inset surfaces so form controls read as content, not panel chrome."
+          >
             <div className="docs-grid-2">
               <Demo title="Input">
-                <label className="docs-field"><span>ROM name</span><Input defaultValue="89-911-28P-4K-SW.bin" /></label>
+                <label className="docs-field">
+                  <span>ROM name</span>
+                  <Input defaultValue="89-911-28P-4K-SW.bin" />
+                </label>
               </Demo>
               <Demo title="Textarea">
-                <label className="docs-field"><span>Notes</span><Textarea defaultValue="Checked against stock image." /></label>
+                <label className="docs-field">
+                  <span>Notes</span>
+                  <Textarea defaultValue="Checked against stock image." />
+                </label>
               </Demo>
               <Demo title="Select">
                 <Select
@@ -180,7 +238,11 @@ function App() {
             </div>
           </Section>
 
-          <Section id="selection" title="Selection controls" intro="The library keeps compact native-system proportions while Base UI manages form state and keyboard behavior.">
+          <Section
+            id="selection"
+            title="Selection controls"
+            intro="The library keeps compact native-system proportions while Base UI manages form state and keyboard behavior."
+          >
             <Demo title="Checkbox, radio and switch">
               <div className="docs-selection-grid">
                 <div className="docs-stack">
@@ -205,20 +267,40 @@ function App() {
             </Demo>
           </Section>
 
-          <Section id="tabs" title="Tabs" intro="Tabs use the same yellow-active/grey-inactive convention as WorkbenchOS window chrome, but remain a standard tablist semantically.">
+          <Section
+            id="tabs"
+            title="Tabs"
+            intro="Tabs use the same yellow-active/grey-inactive convention as WorkbenchOS window chrome, but remain a standard tablist semantically."
+          >
             <Demo title="Related views">
               <Tabs
                 defaultValue="general"
                 items={[
-                  { value: "general", label: "General", content: <p>Compact controls and system defaults.</p> },
-                  { value: "appearance", label: "Appearance", content: <p>BeOS palette and bevel tokens.</p> },
-                  { value: "advanced", label: "Advanced", content: <p>Lower-level integration settings.</p> },
+                  {
+                    value: "general",
+                    label: "General",
+                    content: <p>Compact controls and system defaults.</p>,
+                  },
+                  {
+                    value: "appearance",
+                    label: "Appearance",
+                    content: <p>BeOS palette and bevel tokens.</p>,
+                  },
+                  {
+                    value: "advanced",
+                    label: "Advanced",
+                    content: <p>Lower-level integration settings.</p>,
+                  },
                 ]}
               />
             </Demo>
           </Section>
 
-          <Section id="overlays" title="Menus & overlays" intro="Menus stay terse and system-like. Popovers, tooltips and dialogs reuse the same panel and window vocabulary instead of introducing separate floating-card styling.">
+          <Section
+            id="overlays"
+            title="Menus & overlays"
+            intro="Menus stay terse and system-like. Popovers, tooltips and dialogs reuse the same panel and window vocabulary instead of introducing separate floating-card styling."
+          >
             <Demo title="Interactive overlays">
               <div className="docs-row">
                 <Menu.Root>
@@ -233,27 +315,42 @@ function App() {
 
                 <Popover.Root>
                   <Popover.Trigger>Details…</Popover.Trigger>
-                  <Popover.Popup title="Build information" description="greyUI separates headless behavior from the WorkbenchOS-derived theme.">
-                    <Popover.Close className="greyui-button" type="button">Close</Popover.Close>
+                  <Popover.Popup
+                    title="Build information"
+                    description="greyUI separates headless behavior from the WorkbenchOS-derived theme."
+                  >
+                    <Popover.Close className="greyui-button" type="button">
+                      Close
+                    </Popover.Close>
                   </Popover.Popup>
                 </Popover.Root>
 
                 <Dialog.Root>
                   <Dialog.Trigger>Open dialog…</Dialog.Trigger>
-                  <Dialog.Popup title="Enable edit mode" description="Changes remain local until you explicitly apply them.">
+                  <Dialog.Popup
+                    title="Enable edit mode"
+                    description="Changes remain local until you explicitly apply them."
+                  >
                     <div className="docs-dialog-actions">
                       <Dialog.Close className="greyui-button">Cancel</Dialog.Close>
-                      <Dialog.Close className="greyui-button" data-variant="primary">Enable edits</Dialog.Close>
+                      <Dialog.Close className="greyui-button" data-variant="primary">
+                        Enable edits
+                      </Dialog.Close>
                     </div>
                   </Dialog.Popup>
                 </Dialog.Root>
 
                 <AlertDialog.Root>
                   <AlertDialog.Trigger>Discard…</AlertDialog.Trigger>
-                  <AlertDialog.Popup title="Discard changes?" description="This action cannot be undone.">
+                  <AlertDialog.Popup
+                    title="Discard changes?"
+                    description="This action cannot be undone."
+                  >
                     <div className="docs-dialog-actions">
                       <AlertDialog.Close className="greyui-button">Keep editing</AlertDialog.Close>
-                      <AlertDialog.Close className="greyui-button" data-variant="destructive">Discard</AlertDialog.Close>
+                      <AlertDialog.Close className="greyui-button" data-variant="destructive">
+                        Discard
+                      </AlertDialog.Close>
                     </div>
                   </AlertDialog.Popup>
                 </AlertDialog.Root>
@@ -266,44 +363,87 @@ function App() {
             </Demo>
           </Section>
 
-          <Section id="content" title="Content surfaces" intro="Tables and scroll areas are intentionally plain. They exist to display information densely, not to create decorative containers.">
+          <Section
+            id="content"
+            title="Content surfaces"
+            intro="Tables and scroll areas are intentionally plain. They exist to display information densely, not to create decorative containers."
+          >
             <div className="docs-grid-2">
               <Demo title="Table">
                 <Table>
-                  <thead><tr><th>Component</th><th>Layer</th><th>Status</th></tr></thead>
+                  <thead>
+                    <tr>
+                      <th>Component</th>
+                      <th>Layer</th>
+                      <th>Status</th>
+                    </tr>
+                  </thead>
                   <tbody>
-                    <tr><td>Button</td><td>native</td><td><Badge tone="success">stable</Badge></td></tr>
-                    <tr><td>Select</td><td>Base UI</td><td><Badge tone="success">stable</Badge></td></tr>
-                    <tr><td>Window</td><td>greyUI</td><td><Badge tone="accent">theme</Badge></td></tr>
+                    <tr>
+                      <td>Button</td>
+                      <td>native</td>
+                      <td>
+                        <Badge tone="success">stable</Badge>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>Select</td>
+                      <td>Base UI</td>
+                      <td>
+                        <Badge tone="success">stable</Badge>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>Window</td>
+                      <td>greyUI</td>
+                      <td>
+                        <Badge tone="accent">theme</Badge>
+                      </td>
+                    </tr>
                   </tbody>
                 </Table>
               </Demo>
               <Demo title="Scroll area">
                 <ScrollArea className="docs-scroll-demo">
                   <div className="docs-scroll-content">
-                    {Array.from({ length: 18 }, (_, index) => <div key={index}>Tracker row {String(index + 1).padStart(2, "0")}</div>)}
+                    {Array.from({ length: 18 }, (_, index) => (
+                      <div key={index}>Tracker row {String(index + 1).padStart(2, "0")}</div>
+                    ))}
                   </div>
                 </ScrollArea>
               </Demo>
             </div>
           </Section>
 
-          <Section id="window" title="Window shell" intro="Window is deliberately a shell rather than a desktop manager. Apps can compose their own menu bar and status bar without pulling WorkbenchOS state or launcher logic into the package.">
+          <Section
+            id="window"
+            title="Window shell"
+            intro="Window is deliberately a shell rather than a desktop manager. Apps can compose their own menu bar and status bar without pulling WorkbenchOS state or launcher logic into the package."
+          >
             <Demo title="Active and inactive windows">
               <div className="docs-window-pair">
                 <Window title="Preferences" controls={<WindowWidget label="Close" />}>
-                  <MenuBar><Button size="sm">File</Button><Button size="sm">Edit</Button></MenuBar>
+                  <MenuBar>
+                    <Button size="sm">File</Button>
+                    <Button size="sm">Edit</Button>
+                  </MenuBar>
                   <div className="docs-window-example-body">Active window content</div>
                   <StatusBar>Ready</StatusBar>
                 </Window>
                 <Window title="Tracker" active={false} controls={<WindowWidget label="Close" />}>
-                  <div className="docs-window-example-body">Inactive chrome keeps the same geometry.</div>
+                  <div className="docs-window-example-body">
+                    Inactive chrome keeps the same geometry.
+                  </div>
                 </Window>
               </div>
             </Demo>
           </Section>
 
-          <Section id="tokens" title="Design tokens" intro="The default theme mirrors WorkbenchOS’s canonical R5 palette. Override CSS custom properties at a theme boundary without changing component structure.">
+          <Section
+            id="tokens"
+            title="Design tokens"
+            intro="The default theme mirrors WorkbenchOS’s canonical R5 palette. Override CSS custom properties at a theme boundary without changing component structure."
+          >
             <div className="docs-token-grid">
               {[
                 ["--greyui-tab-active", "#d8cb00"],
@@ -322,11 +462,17 @@ function App() {
             </div>
           </Section>
 
-          <footer className="docs-footer">greyUI 1.0 · WorkbenchOS visual language · Base UI behavior</footer>
+          <footer className="docs-footer">
+            greyUI 1.0 · WorkbenchOS visual language · Base UI behavior
+          </footer>
         </main>
       </div>
     </Tooltip.Provider>
   );
 }
 
-createRoot(document.getElementById("root")!).render(<StrictMode><App /></StrictMode>);
+createRoot(document.getElementById("root")!).render(
+  <StrictMode>
+    <App />
+  </StrictMode>,
+);

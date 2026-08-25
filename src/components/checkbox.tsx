@@ -10,7 +10,13 @@ export interface CheckboxProps extends RootProps {
   label?: ReactNode;
 }
 
-export function Checkbox({ className = "", disabled = false, label, children, ...props }: CheckboxProps) {
+export function Checkbox({
+  className = "",
+  disabled = false,
+  label,
+  children,
+  ...props
+}: CheckboxProps) {
   const control = (
     <CheckboxPrimitive.Root
       data-greyui-component="checkbox"

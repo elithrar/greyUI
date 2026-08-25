@@ -8,11 +8,11 @@ export default defineConfig({
       entry: "src/index.ts",
       formats: ["es"],
       fileName: () => "grey-ui.js",
-      cssFileName: "grey-ui"
+      cssFileName: "grey-ui",
     },
     rolldownOptions: {
       // Match Kumo's packaging direction: Base UI is an implementation detail; React stays a peer.
-      external: [/^react(?:\/.*)?$/, /^react-dom(?:\/.*)?$/]
-    }
-  }
+      external: [/^react(?:\/.*)?$/, /^react-dom(?:\/.*)?$/],
+    },
+  },
 });

@@ -2,14 +2,20 @@
   "name": "@elithrar/greyui",
   "version": "1.0.0",
   "private": true,
-  "type": "module",
   "description": "BeOS R5 / Haiku-inspired React component library extracted from WorkbenchOS.",
-  "sideEffects": [
-    "**/*.css"
-  ],
+  "license": "UNLICENSED",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/elithrar/greyUI.git"
+  },
   "files": [
     "dist"
   ],
+  "type": "module",
+  "sideEffects": [
+    "**/*.css"
+  ],
+  "types": "./dist/index.d.ts",
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
@@ -17,9 +23,24 @@
     },
     "./styles.css": "./dist/grey-ui.css"
   },
-  "peerDependencies": {
-    "react": "^19.0.0",
-    "react-dom": "^19.0.0"
+  "scripts": {
+    "build": "npm run build:types && vite build",
+    "build:types": "tsc -p tsconfig.build.json",
+    "build:docs": "vite build --config docs/vite.config.ts",
+    "dev:docs": "vite --config docs/vite.config.ts",
+    "format": "oxfmt",
+    "format:check": "oxfmt --check",
+    "lint": "oxlint --deny-warnings",
+    "lint:fix": "oxlint --fix --deny-warnings",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "test": "vitest run",
+    "check": "npm run format:check && npm run lint && npm run typecheck && npm test",
+    "pack:check": "npm pack --dry-run",
+    "deploy:docs": "npm run build:docs && wrangler deploy --config docs/wrangler.jsonc",
+    "verify:docs": "npm run build:docs && wrangler deploy --dry-run --config docs/wrangler.jsonc"
+  },
+  "dependencies": {
+    "@base-ui/react": "^1.7.0"
   },
   "devDependencies": {
     "@testing-library/dom": "^10.4.1",
@@ -38,32 +59,11 @@
     "vitest": "^4.1.11",
     "wrangler": "^4.125.0"
   },
-  "scripts": {
-    "build": "npm run build:types && vite build",
-    "build:types": "tsc -p tsconfig.build.json",
-    "build:docs": "vite build --config docs/vite.config.ts",
-    "dev:docs": "vite --config docs/vite.config.ts",
-    "format": "oxfmt",
-    "format:check": "oxfmt --check",
-    "lint": "oxlint --deny-warnings",
-    "lint:fix": "oxlint --fix --deny-warnings",
-    "typecheck": "tsc -p tsconfig.json --noEmit",
-    "test": "vitest run",
-    "check": "npm run format:check && npm run lint && npm run typecheck && npm test",
-    "pack:check": "npm pack --dry-run",
-    "deploy:docs": "npm run build:docs && wrangler deploy --config docs/wrangler.jsonc",
-    "verify:docs": "npm run build:docs && wrangler deploy --dry-run --config docs/wrangler.jsonc"
+  "peerDependencies": {
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0"
   },
   "engines": {
     "node": ">=22"
-  },
-  "dependencies": {
-    "@base-ui/react": "^1.7.0"
-  },
-  "license": "UNLICENSED",
-  "types": "./dist/index.d.ts",
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/elithrar/greyUI.git"
   }
 }

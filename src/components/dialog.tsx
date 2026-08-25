@@ -3,7 +3,9 @@ import { Dialog as DialogPrimitive } from "@base-ui/react/dialog";
 
 export const DialogRoot = DialogPrimitive.Root;
 
-type TriggerProps = Omit<ComponentProps<typeof DialogPrimitive.Trigger>, "className"> & { className?: string };
+type TriggerProps = Omit<ComponentProps<typeof DialogPrimitive.Trigger>, "className"> & {
+  className?: string;
+};
 export function DialogTrigger({ className = "", ...props }: TriggerProps) {
   return <DialogPrimitive.Trigger className={`greyui-button ${className}`.trim()} {...props} />;
 }
@@ -15,7 +17,13 @@ type PopupProps = Omit<ComponentProps<typeof DialogPrimitive.Popup>, "className"
   description?: ReactNode;
 };
 
-export function DialogPopup({ className = "", title, description, children, ...props }: PopupProps) {
+export function DialogPopup({
+  className = "",
+  title,
+  description,
+  children,
+  ...props
+}: PopupProps) {
   return (
     <DialogPrimitive.Portal>
       <DialogPrimitive.Backdrop className="greyui-dialog-backdrop" />
@@ -27,7 +35,9 @@ export function DialogPopup({ className = "", title, description, children, ...p
         >
           <div className="greyui-window-tab">
             <DialogPrimitive.Title className="greyui-window-title">{title}</DialogPrimitive.Title>
-            <DialogPrimitive.Close className="greyui-window-widget" aria-label="Close"><span aria-hidden="true" /></DialogPrimitive.Close>
+            <DialogPrimitive.Close className="greyui-window-widget" aria-label="Close">
+              <span aria-hidden="true" />
+            </DialogPrimitive.Close>
           </div>
           <div className="greyui-dialog-body">
             {description !== undefined ? (
