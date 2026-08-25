@@ -111,7 +111,7 @@ function App() {
                 </p>
               </div>
               <GroupBox title="Install">
-                <code>npm install @elithrar/greyui</code>
+                <code>git clone github.com/elithrar/greyUI.git</code>
               </GroupBox>
             </div>
             <StatusBar>1.0 core set · ESM · CSS tokens · Workers Static Assets docs</StatusBar>
@@ -310,8 +310,8 @@ function App() {
                 ["--greyui-panel", "#d8d8d8"],
                 ["--greyui-control", "#dedede"],
                 ["--greyui-document", "#ffffff"],
-                ["--greyui-selection", "#6698cb"],
-                ["--greyui-border-dark", "#808080"],
+                ["--greyui-selection", "#4779b0"],
+                ["--greyui-border-dark", "#7a7a7a"],
               ].map(([name, value]) => (
                 <div className="docs-token" key={name}>
                   <span className="docs-swatch" style={{ background: value }} />
