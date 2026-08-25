@@ -5,6 +5,9 @@ on:
   push:
     branches: [main]
 
+permissions:
+  contents: read
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -14,6 +17,19 @@ jobs:
         with:
           node-version: 22
       - run: npm install --no-audit --no-fund
-      - run: npm run check
+      - name: Format with oxfmt
+        run: npm run format
+      - name: Require committed oxfmt output
+        run: git diff --check && git diff --exit-code
+      - run: npm run lint
+      - run: npm run typecheck
+      - run: npm test
       - run: npm run build
+      - run: npm run pack:check
       - run: npm run verify:docs
+      - name: Upload generated lockfile for deterministic CI follow-up
+        uses: actions/upload-artifact@v4
+        with:
+          name: package-lock
+          path: package-lock.json
+          if-no-files-found: error

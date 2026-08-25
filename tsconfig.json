@@ -10,7 +10,14 @@
     "exactOptionalPropertyTypes": true,
     "skipLibCheck": true,
     "allowImportingTsExtensions": false,
-    "types": ["vite/client"]
+    "types": ["vite/client", "node", "vitest/globals"]
   },
-  "include": ["src", "docs/src", "vite.config.ts", "docs/vite.config.ts"]
+  "include": [
+    "src",
+    "docs/src",
+    "tests",
+    "vite.config.ts",
+    "docs/vite.config.ts",
+    "vitest.config.ts"
+  ]
 }

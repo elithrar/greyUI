@@ -5,8 +5,8 @@ export interface TableProps extends TableHTMLAttributes<HTMLTableElement> {
 }
 
 export function Table({ className = "", wrapperProps, ...props }: TableProps) {
-  const wrapperClass = `greyui-table-wrap ${wrapperProps?.className ?? ""}`.trim();
-  const { className: _className, ...restWrapperProps } = wrapperProps ?? {};
+  const { className: wrapperClassName = "", ...restWrapperProps } = wrapperProps ?? {};
+  const wrapperClass = `greyui-table-wrap ${wrapperClassName}`.trim();
 
   return (
     <div data-greyui-component="table" className={wrapperClass} {...restWrapperProps}>
