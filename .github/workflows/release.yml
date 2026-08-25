@@ -1,0 +1,50 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "*"
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Verify tag is on main
+        shell: bash
+        run: |
+          git fetch --no-tags origin main:refs/remotes/origin/main
+          tag_commit="$(git rev-list -n 1 "$GITHUB_REF")"
+          if ! git merge-base --is-ancestor "$tag_commit" origin/main; then
+            echo "::error::Tag ${GITHUB_REF_NAME} does not point to a commit on main."
+            exit 1
+          fi
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          registry-url: https://registry.npmjs.org
+          package-manager-cache: false
+
+      - name: Ensure Trusted Publishing-capable npm
+        run: npm install --global "npm@^11.15.0"
+
+      - run: npm ci
+      - run: npm run check
+      - run: npm run build
+      - run: npm run pack:check
+
+      - name: Verify package is publishable
+        run: |
+          node -e 'const p = require("./package.json"); if (p.private) { console.error("package.json still has private:true; remove it before the first npm release."); process.exit(1); }'
+
+      - name: Publish to npm
+        run: npm publish --provenance --access public
