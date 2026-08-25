@@ -114,8 +114,8 @@ function App() {
               <Menu.Root>
                 <Menu.Trigger>File</Menu.Trigger>
                 <Menu.Popup>
-                  <Menu.Item>Install package</Menu.Item>
-                  <Menu.Item>Copy import</Menu.Item>
+                  <Menu.Item>Clone source</Menu.Item>
+                  <Menu.Item>Copy clone command</Menu.Item>
                   <Menu.Separator />
                   <Menu.Item disabled>Publish 1.0…</Menu.Item>
                 </Menu.Popup>
@@ -137,8 +137,8 @@ function App() {
                   WorkbenchOS; Base UI provides the behavior for compound interactive controls.
                 </p>
               </div>
-              <GroupBox title="Install">
-                <code>git clone github.com/elithrar/greyUI.git</code>
+              <GroupBox title="Clone source">
+                <code>git clone https://github.com/elithrar/greyUI.git</code>
               </GroupBox>
             </div>
             <StatusBar>1.0 core set · ESM · CSS tokens · Workers Static Assets docs</StatusBar>
