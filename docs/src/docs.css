@@ -28,7 +28,7 @@ code, pre { font-family: var(--greyui-font-mono); }
 .docs-deskbar-handle { height: 8px; border-top: 1px solid #8a8a8a; border-bottom: 1px solid #444; background: radial-gradient(circle, #333 1px, transparent 1px) 0 0 / 4px 4px; }
 .docs-deskbar nav { display: flex; flex-direction: column; }
 .docs-deskbar a { min-height: 25px; padding: 5px 7px; border-bottom: 1px solid #555; color: #fff; text-decoration: none; }
-.docs-deskbar a:hover, .docs-deskbar a:focus-visible { background: var(--greyui-selection); outline: none; }
+.docs-deskbar a:hover, .docs-deskbar a:focus-visible { background: var(--greyui-selection); color: var(--greyui-selection-text); outline: none; }
 .docs-deskbar-footer { padding: 7px; color: #eee; font-size: 11px; line-height: 1.35; }
 
 .docs-hero-window { margin-bottom: 34px; }
