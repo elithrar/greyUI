@@ -5,7 +5,7 @@ greyUI is a standalone BeOS R5 / Haiku-inspired React component library derived 
 ## Install
 
 ```bash
-npm install @elithrar/greyui
+npm install greyui
 ```
 
 ## Use locally
@@ -28,8 +28,8 @@ npm install /path/to/greyUI
 Import components and the stylesheet once:
 
 ```tsx
-import { Button, Input, Window } from "@elithrar/greyui";
-import "@elithrar/greyui/styles.css";
+import { Button, Input, Window } from "greyui";
+import "greyui/styles.css";
 ```
 
 ## Components
