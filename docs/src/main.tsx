@@ -170,7 +170,7 @@ function App() {
           <Section
             id="buttons"
             title="Buttons"
-            intro="Compact beveled buttons. `defaultAction` adds the default-button treatment."
+            intro="Compact beveled buttons. The defaultAction prop adds the default-action outline."
           >
             <Demo
               title="Variants"
@@ -415,7 +415,7 @@ function App() {
           <Section
             id="window"
             title="Window shell"
-            intro="`Window` provides chrome only: title tab, optional controls, menu bar, content, and status bar. It does not manage desktop state."
+            intro="Window provides chrome only: title tab, optional controls, menu bar, content, and status bar. It does not manage desktop state."
           >
             <Demo title="Active and inactive windows">
               <div className="docs-window-pair">
