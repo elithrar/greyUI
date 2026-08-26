@@ -1,6 +1,13 @@
+import { readFileSync } from "node:fs";
+import { resolve } from "node:path";
 import { cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { CopyCommand } from "../docs/src/CopyCommand";
+import { GREYUI_VERSION } from "../docs/src/version";
+
+const { version: packageVersion } = JSON.parse(
+  readFileSync(resolve(process.cwd(), "package.json"), "utf8"),
+) as { version: string };
 
 const clipboardDescriptor = Object.getOwnPropertyDescriptor(navigator, "clipboard");
 const execCommandDescriptor = Object.getOwnPropertyDescriptor(document, "execCommand");
@@ -71,6 +78,12 @@ describe("documentation copy command", () => {
     await waitFor(() => expect(execCommand).toHaveBeenCalledTimes(1));
     expect(document.body.querySelector("textarea")).toBeNull();
     expect(button.getAttribute("data-copied")).toBe("false");
+  });
+});
+
+describe("documentation version", () => {
+  it("uses the package version injected by the build", () => {
+    expect(GREYUI_VERSION).toBe(packageVersion);
   });
 });
 

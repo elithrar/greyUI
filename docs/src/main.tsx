@@ -27,6 +27,7 @@ import {
 } from "../../src";
 import { CopyCommand } from "./CopyCommand";
 import { DesktopDemos, FeedbackDemos, FieldDemos } from "./next-components";
+import { GREYUI_VERSION } from "./version";
 import "./docs.css";
 
 const WORKBENCH_URL = "https://workbench.questionable.services/";
@@ -88,7 +89,7 @@ function App() {
         <aside className="docs-deskbar" aria-label="Documentation navigation">
           <div className="docs-deskbar-top">
             <strong>greyUI</strong>
-            <Badge tone="accent">0.2.0</Badge>
+            <Badge tone="accent">{GREYUI_VERSION}</Badge>
           </div>
           <div className="docs-deskbar-handle" aria-hidden="true" />
           <nav>
@@ -149,7 +150,7 @@ function App() {
                 <code>git clone https://github.com/elithrar/greyUI.git</code>
               </GroupBox>
             </div>
-            <StatusBar>0.2.0 · ESM · CSS tokens</StatusBar>
+            <StatusBar>{GREYUI_VERSION} · ESM · CSS tokens</StatusBar>
           </Window>
 
           <Section
@@ -528,7 +529,7 @@ function App() {
             </div>
           </Section>
 
-          <footer className="docs-footer">greyUI 0.2.0 · React 19 · Base UI 1.7</footer>
+          <footer className="docs-footer">greyUI {GREYUI_VERSION} · React 19 · Base UI 1.7</footer>
         </main>
       </div>
     </Tooltip.Provider>
