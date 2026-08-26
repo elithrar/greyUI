@@ -8,6 +8,23 @@ greyUI is a standalone BeOS R5 / Haiku-inspired React component library derived 
 npm install greyui
 ```
 
+Import the shared stylesheet once. Named root imports remain the default:
+
+```tsx
+import { Button, Input, Window } from "greyui";
+import "greyui/styles.css";
+```
+
+Component subpaths are available for explicit imports:
+
+```tsx
+import { Button } from "greyui/components/button";
+import { Select } from "greyui/components/select";
+import "greyui/styles.css";
+```
+
+Both forms use the same build graph. CI checks that representative root imports tree-shake to comparable consumer bundles as their component subpaths. React and React DOM remain peer dependencies.
+
 ## Use locally
 
 Build greyUI:
@@ -25,13 +42,6 @@ Then install that local build from your app:
 npm install /path/to/greyUI
 ```
 
-Import components and the stylesheet once:
-
-```tsx
-import { Button, Input, Window } from "greyui";
-import "greyui/styles.css";
-```
-
 ## Components
 
 - Inputs: Input, Textarea, Field, InputGroup, NumberField, Select, Combobox
@@ -46,9 +56,10 @@ import "greyui/styles.css";
 npm install
 npm run check
 npm run build
+npm run perf:package
 ```
 
-`npm run check` runs Oxfmt, Oxlint, TypeScript, and Vitest. CI also validates the package tarball and docs deployment configuration.
+`npm run check` runs Oxfmt, Oxlint, TypeScript, and Vitest. `npm run perf:package` checks package entrypoints and reports component and consumer-bundle costs. CI also validates the package tarball and docs deployment configuration.
 
 ## Docs
 
