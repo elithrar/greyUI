@@ -18,7 +18,11 @@
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
-      "import": "./dist/grey-ui.js"
+      "import": "./dist/index.js"
+    },
+    "./components/*": {
+      "types": "./dist/components/*.d.ts",
+      "import": "./dist/components/*.js"
     },
     "./styles.css": "./dist/grey-ui.css"
   },
@@ -37,7 +41,8 @@
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "test": "vitest run",
     "check": "npm run format:check && npm run lint && npm run typecheck && npm test",
-    "pack:check": "node -e \"const fs=require('node:fs'); for (const file of ['dist/index.d.ts','dist/grey-ui.js','dist/grey-ui.css']) { if (!fs.existsSync(file)) { console.error('Missing package entrypoint: '+file); process.exitCode=1; } }\" && npm pack --dry-run",
+    "perf:package": "node scripts/package-audit.mjs",
+    "pack:check": "node scripts/package-audit.mjs --check && npm pack --dry-run",
     "deploy:docs": "npm run build:docs && wrangler deploy --config docs/wrangler.jsonc",
     "verify:docs": "npm run build:docs && wrangler deploy --dry-run --config docs/wrangler.jsonc"
   },
