@@ -132,7 +132,7 @@ describe("accessibility contracts", () => {
     expect(screen.getByText("Output filename")).not.toBeNull();
   });
 
-  it("keeps NumberField as an accessible spinbutton and steps values", () => {
+  it("keeps NumberField editable and steps values", () => {
     render(
       <NumberField.Root defaultValue={10}>
         <NumberField.Group>
@@ -143,10 +143,11 @@ describe("accessibility contracts", () => {
       </NumberField.Root>,
     );
 
-    const input = screen.getByRole("spinbutton", { name: "Count" });
-    expect(input.getAttribute("aria-valuenow")).toBe("10");
+    const input = screen.getByRole("textbox", { name: "Count" });
+    expect(input.getAttribute("aria-roledescription")).toBe("Number field");
+    expect((input as HTMLInputElement).value).toBe("10");
     fireEvent.click(screen.getByRole("button", { name: "Increase" }));
-    expect(input.getAttribute("aria-valuenow")).toBe("11");
+    expect((input as HTMLInputElement).value).toBe("11");
   });
 
   it("labels Slider thumbs through Slider.Label", () => {
