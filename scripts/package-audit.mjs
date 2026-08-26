@@ -64,7 +64,7 @@ function listJsFiles(dir) {
 
 function bareRuntimeImports(source) {
   const imports = new Set();
-  const pattern = /(?:from\s*|import\s*(?:\(\s*)?)["']([^"'.\/][^"']*)["']/g;
+  const pattern = /(?:from\s*|import\s*(?:\(\s*)?)["']([^"'./][^"']*)["']/g;
   let match;
 
   while ((match = pattern.exec(source)) !== null) {
@@ -185,8 +185,14 @@ if (failures.length === 0) {
     `${"entry".padEnd(26)} ${"files".padStart(5)} ${"raw".padStart(10)} ${"gzip".padStart(10)}`,
   );
 
-  for (const name of componentNames) {
-    const metrics = await bundleConsumer(`export * from "greyui/components/${name}";`);
+  const componentRows = await Promise.all(
+    componentNames.map(async (name) => ({
+      name,
+      metrics: await bundleConsumer(`export * from "greyui/components/${name}";`),
+    })),
+  );
+
+  for (const { name, metrics } of componentRows) {
     if (lightComponents.has(name) && metrics.gzip > LIGHT_COMPONENT_GZIP_BUDGET) {
       fail(
         `components/${name} exceeds lightweight ${formatBytes(LIGHT_COMPONENT_GZIP_BUDGET)} gzip budget: ${formatBytes(metrics.gzip)}`,
@@ -202,11 +208,17 @@ if (failures.length === 0) {
     `${"component".padEnd(14)} ${"root gzip".padStart(10)} ${"subpath".padStart(10)} ${"delta".padStart(10)}`,
   );
 
-  for (const { name, exportName } of consumerCases) {
-    const rootBundle = await bundleConsumer(`export { ${exportName} } from "greyui";`);
-    const subpathBundle = await bundleConsumer(
-      `export { ${exportName} } from "greyui/components/${name}";`,
-    );
+  const equivalenceRows = await Promise.all(
+    consumerCases.map(async ({ name, exportName }) => {
+      const [rootBundle, subpathBundle] = await Promise.all([
+        bundleConsumer(`export { ${exportName} } from "greyui";`),
+        bundleConsumer(`export { ${exportName} } from "greyui/components/${name}";`),
+      ]);
+      return { name, exportName, rootBundle, subpathBundle };
+    }),
+  );
+
+  for (const { name, exportName, rootBundle, subpathBundle } of equivalenceRows) {
     const delta = rootBundle.gzip - subpathBundle.gzip;
     const allowedDelta = Math.max(128, Math.ceil(subpathBundle.gzip * 0.02));
 
