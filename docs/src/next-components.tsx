@@ -73,12 +73,12 @@ export function FieldDemos() {
             <Combobox.Popup>
               <Combobox.Empty>No matches</Combobox.Empty>
               <Combobox.List>
-                {themes.map((theme) => (
+                {(theme: string) => (
                   <Combobox.Item key={theme} value={theme}>
                     <Combobox.ItemIndicator />
                     <span>{theme}</span>
                   </Combobox.Item>
-                ))}
+                )}
               </Combobox.List>
             </Combobox.Popup>
           </Combobox.Root>

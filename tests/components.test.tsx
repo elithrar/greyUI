@@ -225,24 +225,36 @@ describe("accessibility contracts", () => {
     expect(screen.getByRole("menuitem", { name: "Rename" })).not.toBeNull();
   });
 
-  it("renders Combobox as a labeled editable combobox", () => {
+  it("filters and selects Combobox items", () => {
     render(
       <Combobox.Root items={["BeOS R5", "Haiku"]}>
         <Combobox.InputGroup>
           <Combobox.Input aria-label="Theme" />
+          <Combobox.Clear />
           <Combobox.Trigger />
         </Combobox.InputGroup>
         <Combobox.Popup>
           <Combobox.List>
-            <Combobox.Item value="BeOS R5">BeOS R5</Combobox.Item>
-            <Combobox.Item value="Haiku">Haiku</Combobox.Item>
+            {(theme: string) => (
+              <Combobox.Item key={theme} value={theme}>
+                {theme}
+              </Combobox.Item>
+            )}
           </Combobox.List>
         </Combobox.Popup>
       </Combobox.Root>,
     );
 
-    expect(screen.getByRole("combobox", { name: "Theme" })).not.toBeNull();
-    expect(screen.getByRole("button", { name: "Show options" })).not.toBeNull();
+    const input = screen.getByRole("combobox", { name: "Theme" });
+    fireEvent.click(screen.getByRole("button", { name: "Show options" }));
+    fireEvent.change(input, { target: { value: "Hai" } });
+
+    expect(screen.queryByRole("option", { name: "BeOS R5" })).toBeNull();
+    fireEvent.click(screen.getByRole("option", { name: "Haiku" }));
+    expect((input as HTMLInputElement).value).toBe("Haiku");
+
+    fireEvent.click(screen.getByRole("button", { name: "Clear selection" }));
+    expect((input as HTMLInputElement).value).toBe("");
   });
 
   it("toggles Collapsible panels through the Base UI trigger", () => {
