@@ -25,6 +25,7 @@ import {
   Window,
   WindowWidget,
 } from "../../src";
+import { CopyCommand } from "./CopyCommand";
 import { DesktopDemos, FeedbackDemos, FieldDemos } from "./next-components";
 import "./docs.css";
 
@@ -139,6 +140,10 @@ function App() {
                   React components styled after BeOS R5 and Haiku. Compound controls use Base UI for
                   keyboard, focus, and ARIA behavior.
                 </p>
+                <div className="docs-install">
+                  <span className="docs-install-label">Install with npm</span>
+                  <CopyCommand value="npm install greyui" label="npm install command" />
+                </div>
               </div>
               <GroupBox title="Clone source">
                 <code>git clone https://github.com/elithrar/greyUI.git</code>
