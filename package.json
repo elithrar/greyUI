@@ -18,7 +18,7 @@
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
-      "import": "./dist/index.js"
+      "import": "./dist/grey-ui.js"
     },
     "./components/*": {
       "types": "./dist/components/*.d.ts",
@@ -30,7 +30,7 @@
     "access": "public"
   },
   "scripts": {
-    "build": "vite build && npm run build:types",
+    "build": "vite build && vite build --config vite.components.config.ts && npm run build:types",
     "build:types": "tsc -p tsconfig.build.json",
     "build:docs": "vite build --config docs/vite.config.ts",
     "dev:docs": "vite --config docs/vite.config.ts",
