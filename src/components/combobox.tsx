@@ -30,7 +30,7 @@ export function ComboboxTrigger({
   className = "",
   children,
   ...props
-}: WithClassName<ComponentProps<typeof ComboboxPrimitive.Trigger>>) & { children?: ReactNode }) {
+}: WithClassName<ComponentProps<typeof ComboboxPrimitive.Trigger> & { children?: ReactNode }>) {
   return (
     <ComboboxPrimitive.Trigger
       aria-label={ariaLabel}
@@ -47,7 +47,7 @@ export function ComboboxClear({
   className = "",
   children = "×",
   ...props
-}: WithClassName<ComponentProps<typeof ComboboxPrimitive.Clear>>) & { children?: ReactNode }) {
+}: WithClassName<ComponentProps<typeof ComboboxPrimitive.Clear> & { children?: ReactNode }>) {
   return (
     <ComboboxPrimitive.Clear
       aria-label={ariaLabel}
@@ -97,7 +97,9 @@ export function ComboboxItemIndicator({
   className = "",
   children = "✓",
   ...props
-}: WithClassName<ComponentProps<typeof ComboboxPrimitive.ItemIndicator>>) & { children?: ReactNode }) {
+}: WithClassName<
+  ComponentProps<typeof ComboboxPrimitive.ItemIndicator> & { children?: ReactNode }
+>) {
   return (
     <ComboboxPrimitive.ItemIndicator
       className={`greyui-combobox-item-indicator ${className}`.trim()}
