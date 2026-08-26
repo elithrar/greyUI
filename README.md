@@ -15,7 +15,7 @@ import { Button, Input, Window } from "greyui";
 import "greyui/styles.css";
 ```
 
-Component subpaths are also available when you want an explicit package boundary:
+Component subpaths are available when you want an explicit package boundary:
 
 ```tsx
 import { Button } from "greyui/components/button";
@@ -23,7 +23,7 @@ import { Select } from "greyui/components/select";
 import "greyui/styles.css";
 ```
 
-The root and component entrypoints are built from the same shared module graph. CI verifies that representative named root imports tree-shake to comparable consumer bundles as their component subpaths. React and React DOM remain peer dependencies.
+Both forms use the same shared build graph. CI checks that representative named root imports tree-shake to comparable consumer bundles as their component subpaths. React and React DOM remain peer dependencies.
 
 ## Use locally
 
