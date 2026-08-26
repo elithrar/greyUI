@@ -5,6 +5,7 @@ import {
   Button,
   Collapsible,
   Combobox,
+  ContextMenu,
   Dialog,
   Field,
   InputGroup,
@@ -206,6 +207,22 @@ describe("accessibility contracts", () => {
 
     expect(screen.getByRole("toolbar", { name: "Document toolbar" })).not.toBeNull();
     expect(screen.getAllByRole("button")).toHaveLength(2);
+  });
+
+  it("opens ContextMenu from a context-menu interaction", () => {
+    render(
+      <ContextMenu.Root>
+        <ContextMenu.Trigger>Tracker row</ContextMenu.Trigger>
+        <ContextMenu.Popup>
+          <ContextMenu.Item>Open</ContextMenu.Item>
+          <ContextMenu.Item>Rename</ContextMenu.Item>
+        </ContextMenu.Popup>
+      </ContextMenu.Root>,
+    );
+
+    fireEvent.contextMenu(screen.getByText("Tracker row"));
+    expect(screen.getByRole("menuitem", { name: "Open" })).not.toBeNull();
+    expect(screen.getByRole("menuitem", { name: "Rename" })).not.toBeNull();
   });
 
   it("renders Combobox as a labeled editable combobox", () => {
