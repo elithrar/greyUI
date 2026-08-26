@@ -1,10 +1,5 @@
 import { Input as InputPrimitive } from "@base-ui/react/input";
-import type {
-  ButtonHTMLAttributes,
-  ComponentProps,
-  HTMLAttributes,
-  InputHTMLAttributes,
-} from "react";
+import type { ButtonHTMLAttributes, ComponentProps, HTMLAttributes } from "react";
 import { forwardRef } from "react";
 
 export const InputGroupRoot = forwardRef<HTMLDivElement, HTMLAttributes<HTMLDivElement>>(
@@ -60,8 +55,6 @@ export const InputGroupButton = forwardRef<
     />
   );
 });
-
-export type InputGroupNativeInputProps = InputHTMLAttributes<HTMLInputElement>;
 
 export const InputGroup = {
   Root: InputGroupRoot,
