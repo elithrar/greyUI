@@ -2,9 +2,14 @@ import { cleanup, fireEvent, render, screen, waitFor } from "@testing-library/re
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { CopyCommand } from "../docs/src/CopyCommand";
 
+const clipboardDescriptor = Object.getOwnPropertyDescriptor(navigator, "clipboard");
+const execCommandDescriptor = Object.getOwnPropertyDescriptor(document, "execCommand");
+
 afterEach(() => {
   cleanup();
   vi.restoreAllMocks();
+  restoreProperty(navigator, "clipboard", clipboardDescriptor);
+  restoreProperty(document, "execCommand", execCommandDescriptor);
 });
 
 describe("documentation copy command", () => {
@@ -23,6 +28,7 @@ describe("documentation copy command", () => {
     await waitFor(() => expect(writeText).toHaveBeenCalledWith("npm install greyui"));
     expect(button.getAttribute("data-copied")).toBe("true");
     expect(button.getAttribute("title")).toBe("Copied");
+    expect(screen.getByRole("status").textContent).toBe("Copied npm install command");
   });
 
   it("does not report success when clipboard copying fails", async () => {
@@ -43,4 +49,39 @@ describe("documentation copy command", () => {
     await waitFor(() => expect(document.execCommand).toHaveBeenCalledWith("copy"));
     expect(button.getAttribute("data-copied")).toBe("false");
   });
+
+  it("cleans up the fallback field when legacy copying throws", async () => {
+    Object.defineProperty(navigator, "clipboard", {
+      configurable: true,
+      value: undefined,
+    });
+    const execCommand = vi.fn<(commandId: string) => boolean>().mockImplementation(() => {
+      throw new Error("Copy unavailable");
+    });
+    Object.defineProperty(document, "execCommand", {
+      configurable: true,
+      value: execCommand,
+    });
+
+    render(<CopyCommand value="npm install greyui" label="npm install command" />);
+    const button = screen.getByRole("button", { name: "Copy npm install command" });
+
+    fireEvent.click(button);
+
+    await waitFor(() => expect(execCommand).toHaveBeenCalledTimes(1));
+    expect(document.body.querySelector("textarea")).toBeNull();
+    expect(button.getAttribute("data-copied")).toBe("false");
+  });
 });
+
+function restoreProperty(
+  target: object,
+  property: PropertyKey,
+  descriptor: PropertyDescriptor | undefined,
+) {
+  if (descriptor) {
+    Object.defineProperty(target, property, descriptor);
+  } else {
+    Reflect.deleteProperty(target, property);
+  }
+}

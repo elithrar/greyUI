@@ -37,18 +37,22 @@ export function CopyCommand({ value, label }: CopyCommandProps) {
   }
 
   return (
-    <button
-      type="button"
-      className="docs-copy-command"
-      title={copied ? "Copied" : `Copy ${label}: ${value}`}
-      aria-label={`Copy ${label}`}
-      data-copied={copied ? "true" : "false"}
-      onClick={() => void copyCommand()}
-    >
-      <code className="docs-copy-command-text">{value}</code>
-      <span className="docs-copy-command-icon" aria-hidden="true" />
-      <span className="docs-sr-only">{copied ? "Copied" : "Copy"}</span>
-    </button>
+    <>
+      <button
+        type="button"
+        className="docs-copy-command"
+        title={copied ? "Copied" : `Copy ${label}: ${value}`}
+        aria-label={`Copy ${label}`}
+        data-copied={copied ? "true" : "false"}
+        onClick={() => void copyCommand()}
+      >
+        <code className="docs-copy-command-text">{value}</code>
+        <span className="docs-copy-command-icon" aria-hidden="true" />
+      </button>
+      <span className="docs-sr-only" role="status" aria-live="polite">
+        {copied ? `Copied ${label}` : ""}
+      </span>
+    </>
   );
 }
 
@@ -57,14 +61,20 @@ function copyWithTemporaryField(value: string) {
     return false;
   }
 
-  const field = document.createElement("textarea");
-  field.value = value;
-  field.setAttribute("readonly", "");
-  field.style.position = "fixed";
-  field.style.left = "-9999px";
-  document.body.append(field);
-  field.select();
-  const copied = document.execCommand("copy");
-  field.remove();
-  return copied;
+  let field: HTMLTextAreaElement | undefined;
+
+  try {
+    field = document.createElement("textarea");
+    field.value = value;
+    field.setAttribute("readonly", "");
+    field.style.position = "fixed";
+    field.style.left = "-9999px";
+    document.body.append(field);
+    field.select();
+    return document.execCommand("copy");
+  } catch {
+    return false;
+  } finally {
+    field?.remove();
+  }
 }
