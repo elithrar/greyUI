@@ -35,9 +35,7 @@ export const InputGroupInput = forwardRef<
 
 export const InputGroupAddon = forwardRef<HTMLSpanElement, HTMLAttributes<HTMLSpanElement>>(
   function InputGroupAddon({ className = "", ...props }, ref) {
-    return (
-      <span ref={ref} className={`greyui-input-group-addon ${className}`.trim()} {...props} />
-    );
+    return <span ref={ref} className={`greyui-input-group-addon ${className}`.trim()} {...props} />;
   },
 );
 

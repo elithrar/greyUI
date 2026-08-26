@@ -20,7 +20,9 @@ export function ToolbarGroup({
   className = "",
   ...props
 }: WithClassName<ComponentProps<typeof ToolbarPrimitive.Group>>) {
-  return <ToolbarPrimitive.Group className={`greyui-toolbar-group ${className}`.trim()} {...props} />;
+  return (
+    <ToolbarPrimitive.Group className={`greyui-toolbar-group ${className}`.trim()} {...props} />
+  );
 }
 
 export function ToolbarButton({

@@ -24,7 +24,9 @@ export function ToastContent({
   className = "",
   ...props
 }: WithClassName<ComponentProps<typeof ToastPrimitive.Content>>) {
-  return <ToastPrimitive.Content className={`greyui-toast-content ${className}`.trim()} {...props} />;
+  return (
+    <ToastPrimitive.Content className={`greyui-toast-content ${className}`.trim()} {...props} />
+  );
 }
 
 export function ToastTitle({
@@ -50,9 +52,7 @@ export function ToastClose({
   className = "",
   ...props
 }: WithClassName<ComponentProps<typeof ToastPrimitive.Close>>) {
-  return (
-    <ToastPrimitive.Close className={`greyui-toast-close ${className}`.trim()} {...props} />
-  );
+  return <ToastPrimitive.Close className={`greyui-toast-close ${className}`.trim()} {...props} />;
 }
 
 export function ToastToaster() {

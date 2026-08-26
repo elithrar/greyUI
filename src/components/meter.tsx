@@ -42,10 +42,7 @@ export function MeterIndicator({
   ...props
 }: WithClassName<ComponentProps<typeof MeterPrimitive.Indicator>>) {
   return (
-    <MeterPrimitive.Indicator
-      className={`greyui-meter-indicator ${className}`.trim()}
-      {...props}
-    />
+    <MeterPrimitive.Indicator className={`greyui-meter-indicator ${className}`.trim()} {...props} />
   );
 }
 

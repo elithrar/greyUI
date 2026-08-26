@@ -42,7 +42,8 @@
   gap: 6px;
 }
 
-.greyui-field[data-invalid] > :where(.greyui-input, .greyui-input-group, .greyui-number-field-group) {
+.greyui-field[data-invalid]
+  > :where(.greyui-input, .greyui-input-group, .greyui-number-field-group) {
   outline: 2px solid var(--greyui-danger);
   outline-offset: 0;
 }

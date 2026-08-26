@@ -20,9 +20,7 @@ export function FieldLabel({
   className = "",
   ...props
 }: WithClassName<ComponentProps<typeof FieldPrimitive.Label>>) {
-  return (
-    <FieldPrimitive.Label className={`greyui-field-label ${className}`.trim()} {...props} />
-  );
+  return <FieldPrimitive.Label className={`greyui-field-label ${className}`.trim()} {...props} />;
 }
 
 export function FieldControl({

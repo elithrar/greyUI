@@ -22,7 +22,9 @@ export function ComboboxInput({
   className = "",
   ...props
 }: WithClassName<ComponentProps<typeof ComboboxPrimitive.Input>>) {
-  return <ComboboxPrimitive.Input className={`greyui-combobox-input ${className}`.trim()} {...props} />;
+  return (
+    <ComboboxPrimitive.Input className={`greyui-combobox-input ${className}`.trim()} {...props} />
+  );
 }
 
 export function ComboboxTrigger({
@@ -83,14 +85,18 @@ export function ComboboxList({
   className = "",
   ...props
 }: WithClassName<ComponentProps<typeof ComboboxPrimitive.List>>) {
-  return <ComboboxPrimitive.List className={`greyui-combobox-list ${className}`.trim()} {...props} />;
+  return (
+    <ComboboxPrimitive.List className={`greyui-combobox-list ${className}`.trim()} {...props} />
+  );
 }
 
 export function ComboboxItem({
   className = "",
   ...props
 }: WithClassName<ComponentProps<typeof ComboboxPrimitive.Item>>) {
-  return <ComboboxPrimitive.Item className={`greyui-combobox-item ${className}`.trim()} {...props} />;
+  return (
+    <ComboboxPrimitive.Item className={`greyui-combobox-item ${className}`.trim()} {...props} />
+  );
 }
 
 export function ComboboxItemIndicator({
@@ -114,7 +120,9 @@ export function ComboboxEmpty({
   className = "",
   ...props
 }: WithClassName<ComponentProps<typeof ComboboxPrimitive.Empty>>) {
-  return <ComboboxPrimitive.Empty className={`greyui-combobox-empty ${className}`.trim()} {...props} />;
+  return (
+    <ComboboxPrimitive.Empty className={`greyui-combobox-empty ${className}`.trim()} {...props} />
+  );
 }
 
 export function ComboboxSeparator({
