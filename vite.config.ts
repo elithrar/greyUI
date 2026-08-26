@@ -10,8 +10,7 @@ const componentsDir = resolve(rootDir, "src/components");
 const componentEntries = Object.fromEntries(
   readdirSync(componentsDir, { withFileTypes: true })
     .filter(
-      (entry) =>
-        entry.isFile() && (entry.name.endsWith(".ts") || entry.name.endsWith(".tsx")),
+      (entry) => entry.isFile() && (entry.name.endsWith(".ts") || entry.name.endsWith(".tsx")),
     )
     .map((entry) => {
       const name = basename(entry.name, extname(entry.name));

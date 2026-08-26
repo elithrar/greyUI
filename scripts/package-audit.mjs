@@ -90,9 +90,7 @@ if (
 }
 
 const componentNames = readdirSync(sourceComponentsDir, { withFileTypes: true })
-  .filter(
-    (entry) => entry.isFile() && (entry.name.endsWith(".ts") || entry.name.endsWith(".tsx")),
-  )
+  .filter((entry) => entry.isFile() && (entry.name.endsWith(".ts") || entry.name.endsWith(".tsx")))
   .map((entry) => entry.name.replace(/\.tsx?$/, ""))
   .sort();
 
