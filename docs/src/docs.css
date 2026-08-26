@@ -1,5 +1,6 @@
 @import "../../src/styles.css";
 @import "../../src/components-v2.css";
+@import "../../src/components-v2-states.css";
 
 * {
   box-sizing: border-box;
