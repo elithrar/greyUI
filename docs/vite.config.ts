@@ -23,5 +23,23 @@ export default defineConfig({
   build: {
     outDir: "dist",
     emptyOutDir: true,
+    rolldownOptions: {
+      output: {
+        codeSplitting: {
+          groups: [
+            {
+              name: "react",
+              test: /node_modules[\\/](?:react|react-dom|scheduler)[\\/]/,
+              priority: 20,
+            },
+            {
+              name: "base-ui",
+              test: /node_modules[\\/](?:@base-ui|@floating-ui|@babel[\\/]runtime|use-sync-external-store)[\\/]/,
+              priority: 10,
+            },
+          ],
+        },
+      },
+    },
   },
 });
