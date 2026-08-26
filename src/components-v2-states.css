@@ -10,6 +10,25 @@
   cursor: not-allowed;
 }
 
+/* Root opacity owns the disabled treatment; avoid double-dimming nested controls. */
+.greyui-number-field[data-disabled] .greyui-number-field-step,
+.greyui-number-field[data-disabled] .greyui-number-field-input,
+.greyui-slider[data-disabled] .greyui-slider-thumb {
+  opacity: 1;
+}
+
+/* Field validation needs to reach the visible shell of compound controls. */
+.greyui-field[data-invalid]
+  :where(
+    .greyui-input-group,
+    .greyui-number-field-group,
+    .greyui-combobox-input-group,
+    .greyui-slider-track
+  ) {
+  outline: 2px solid var(--greyui-danger);
+  outline-offset: 0;
+}
+
 .greyui-combobox-input-group:has([data-disabled]) {
   background: var(--greyui-panel);
   color: var(--greyui-text-muted);
@@ -27,5 +46,15 @@
 .greyui-combobox-trigger[data-disabled]:active,
 .greyui-combobox-clear[data-disabled]:active,
 .greyui-collapsible-trigger[data-disabled]:active {
+  box-shadow: var(--greyui-bevel-outset);
+}
+
+/* Base UI keeps disabled toolbar buttons focusable, so neutralize hover/press feedback explicitly. */
+.greyui-toolbar-button[data-disabled]:hover {
+  filter: none;
+}
+
+.greyui-toolbar-button[data-disabled]:active {
+  padding: 0.12rem 0.55rem;
   box-shadow: var(--greyui-bevel-outset);
 }
