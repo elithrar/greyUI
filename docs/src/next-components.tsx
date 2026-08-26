@@ -1,0 +1,261 @@
+import {
+  Button,
+  Collapsible,
+  Combobox,
+  ContextMenu,
+  Field,
+  Input,
+  InputGroup,
+  Meter,
+  NumberField,
+  Progress,
+  Separator,
+  Slider,
+  Toast,
+  Toolbar,
+} from "../../src";
+
+const themes = ["BeOS R5", "Haiku", "Workbench"];
+
+function Demo({ title, children }: { title: string; children: React.ReactNode }) {
+  return (
+    <div className="docs-demo">
+      <div className="docs-demo-title">{title}</div>
+      <div className="docs-demo-canvas">{children}</div>
+    </div>
+  );
+}
+
+export function FieldDemos() {
+  return (
+    <>
+      <div className="docs-grid-2 docs-component-grid">
+        <Demo title="Field">
+          <Field.Root>
+            <Field.Label>ROM name</Field.Label>
+            <Field.Control defaultValue="89-911-28P-4K-SW.bin" />
+            <Field.Description>Shown in exported file names.</Field.Description>
+          </Field.Root>
+        </Demo>
+
+        <Demo title="Input group">
+          <div className="docs-stack docs-control-fill">
+            <InputGroup.Root>
+              <InputGroup.Addon>Path</InputGroup.Addon>
+              <InputGroup.Input defaultValue="/roms/911.bin" aria-label="ROM path" />
+              <InputGroup.Button>Browse…</InputGroup.Button>
+            </InputGroup.Root>
+            <InputGroup.Root>
+              <InputGroup.Input defaultValue="6500" aria-label="RPM value" />
+              <InputGroup.Suffix>RPM</InputGroup.Suffix>
+            </InputGroup.Root>
+          </div>
+        </Demo>
+
+        <Demo title="Number field">
+          <NumberField.Root defaultValue={6500} min={5000} max={8000} step={100}>
+            <NumberField.ScrubArea>Rev limit</NumberField.ScrubArea>
+            <NumberField.Group>
+              <NumberField.Input aria-label="Rev limit" />
+              <NumberField.Increment />
+              <NumberField.Decrement />
+            </NumberField.Group>
+          </NumberField.Root>
+        </Demo>
+
+        <Demo title="Combobox">
+          <Combobox.Root items={themes}>
+            <Combobox.InputGroup>
+              <Combobox.Input aria-label="Theme" placeholder="Find a theme…" />
+              <Combobox.Clear />
+              <Combobox.Trigger />
+            </Combobox.InputGroup>
+            <Combobox.Popup>
+              <Combobox.Empty>No matches</Combobox.Empty>
+              <Combobox.List>
+                {themes.map((theme) => (
+                  <Combobox.Item key={theme} value={theme}>
+                    <Combobox.ItemIndicator />
+                    <span>{theme}</span>
+                  </Combobox.Item>
+                ))}
+              </Combobox.List>
+            </Combobox.Popup>
+          </Combobox.Root>
+        </Demo>
+      </div>
+
+      <Demo title="Form state matrix">
+        <div className="docs-state-grid">
+          <label className="docs-field">
+            <span>Enabled input</span>
+            <Input defaultValue="Editable" />
+          </label>
+          <label className="docs-field">
+            <span>Disabled input</span>
+            <Input disabled defaultValue="Unavailable" />
+          </label>
+          <NumberField.Root disabled defaultValue={6500}>
+            <NumberField.ScrubArea>Disabled spinner</NumberField.ScrubArea>
+            <NumberField.Group>
+              <NumberField.Input aria-label="Disabled spinner" />
+              <NumberField.Increment />
+              <NumberField.Decrement />
+            </NumberField.Group>
+          </NumberField.Root>
+        </div>
+      </Demo>
+    </>
+  );
+}
+
+export function DesktopDemos() {
+  return (
+    <>
+      <Demo title="Toolbar">
+        <Toolbar.Root aria-label="Document toolbar">
+          <Toolbar.Group>
+            <Toolbar.Button>New</Toolbar.Button>
+            <Toolbar.Button>Open…</Toolbar.Button>
+            <Toolbar.Button>Save</Toolbar.Button>
+          </Toolbar.Group>
+          <Toolbar.Separator />
+          <Toolbar.Group>
+            <Toolbar.Button disabled>Print</Toolbar.Button>
+            <Toolbar.Input aria-label="Find" placeholder="Find…" />
+          </Toolbar.Group>
+        </Toolbar.Root>
+      </Demo>
+
+      <div className="docs-grid-2 docs-component-grid">
+        <Demo title="Slider">
+          <div className="docs-stack docs-control-fill">
+            <Slider.Root defaultValue={65}>
+              <Slider.Label>Volume</Slider.Label>
+              <Slider.Value />
+              <Slider.Control>
+                <Slider.Track>
+                  <Slider.Indicator />
+                </Slider.Track>
+                <Slider.Thumb />
+              </Slider.Control>
+            </Slider.Root>
+            <Slider.Root disabled defaultValue={35}>
+              <Slider.Label>Disabled</Slider.Label>
+              <Slider.Value />
+              <Slider.Control>
+                <Slider.Track>
+                  <Slider.Indicator />
+                </Slider.Track>
+                <Slider.Thumb />
+              </Slider.Control>
+            </Slider.Root>
+          </div>
+        </Demo>
+
+        <Demo title="Context menu">
+          <ContextMenu.Root>
+            <ContextMenu.Trigger className="docs-context-target" tabIndex={0}>
+              Right-click this Tracker row
+            </ContextMenu.Trigger>
+            <ContextMenu.Popup>
+              <ContextMenu.Item>Open</ContextMenu.Item>
+              <ContextMenu.Item>Rename</ContextMenu.Item>
+              <ContextMenu.Separator />
+              <ContextMenu.Item>Move to Trash</ContextMenu.Item>
+            </ContextMenu.Popup>
+          </ContextMenu.Root>
+        </Demo>
+
+        <Demo title="Collapsible">
+          <Collapsible.Root defaultOpen>
+            <Collapsible.Trigger>Advanced settings</Collapsible.Trigger>
+            <Collapsible.Panel>
+              <div className="docs-stack">
+                <span>Lower-level application options.</span>
+                <Button size="sm">Reset</Button>
+              </div>
+            </Collapsible.Panel>
+          </Collapsible.Root>
+        </Demo>
+
+        <Demo title="Separator">
+          <div className="docs-stack docs-control-fill">
+            <span>General</span>
+            <Separator />
+            <span>Advanced</span>
+            <div className="docs-row">
+              <Button size="sm">Left</Button>
+              <Separator orientation="vertical" />
+              <Button size="sm">Right</Button>
+            </div>
+          </div>
+        </Demo>
+      </div>
+    </>
+  );
+}
+
+function ToastButton() {
+  const toastManager = Toast.useToastManager();
+
+  return (
+    <Button
+      onClick={() =>
+        toastManager.add({
+          title: "ROM saved",
+          description: "89-911-28P-4K-SW.bin was written successfully.",
+        })
+      }
+    >
+      Show notification
+    </Button>
+  );
+}
+
+function ToastDemo() {
+  return (
+    <Toast.Provider>
+      <ToastButton />
+      <Toast.Toaster />
+    </Toast.Provider>
+  );
+}
+
+export function FeedbackDemos() {
+  return (
+    <div className="docs-grid-2 docs-component-grid">
+      <Demo title="Progress">
+        <div className="docs-stack docs-control-fill">
+          <Progress.Root value={64}>
+            <Progress.Label>Writing ROM</Progress.Label>
+            <Progress.Value />
+            <Progress.Track>
+              <Progress.Indicator />
+            </Progress.Track>
+          </Progress.Root>
+          <Progress.Root value={null}>
+            <Progress.Label>Detecting programmer</Progress.Label>
+            <Progress.Track>
+              <Progress.Indicator />
+            </Progress.Track>
+          </Progress.Root>
+        </div>
+      </Demo>
+
+      <Demo title="Meter">
+        <Meter.Root value={72}>
+          <Meter.Label>Storage used</Meter.Label>
+          <Meter.Value />
+          <Meter.Track>
+            <Meter.Indicator />
+          </Meter.Track>
+        </Meter.Root>
+      </Demo>
+
+      <Demo title="Toast">
+        <ToastDemo />
+      </Demo>
+    </div>
+  );
+}
