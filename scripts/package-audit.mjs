@@ -10,6 +10,18 @@ const packageJson = JSON.parse(readFileSync(resolve(rootDir, "package.json"), "u
 const shouldCheck = process.argv.includes("--check");
 const failures = [];
 
+const ROOT_GZIP_BUDGET = 150 * 1024;
+const LIGHT_COMPONENT_GZIP_BUDGET = 2 * 1024;
+const lightComponents = new Set([
+  "badge",
+  "button",
+  "group-box",
+  "input",
+  "table",
+  "toggle-button",
+  "window",
+]);
+
 function fail(message) {
   failures.push(message);
 }
@@ -64,6 +76,11 @@ function graphSize(entryPath) {
   return { files: files.size, raw, gzip, graph: files };
 }
 
+function hasBareBaseUiImport(path) {
+  const source = readFileSync(path, "utf8");
+  return /(?:from\s*|import\s*(?:\(\s*)?)["']@base-ui\/react(?:\/[^"']*)?["']/.test(source);
+}
+
 function formatBytes(bytes) {
   if (bytes < 1024) return `${bytes} B`;
   return `${(bytes / 1024).toFixed(1)} kB`;
@@ -74,12 +91,17 @@ if (!existsSync(distDir)) {
   process.exit(1);
 }
 
-const rootJs = resolve(distDir, "index.js");
+const rootJs = resolve(distDir, "grey-ui.js");
 const rootTypes = resolve(distDir, "index.d.ts");
 const styles = resolve(distDir, "grey-ui.css");
 requireFile(rootJs, "root JavaScript entrypoint");
 requireFile(rootTypes, "root declaration entrypoint");
 requireFile(styles, "shared stylesheet");
+
+const rootExport = packageJson.exports?.["."];
+if (rootExport?.import !== "./dist/grey-ui.js" || rootExport?.types !== "./dist/index.d.ts") {
+  fail("package.json root export does not match dist/grey-ui.js + dist/index.d.ts");
+}
 
 const componentExport = packageJson.exports?.["./components/*"];
 if (
@@ -101,12 +123,37 @@ for (const name of componentNames) {
 
 if (failures.length === 0) {
   const rootMetrics = graphSize(rootJs);
+  if (rootMetrics.gzip > ROOT_GZIP_BUDGET) {
+    fail(
+      `Root entrypoint exceeds ${formatBytes(ROOT_GZIP_BUDGET)} gzip budget: ${formatBytes(rootMetrics.gzip)}`,
+    );
+  }
+
   const rows = componentNames.map((name) => {
     const entry = resolve(distDir, `components/${name}.js`);
     const metrics = graphSize(entry);
 
     if (metrics.graph.has(rootJs)) {
-      fail(`components/${name}.js reaches the root index.js entrypoint`);
+      fail(`components/${name}.js reaches the root grey-ui.js entrypoint`);
+    }
+    if (metrics.gzip >= rootMetrics.gzip) {
+      fail(
+        `components/${name} is not cheaper than the root entrypoint: ${formatBytes(metrics.gzip)} gzip`,
+      );
+    }
+    if (lightComponents.has(name) && metrics.gzip > LIGHT_COMPONENT_GZIP_BUDGET) {
+      fail(
+        `components/${name} exceeds lightweight ${formatBytes(LIGHT_COMPONENT_GZIP_BUDGET)} gzip budget: ${formatBytes(metrics.gzip)}`,
+      );
+    }
+
+    for (const file of metrics.graph) {
+      if (hasBareBaseUiImport(file)) {
+        fail(
+          `components/${name} leaves Base UI external in ${relative(distDir, file)}; Base UI must stay bundled`,
+        );
+        break;
+      }
     }
 
     return {
@@ -114,7 +161,6 @@ if (failures.length === 0) {
       files: metrics.files,
       raw: metrics.raw,
       gzip: metrics.gzip,
-      graph: metrics.graph,
     };
   });
 
