@@ -7,6 +7,9 @@ import { build } from "vite";
 const rootDir = fileURLToPath(new URL("..", import.meta.url));
 const distDir = resolve(rootDir, "dist");
 const sourceComponentsDir = resolve(rootDir, "src/components");
+const rootJs = resolve(distDir, "index.js");
+const rootTypes = resolve(distDir, "index.d.ts");
+const styles = resolve(distDir, "grey-ui.css");
 const packageJson = JSON.parse(readFileSync(resolve(rootDir, "package.json"), "utf8"));
 const shouldCheck = process.argv.includes("--check");
 const failures = [];
@@ -22,11 +25,11 @@ const lightComponents = new Set([
   "window",
 ]);
 const consumerCases = [
-  ["button", "Button"],
-  ["input", "Input"],
-  ["select", "Select"],
-  ["menu", "Menu"],
-  ["combobox", "Combobox"],
+  { name: "button", exportName: "Button" },
+  { name: "input", exportName: "Input" },
+  { name: "select", exportName: "Select" },
+  { name: "menu", exportName: "Menu" },
+  { name: "combobox", exportName: "Combobox" },
 ];
 
 function fail(message) {
@@ -89,7 +92,7 @@ function hasBareBaseUiImport(path) {
 }
 
 function formatBytes(bytes) {
-  if (bytes < 1024) return `${bytes} B`;
+  if (Math.abs(bytes) < 1024) return `${bytes} B`;
   return `${(bytes / 1024).toFixed(1)} kB`;
 }
 
@@ -121,6 +124,7 @@ async function bundleConsumer(specifier, exportName) {
     logLevel: "silent",
     plugins: [packageResolver(source)],
     build: {
+      emptyOutDir: false,
       write: false,
       minify: true,
       rolldownOptions: {
@@ -135,21 +139,17 @@ async function bundleConsumer(specifier, exportName) {
   });
 
   const outputs = Array.isArray(result) ? result : [result];
-  let files = 0;
-  let raw = 0;
   let gzip = 0;
 
   for (const output of outputs) {
     for (const item of output.output) {
-      if (item.type !== "chunk") continue;
-      const contents = Buffer.from(item.code);
-      files += 1;
-      raw += contents.length;
-      gzip += gzipSync(contents).length;
+      if (item.type === "chunk") {
+        gzip += gzipSync(item.code).length;
+      }
     }
   }
 
-  return { files, raw, gzip };
+  return gzip;
 }
 
 if (!existsSync(distDir)) {
@@ -157,9 +157,6 @@ if (!existsSync(distDir)) {
   process.exit(1);
 }
 
-const rootJs = resolve(distDir, "index.js");
-const rootTypes = resolve(distDir, "index.d.ts");
-const styles = resolve(distDir, "grey-ui.css");
 requireFile(rootJs, "root JavaScript entrypoint");
 requireFile(rootTypes, "root declaration entrypoint");
 requireFile(styles, "shared stylesheet");
@@ -228,11 +225,11 @@ if (failures.length === 0) {
     `${"component".padEnd(14)} ${"root gzip".padStart(10)} ${"subpath".padStart(10)} ${"delta".padStart(10)}`,
   );
 
-  for (const [name, exportName] of consumerCases) {
-    const rootBundle = await bundleConsumer("greyui", exportName);
-    const subpathBundle = await bundleConsumer(`greyui/components/${name}`, exportName);
-    const delta = rootBundle.gzip - subpathBundle.gzip;
-    const allowedDelta = Math.max(128, Math.ceil(subpathBundle.gzip * 0.02));
+  for (const { name, exportName } of consumerCases) {
+    const rootGzip = await bundleConsumer("greyui", exportName);
+    const subpathGzip = await bundleConsumer(`greyui/components/${name}`, exportName);
+    const delta = rootGzip - subpathGzip;
+    const allowedDelta = Math.max(128, Math.ceil(subpathGzip * 0.02));
 
     if (delta > allowedDelta) {
       fail(
@@ -241,7 +238,7 @@ if (failures.length === 0) {
     }
 
     console.log(
-      `${name.padEnd(14)} ${formatBytes(rootBundle.gzip).padStart(10)} ${formatBytes(subpathBundle.gzip).padStart(10)} ${formatBytes(delta).padStart(10)}`,
+      `${name.padEnd(14)} ${formatBytes(rootGzip).padStart(10)} ${formatBytes(subpathGzip).padStart(10)} ${formatBytes(delta).padStart(10)}`,
     );
   }
 }
