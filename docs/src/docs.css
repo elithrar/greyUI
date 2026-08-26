@@ -118,6 +118,92 @@ pre {
   font-size: 14px;
   line-height: 1.45;
 }
+.docs-install {
+  display: grid;
+  gap: 5px;
+  width: min(100%, 260px);
+  margin-top: 16px;
+}
+.docs-install-label {
+  font-size: 11px;
+  font-weight: 700;
+}
+.docs-copy-command {
+  display: inline-grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 0.35rem;
+  min-width: 0;
+  padding: 0.12rem 0.28rem 0.12rem 0.4rem;
+  border: 1px solid var(--greyui-border-dark);
+  border-radius: 0;
+  background: var(--greyui-document);
+  box-shadow: var(--greyui-bevel-inset);
+  color: var(--greyui-text);
+  cursor: pointer;
+  font-family: var(--greyui-font-mono);
+  font-size: 0.75rem;
+  text-align: left;
+}
+.docs-copy-command:hover,
+.docs-copy-command:focus-visible {
+  outline: 2px solid var(--greyui-keyboard-navigation);
+  outline-offset: 0;
+}
+.docs-copy-command:active {
+  background: var(--greyui-control);
+  box-shadow: var(--greyui-bevel-outset);
+}
+.docs-copy-command[data-copied="true"] {
+  background: color-mix(in oklab, var(--greyui-success) 12%, var(--greyui-document));
+}
+.docs-copy-command-text {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.docs-copy-command-icon {
+  position: relative;
+  width: 1.05rem;
+  height: 1.05rem;
+  border: 1px solid var(--greyui-border-dark);
+  background: linear-gradient(180deg, var(--greyui-panel-light), var(--greyui-control));
+  box-shadow: var(--greyui-bevel-outset);
+}
+.docs-copy-command-icon::before {
+  content: "";
+  position: absolute;
+  top: 0.22rem;
+  left: -0.25rem;
+  width: 0.76rem;
+  height: 0.76rem;
+  border: 1px solid var(--greyui-border-dark);
+  background: var(--greyui-document);
+  box-shadow: var(--greyui-bevel-inset);
+}
+.docs-copy-command[data-copied="true"] .docs-copy-command-icon::after {
+  content: "";
+  position: absolute;
+  top: 0.15rem;
+  left: 0.27rem;
+  width: 0.42rem;
+  height: 0.72rem;
+  border: solid var(--greyui-success);
+  border-width: 0 2px 2px 0;
+  transform: rotate(42deg);
+}
+.docs-sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
 .docs-eyebrow {
   margin-bottom: 8px;
   color: var(--greyui-text-muted);
