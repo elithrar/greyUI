@@ -15,7 +15,7 @@ import { Button, Input, Window } from "greyui";
 import "greyui/styles.css";
 ```
 
-Component subpaths are available when you want an explicit package boundary:
+Component subpaths are available for explicit package boundaries:
 
 ```tsx
 import { Button } from "greyui/components/button";
