@@ -109,7 +109,13 @@ if (failures.length === 0) {
       fail(`components/${name}.js reaches the root index.js entrypoint`);
     }
 
-    return { name, ...metrics };
+    return {
+      name,
+      files: metrics.files,
+      raw: metrics.raw,
+      gzip: metrics.gzip,
+      graph: metrics.graph,
+    };
   });
 
   console.log("Package entrypoint load cost (entry + transitive local chunks):");
