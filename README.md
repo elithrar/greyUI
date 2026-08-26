@@ -1,6 +1,6 @@
 # greyUI
 
-greyUI is a standalone BeOS R5 / Haiku-inspired React component library derived from WorkbenchOS. Base UI provides keyboard, focus, positioning, and ARIA behavior for compound controls.
+greyUI is a standalone BeOS R5 / Haiku-inspired React component library derived from [WorkbenchOS](https://workbench.questionable.services/). Base UI provides keyboard, focus, positioning, and ARIA behavior for compound controls.
 
 ## Install
 
@@ -34,9 +34,11 @@ import "greyui/styles.css";
 
 ## Components
 
-- Controls: Button, ToggleButton, SegmentedControl, Input, Textarea, Checkbox, RadioGroup, Switch, Select
-- Compound UI: Tabs, Menu, Popover, Tooltip, Dialog, AlertDialog, ScrollArea
-- Surfaces: Table, Badge, GroupBox, Window, MenuBar, StatusBar
+- Inputs: Input, Textarea, Field, InputGroup, NumberField, Select, Combobox
+- Controls: Button, ToggleButton, SegmentedControl, Checkbox, RadioGroup, Switch, Slider
+- Desktop UI: Tabs, Menu, ContextMenu, Toolbar, Collapsible, Popover, Tooltip, Dialog, AlertDialog
+- Feedback and content: Progress, Meter, Toast, ScrollArea, Table, Badge, GroupBox, Separator
+- Window chrome: Window, MenuBar, StatusBar
 
 ## Development
 
@@ -60,4 +62,4 @@ The docs site deploys `docs/dist` with Cloudflare Workers Static Assets; no Work
 
 ## Design provenance
 
-The visual system is derived from WorkbenchOS's BeOS/Haiku design language. Kumo UI informs package ergonomics; Base UI provides headless behavior for compound primitives. greyUI ships original CSS and generic control geometry, not BeOS or Haiku artwork or system assets.
+The visual system is derived from [WorkbenchOS](https://workbench.questionable.services/)'s BeOS/Haiku design language. Kumo UI informs package ergonomics; Base UI provides headless behavior for compound primitives. greyUI ships original CSS and generic control geometry, not BeOS or Haiku artwork or system assets.

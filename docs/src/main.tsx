@@ -25,13 +25,18 @@ import {
   Window,
   WindowWidget,
 } from "../../src";
+import { DesktopDemos, FeedbackDemos, FieldDemos } from "./next-components";
 import "./docs.css";
+
+const WORKBENCH_URL = "https://workbench.questionable.services/";
 
 const sections = [
   ["principles", "Principles"],
   ["buttons", "Buttons"],
   ["fields", "Fields"],
   ["selection", "Selection"],
+  ["desktop", "Desktop controls"],
+  ["feedback", "Feedback"],
   ["tabs", "Tabs"],
   ["overlays", "Menus & overlays"],
   ["content", "Content"],
@@ -161,7 +166,10 @@ function App() {
                   <li>Native HTML for simple controls.</li>
                   <li>Base UI for compound-control behavior and positioning.</li>
                   <li>Component state is exposed through data attributes.</li>
-                  <li>WorkbenchOS-specific application components are not included.</li>
+                  <li>
+                    <a href={WORKBENCH_URL}>WorkbenchOS</a>-specific application components are not
+                    included.
+                  </li>
                 </ul>
               </GroupBox>
             </div>
@@ -209,7 +217,7 @@ function App() {
           <Section
             id="fields"
             title="Fields"
-            intro="Inputs, textareas, and selects use white inset fields."
+            intro="Inputs, textareas, selects, number fields, and comboboxes use white inset editing surfaces."
           >
             <div className="docs-grid-2">
               <Demo title="Input">
@@ -236,6 +244,7 @@ function App() {
                 />
               </Demo>
             </div>
+            <FieldDemos />
           </Section>
 
           <Section
@@ -265,6 +274,33 @@ function App() {
                 </div>
               </div>
             </Demo>
+          </Section>
+
+          <Section
+            id="desktop"
+            title="Desktop controls"
+            intro={
+              <>
+                Toolbars, context menus, sliders, separators, and collapsible panels follow the same
+                compact control geometry used by <a href={WORKBENCH_URL}>WorkbenchOS</a>.
+              </>
+            }
+          >
+            <DesktopDemos />
+          </Section>
+
+          <Section
+            id="feedback"
+            title="Feedback"
+            intro={
+              <>
+                Progress and meter tracks use the same inset document trough and selection-blue fill
+                as <a href={WORKBENCH_URL}>WorkbenchOS</a>. Toasts use a small desktop notification
+                panel rather than card styling.
+              </>
+            }
+          >
+            <FeedbackDemos />
           </Section>
 
           <Section
@@ -462,7 +498,12 @@ function App() {
           <Section
             id="tokens"
             title="Design tokens"
-            intro="The default theme uses the WorkbenchOS R5 palette. Override these CSS custom properties at a theme boundary."
+            intro={
+              <>
+                The default theme uses the R5 palette from <a href={WORKBENCH_URL}>WorkbenchOS</a>.
+                Override these CSS custom properties at a theme boundary.
+              </>
+            }
           >
             <div className="docs-token-grid">
               {[

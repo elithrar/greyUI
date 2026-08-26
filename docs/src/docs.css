@@ -1,4 +1,5 @@
 @import "../../src/styles.css";
+@import "../../src/components-v2.css";
 
 * {
   box-sizing: border-box;
@@ -146,8 +147,15 @@ pre {
   font-size: 13px;
   line-height: 1.45;
 }
+.docs-lede a,
+.docs-principles a {
+  color: inherit;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
 .docs-principles,
-.docs-grid-2 {
+.docs-grid-2,
+.docs-state-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 14px;
@@ -164,8 +172,12 @@ pre {
   background: var(--greyui-panel);
   box-shadow: inset 1px 1px var(--greyui-border-light);
 }
-.docs-demo + .docs-demo {
+.docs-demo + .docs-demo,
+.docs-component-grid + .docs-demo {
   margin-top: 12px;
+}
+.docs-component-grid > .docs-demo + .docs-demo {
+  margin-top: 0;
 }
 .docs-demo-title {
   min-height: 23px;
@@ -204,6 +216,10 @@ pre {
   align-items: flex-start;
   gap: 6px;
 }
+.docs-control-fill,
+.docs-control-fill > * {
+  width: 100%;
+}
 .docs-field {
   display: grid;
   min-width: 0;
@@ -227,6 +243,19 @@ pre {
   flex-wrap: wrap;
   justify-content: flex-end;
   gap: 8px;
+}
+.docs-context-target {
+  min-height: 72px;
+  padding: 14px;
+  border: 1px solid var(--greyui-border-dark);
+  background: var(--greyui-document);
+  box-shadow: var(--greyui-bevel-inset);
+  cursor: context-menu;
+  user-select: none;
+}
+.docs-context-target:focus-visible {
+  outline: 2px solid var(--greyui-selection);
+  outline-offset: 0;
 }
 
 .docs-scroll-demo {
@@ -330,6 +359,7 @@ pre {
   .docs-grid-2,
   .docs-principles,
   .docs-selection-grid,
+  .docs-state-grid,
   .docs-window-pair,
   .docs-token-grid {
     grid-template-columns: 1fr;
@@ -352,6 +382,7 @@ pre {
   .docs-grid-2 > *,
   .docs-principles > *,
   .docs-selection-grid > *,
+  .docs-state-grid > *,
   .docs-window-pair > *,
   .docs-token-grid > * {
     min-width: 0;
