@@ -174,10 +174,12 @@ pre {
   box-shadow: inset 1px 1px var(--greyui-border-light);
 }
 .docs-demo + .docs-demo,
-.docs-component-grid + .docs-demo {
+.docs-grid-2 + .docs-grid-2,
+.docs-grid-2 + .docs-demo,
+.docs-demo + .docs-grid-2 {
   margin-top: 12px;
 }
-.docs-component-grid > .docs-demo + .docs-demo {
+.docs-grid-2 > .docs-demo + .docs-demo {
   margin-top: 0;
 }
 .docs-demo-title {

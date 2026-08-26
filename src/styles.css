@@ -784,8 +784,7 @@
   scrollbar-width: auto;
 }
 
-.greyui-scroll-area[data-stable-gutter="true"] .greyui-scroll-viewport,
-.greyui-table-wrap {
+.greyui-scroll-area[data-stable-gutter="true"] .greyui-scroll-viewport {
   scrollbar-gutter: stable;
 }
 
