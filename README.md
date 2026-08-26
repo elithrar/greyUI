@@ -23,7 +23,7 @@ import { Select } from "greyui/components/select";
 import "greyui/styles.css";
 ```
 
-Both forms use the same shared build graph. CI checks that representative named root imports tree-shake to comparable consumer bundles as their component subpaths. React and React DOM remain peer dependencies.
+Both forms use the same build graph. CI checks that representative named root imports tree-shake to comparable consumer bundles as their component subpaths. React and React DOM remain peer dependencies.
 
 ## Use locally
 
