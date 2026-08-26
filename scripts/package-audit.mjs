@@ -2,6 +2,7 @@ import { existsSync, readdirSync, readFileSync, statSync } from "node:fs";
 import { dirname, relative, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { gzipSync } from "node:zlib";
+import { build } from "vite";
 
 const rootDir = fileURLToPath(new URL("..", import.meta.url));
 const distDir = resolve(rootDir, "dist");
@@ -10,7 +11,6 @@ const packageJson = JSON.parse(readFileSync(resolve(rootDir, "package.json"), "u
 const shouldCheck = process.argv.includes("--check");
 const failures = [];
 
-const ROOT_GZIP_BUDGET = 150 * 1024;
 const LIGHT_COMPONENT_GZIP_BUDGET = 2 * 1024;
 const lightComponents = new Set([
   "badge",
@@ -21,6 +21,13 @@ const lightComponents = new Set([
   "toggle-button",
   "window",
 ]);
+const consumerCases = [
+  ["button", "Button"],
+  ["input", "Input"],
+  ["select", "Select"],
+  ["menu", "Menu"],
+  ["combobox", "Combobox"],
+];
 
 function fail(message) {
   failures.push(message);
@@ -86,12 +93,71 @@ function formatBytes(bytes) {
   return `${(bytes / 1024).toFixed(1)} kB`;
 }
 
+function packageResolver(source) {
+  const virtualId = "virtual:greyui-consumer";
+  const resolvedVirtualId = `\0${virtualId}`;
+  const componentPrefix = "greyui/components/";
+
+  return {
+    name: "greyui-package-audit",
+    resolveId(id) {
+      if (id === virtualId) return resolvedVirtualId;
+      if (id === "greyui") return rootJs;
+      if (id.startsWith(componentPrefix)) {
+        return resolve(distDir, `components/${id.slice(componentPrefix.length)}.js`);
+      }
+      return null;
+    },
+    load(id) {
+      return id === resolvedVirtualId ? source : null;
+    },
+  };
+}
+
+async function bundleConsumer(specifier, exportName) {
+  const source = `export { ${exportName} } from ${JSON.stringify(specifier)};`;
+  const result = await build({
+    configFile: false,
+    logLevel: "silent",
+    plugins: [packageResolver(source)],
+    build: {
+      write: false,
+      minify: true,
+      rolldownOptions: {
+        input: "virtual:greyui-consumer",
+        external: [/^react(?:\/.*)?$/, /^react-dom(?:\/.*)?$/],
+        output: {
+          format: "es",
+          hoistTransitiveImports: false,
+        },
+      },
+    },
+  });
+
+  const outputs = Array.isArray(result) ? result : [result];
+  let files = 0;
+  let raw = 0;
+  let gzip = 0;
+
+  for (const output of outputs) {
+    for (const item of output.output) {
+      if (item.type !== "chunk") continue;
+      const contents = Buffer.from(item.code);
+      files += 1;
+      raw += contents.length;
+      gzip += gzipSync(contents).length;
+    }
+  }
+
+  return { files, raw, gzip };
+}
+
 if (!existsSync(distDir)) {
   console.error("dist/ does not exist. Run `npm run build` first.");
   process.exit(1);
 }
 
-const rootJs = resolve(distDir, "grey-ui.js");
+const rootJs = resolve(distDir, "index.js");
 const rootTypes = resolve(distDir, "index.d.ts");
 const styles = resolve(distDir, "grey-ui.css");
 requireFile(rootJs, "root JavaScript entrypoint");
@@ -99,8 +165,8 @@ requireFile(rootTypes, "root declaration entrypoint");
 requireFile(styles, "shared stylesheet");
 
 const rootExport = packageJson.exports?.["."];
-if (rootExport?.import !== "./dist/grey-ui.js" || rootExport?.types !== "./dist/index.d.ts") {
-  fail("package.json root export does not match dist/grey-ui.js + dist/index.d.ts");
+if (rootExport?.import !== "./dist/index.js" || rootExport?.types !== "./dist/index.d.ts") {
+  fail("package.json root export does not match dist/index.js + dist/index.d.ts");
 }
 
 const componentExport = packageJson.exports?.["./components/*"];
@@ -122,24 +188,12 @@ for (const name of componentNames) {
 }
 
 if (failures.length === 0) {
-  const rootMetrics = graphSize(rootJs);
-  if (rootMetrics.gzip > ROOT_GZIP_BUDGET) {
-    fail(
-      `Root entrypoint exceeds ${formatBytes(ROOT_GZIP_BUDGET)} gzip budget: ${formatBytes(rootMetrics.gzip)}`,
-    );
-  }
-
   const rows = componentNames.map((name) => {
     const entry = resolve(distDir, `components/${name}.js`);
     const metrics = graphSize(entry);
 
     if (metrics.graph.has(rootJs)) {
-      fail(`components/${name}.js reaches the root grey-ui.js entrypoint`);
-    }
-    if (metrics.gzip >= rootMetrics.gzip) {
-      fail(
-        `components/${name} is not cheaper than the root entrypoint: ${formatBytes(metrics.gzip)} gzip`,
-      );
+      fail(`components/${name}.js reaches the root index.js entrypoint`);
     }
     if (lightComponents.has(name) && metrics.gzip > LIGHT_COMPONENT_GZIP_BUDGET) {
       fail(
@@ -156,26 +210,38 @@ if (failures.length === 0) {
       }
     }
 
-    return {
-      name,
-      files: metrics.files,
-      raw: metrics.raw,
-      gzip: metrics.gzip,
-    };
+    return { name, files: metrics.files, raw: metrics.raw, gzip: metrics.gzip };
   });
 
-  console.log("Package entrypoint load cost (entry + transitive local chunks):");
+  console.log("Component entrypoint load cost (entry + transitive local chunks):");
   console.log(
-    `${"entry".padEnd(26)} ${"files".padStart(5)} ${"raw".padStart(10)} ${"gzip".padStart(10)} ${"root %".padStart(8)}`,
+    `${"entry".padEnd(26)} ${"files".padStart(5)} ${"raw".padStart(10)} ${"gzip".padStart(10)}`,
   );
+  for (const row of rows) {
+    console.log(
+      `${`components/${row.name}`.padEnd(26)} ${String(row.files).padStart(5)} ${formatBytes(row.raw).padStart(10)} ${formatBytes(row.gzip).padStart(10)}`,
+    );
+  }
+
+  console.log("\nConsumer bundle equivalence (root import vs component subpath):");
   console.log(
-    `${"root".padEnd(26)} ${String(rootMetrics.files).padStart(5)} ${formatBytes(rootMetrics.raw).padStart(10)} ${formatBytes(rootMetrics.gzip).padStart(10)} ${"100.0%".padStart(8)}`,
+    `${"component".padEnd(14)} ${"root gzip".padStart(10)} ${"subpath".padStart(10)} ${"delta".padStart(10)}`,
   );
 
-  for (const row of rows) {
-    const ratio = rootMetrics.gzip === 0 ? 0 : (row.gzip / rootMetrics.gzip) * 100;
+  for (const [name, exportName] of consumerCases) {
+    const rootBundle = await bundleConsumer("greyui", exportName);
+    const subpathBundle = await bundleConsumer(`greyui/components/${name}`, exportName);
+    const delta = rootBundle.gzip - subpathBundle.gzip;
+    const allowedDelta = Math.max(128, Math.ceil(subpathBundle.gzip * 0.02));
+
+    if (delta > allowedDelta) {
+      fail(
+        `Root import for ${exportName} is ${formatBytes(delta)} larger than the component subpath; allowed delta is ${formatBytes(allowedDelta)}`,
+      );
+    }
+
     console.log(
-      `${`components/${row.name}`.padEnd(26)} ${String(row.files).padStart(5)} ${formatBytes(row.raw).padStart(10)} ${formatBytes(row.gzip).padStart(10)} ${`${ratio.toFixed(1)}%`.padStart(8)}`,
+      `${name.padEnd(14)} ${formatBytes(rootBundle.gzip).padStart(10)} ${formatBytes(subpathBundle.gzip).padStart(10)} ${formatBytes(delta).padStart(10)}`,
     );
   }
 }
