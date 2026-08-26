@@ -162,9 +162,7 @@ describe("accessibility contracts", () => {
       </Slider.Root>,
     );
 
-    expect(screen.getByRole("slider", { name: "Volume" }).getAttribute("aria-valuenow")).toBe(
-      "50",
-    );
+    expect(screen.getByRole("slider", { name: "Volume" }).getAttribute("aria-valuenow")).toBe("50");
   });
 
   it("exposes progress and meter semantics", () => {
@@ -185,9 +183,9 @@ describe("accessibility contracts", () => {
       </>,
     );
 
-    expect(screen.getByRole("progressbar", { name: "Write progress" }).getAttribute("aria-valuenow")).toBe(
-      "64",
-    );
+    expect(
+      screen.getByRole("progressbar", { name: "Write progress" }).getAttribute("aria-valuenow"),
+    ).toBe("64");
     expect(screen.getByRole("meter", { name: "Storage" }).getAttribute("aria-valuenow")).toBe("72");
   });
 
