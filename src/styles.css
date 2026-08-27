@@ -52,7 +52,7 @@
     "Noto Sans Mono", "DejaVu Sans Mono", "Courier 10 Pitch", "Courier New", monospace;
   --greyui-font-size: 12px;
   --greyui-font-size-small: 11px;
-  --greyui-tab-height: 22px;
+  --greyui-tab-height: 26px;
   --greyui-menubar-height: 20px;
   --greyui-layer-menu: 1000;
   --greyui-layer-popover: 1100;
@@ -142,7 +142,7 @@
   background: var(--greyui-control);
   box-shadow: var(--greyui-bevel-outset);
   color: var(--greyui-text);
-  font-weight: 600;
+  font-weight: 400;
   cursor: pointer;
   user-select: none;
   white-space: nowrap;

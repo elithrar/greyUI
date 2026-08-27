@@ -41,8 +41,10 @@ describe("default theme contrast", () => {
 
     expect(css).toContain("--greyui-font-size: 12px");
     expect(css).toContain("--greyui-font-size-small: 11px");
-    expect(css).toContain("--greyui-tab-height: 22px");
+    expect(css).toContain("--greyui-tab-height: 26px");
     expect(css).toContain("--greyui-menubar-height: 20px");
+    expect(css).toMatch(/\.greyui-button\s*\{[\s\S]*?min-height:\s*1\.85rem/);
+    expect(css).toMatch(/\.greyui-button\s*\{[\s\S]*?font-weight:\s*400/);
   });
 
   it("keeps tooltip and app overlay layers above window-level content", () => {
