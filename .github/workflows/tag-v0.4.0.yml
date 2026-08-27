@@ -1,0 +1,36 @@
+name: Tag v0.4.0
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - .github/workflows/tag-v0.4.0.yml
+
+permissions:
+  contents: write
+
+jobs:
+  tag:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Create v0.4.0 tag
+        uses: actions/github-script@v8
+        with:
+          script: |
+            try {
+              await github.rest.git.getRef({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                ref: "tags/v0.4.0",
+              });
+              core.setFailed("refs/tags/v0.4.0 already exists");
+            } catch (error) {
+              if (error.status !== 404) throw error;
+              await github.rest.git.createRef({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                ref: "refs/tags/v0.4.0",
+                sha: context.sha,
+              });
+            }
