@@ -1,5 +1,6 @@
 import type { ComponentProps, ReactNode } from "react";
 import { Dialog as DialogPrimitive } from "@base-ui/react/dialog";
+import { useLayerContainer } from "./layer";
 
 export const DialogRoot = DialogPrimitive.Root;
 
@@ -24,8 +25,9 @@ export function DialogPopup({
   children,
   ...props
 }: PopupProps) {
+  const container = useLayerContainer("dialog");
   return (
-    <DialogPrimitive.Portal>
+    <DialogPrimitive.Portal container={container}>
       <DialogPrimitive.Backdrop className="greyui-dialog-backdrop" />
       <DialogPrimitive.Viewport className="greyui-dialog-viewport">
         <DialogPrimitive.Popup

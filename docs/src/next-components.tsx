@@ -1,4 +1,6 @@
 import {
+  Banner,
+  Breadcrumbs,
   Button,
   ButtonGroup,
   Collapsible,
@@ -6,12 +8,15 @@ import {
   ContextMenu,
   createVirtualAnchor,
   DatePicker,
+  Empty,
   Field,
   IconButton,
   Input,
   InputGroup,
+  Loader,
   Meter,
   NumberField,
+  Pagination,
   Progress,
   Popover,
   SegmentedMeter,
@@ -267,6 +272,57 @@ export function FeedbackDemos() {
 
       <Demo title="Toast">
         <ToastDemo />
+      </Demo>
+    </div>
+  );
+}
+
+export function KumoPatternDemos() {
+  const [page, setPage] = useState(3);
+
+  return (
+    <div className="docs-grid-2 docs-component-grid">
+      <Demo title="Inline banners">
+        <div className="docs-stack docs-control-fill">
+          <Banner
+            title="Update available"
+            description="A new component build is ready."
+            action={<Banner.Action>Install</Banner.Action>}
+          />
+          <Banner size="sm" variant="alert" description="Unsaved calibration changes remain." />
+        </div>
+      </Demo>
+
+      <Demo title="Tracker breadcrumbs">
+        <Breadcrumbs>
+          <Breadcrumbs.Link href="#">boot</Breadcrumbs.Link>
+          <Breadcrumbs.Separator />
+          <Breadcrumbs.Link href="#">home</Breadcrumbs.Link>
+          <Breadcrumbs.Separator />
+          <Breadcrumbs.Current>calibrations</Breadcrumbs.Current>
+        </Breadcrumbs>
+      </Demo>
+
+      <Demo title="Empty state">
+        <Empty
+          size="sm"
+          icon={<span className="docs-empty-folder" />}
+          title="No ROM loaded"
+          description="Open a binary image to inspect its calibration tables."
+          contents={<Button size="sm">Open ROM…</Button>}
+        />
+      </Demo>
+
+      <Demo title="Loaders">
+        <div className="docs-row">
+          <Loader size="sm" label="Loading inline data" />
+          <Loader label="Loading document" />
+          <Loader size="lg" label="Loading application" />
+        </div>
+      </Demo>
+
+      <Demo title="Pagination">
+        <Pagination page={page} setPage={setPage} perPage={10} totalCount={86} />
       </Demo>
     </div>
   );

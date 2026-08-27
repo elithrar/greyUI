@@ -1,5 +1,6 @@
 import type { ComponentProps } from "react";
 import { Toast as ToastPrimitive } from "@base-ui/react/toast";
+import { useLayerContainer } from "./layer";
 
 type WithClassName<T> = Omit<T, "className"> & { className?: string };
 
@@ -57,9 +58,10 @@ export function ToastClose({
 
 export function ToastToaster() {
   const { toasts } = ToastPrimitive.useToastManager();
+  const container = useLayerContainer("toast");
 
   return (
-    <ToastPrimitive.Portal>
+    <ToastPrimitive.Portal container={container}>
       <ToastPrimitive.Viewport className="greyui-toast-viewport">
         {toasts.map((toast) => (
           <ToastRoot key={toast.id} toast={toast}>

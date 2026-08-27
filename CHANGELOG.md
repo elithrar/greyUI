@@ -1,5 +1,13 @@
 # Changelog
 
+## Unreleased
+
+- Add shared Layer hosts for menus, popovers, app-owned overlays, dialogs, toasts, and tooltips.
+- Add a compound Window API while preserving the existing shorthand component.
+- Add WorkbenchOS-styled Banner, Breadcrumbs, Empty, Loader, and Pagination components using
+  Kumo-inspired composition patterns.
+- Align desktop tab height, button weight, and editable-value typography with WorkbenchOS.
+
 ## 0.4.0 — 2026-08-27
 
 - Add controlled and uncontrolled Window collapse state, floating/stacked responsive modes, body

@@ -1,5 +1,6 @@
 import type { ComponentProps, ReactNode } from "react";
 import { Combobox as ComboboxPrimitive } from "@base-ui/react/combobox";
+import { useLayerContainer } from "./layer";
 
 export const ComboboxRoot = ComboboxPrimitive.Root;
 
@@ -65,8 +66,9 @@ export function ComboboxPopup({
   className = "",
   ...props
 }: WithClassName<ComponentProps<typeof ComboboxPrimitive.Popup>>) {
+  const container = useLayerContainer("menu");
   return (
-    <ComboboxPrimitive.Portal>
+    <ComboboxPrimitive.Portal container={container}>
       <ComboboxPrimitive.Positioner
         className="greyui-combobox-positioner"
         align="start"

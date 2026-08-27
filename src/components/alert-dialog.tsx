@@ -1,5 +1,6 @@
 import type { ComponentProps, ReactNode } from "react";
 import { AlertDialog as AlertDialogPrimitive } from "@base-ui/react/alert-dialog";
+import { useLayerContainer } from "./layer";
 
 export const AlertDialogRoot = AlertDialogPrimitive.Root;
 
@@ -29,8 +30,9 @@ export function AlertDialogPopup({
   children,
   ...props
 }: PopupProps) {
+  const container = useLayerContainer("dialog");
   return (
-    <AlertDialogPrimitive.Portal>
+    <AlertDialogPrimitive.Portal container={container}>
       <AlertDialogPrimitive.Backdrop className="greyui-dialog-backdrop" />
       <AlertDialogPrimitive.Viewport className="greyui-dialog-viewport">
         <AlertDialogPrimitive.Popup

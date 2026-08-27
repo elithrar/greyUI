@@ -378,6 +378,28 @@ pre {
   padding: 14px;
 }
 
+.docs-empty-folder {
+  position: relative;
+  display: block;
+  width: 26px;
+  height: 18px;
+  border: 1px solid var(--greyui-border-darker);
+  background: var(--greyui-tab-active);
+  box-shadow: var(--greyui-bevel-outset);
+}
+
+.docs-empty-folder::before {
+  content: "";
+  position: absolute;
+  top: -6px;
+  left: 2px;
+  width: 11px;
+  height: 5px;
+  border: 1px solid var(--greyui-border-darker);
+  border-bottom: 0;
+  background: var(--greyui-tab-active);
+}
+
 .docs-token-grid {
   display: grid;
   min-width: 0;

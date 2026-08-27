@@ -1,5 +1,6 @@
 import type { ComponentProps, ReactNode } from "react";
 import { Popover as PopoverPrimitive } from "@base-ui/react/popover";
+import { useLayerContainer } from "./layer";
 
 export const PopoverRoot = PopoverPrimitive.Root;
 
@@ -28,8 +29,9 @@ export function PopoverPopup({
   positionerProps,
   ...props
 }: PopupProps) {
+  const container = useLayerContainer("popover");
   return (
-    <PopoverPrimitive.Portal>
+    <PopoverPrimitive.Portal container={container}>
       <PopoverPrimitive.Positioner
         sideOffset={5}
         {...positionerProps}

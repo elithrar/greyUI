@@ -1,7 +1,10 @@
 import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import { afterEach, describe, expect, it } from "vitest";
+import { useState } from "react";
 import {
   AlertDialog,
+  Banner,
+  Breadcrumbs,
   Button,
   ButtonGroup,
   Collapsible,
@@ -10,11 +13,15 @@ import {
   createVirtualAnchor,
   DatePicker,
   Dialog,
+  Empty,
   Field,
   InputGroup,
   IconButton,
+  Layer,
+  Loader,
   Meter,
   NumberField,
+  Pagination,
   Progress,
   ScrollArea,
   SegmentedMeter,
@@ -376,6 +383,135 @@ describe("accessibility contracts", () => {
     fireEvent.click(toggle);
     expect(body.hasAttribute("hidden")).toBe(true);
     expect(screen.getByRole("button", { name: "Restore window" })).not.toBeNull();
+  });
+
+  it("composes Window parts against the same collapse state", () => {
+    render(
+      <Window.Root bodyId="compound-body">
+        <Window.TitleBar>
+          <Window.Title>Tracker</Window.Title>
+          <Window.Controls>
+            <Window.Collapse />
+          </Window.Controls>
+        </Window.TitleBar>
+        <Window.Body aria-label="Tracker body">Files</Window.Body>
+      </Window.Root>,
+    );
+
+    const body = screen.getByLabelText("Tracker body");
+    expect(body.getAttribute("id")).toBe("compound-body");
+    fireEvent.click(screen.getByRole("button", { name: "Minimize window" }));
+    expect(body.hasAttribute("hidden")).toBe(true);
+  });
+
+  it("does not allow body props to expose a collapsed Window body", () => {
+    const { container } = render(
+      <Window.Root defaultCollapsed>
+        <Window.Body hidden={false} aria-label="Collapsed body">
+          Hidden files
+        </Window.Body>
+      </Window.Root>,
+    );
+
+    expect(container.querySelector('[aria-label="Collapsed body"]')?.hasAttribute("hidden")).toBe(
+      true,
+    );
+  });
+
+  it("routes custom overlays through ordered Layer hosts", () => {
+    render(
+      <Layer.Provider>
+        <Layer.Portal layer="overlay">
+          <button type="button">Map POI</button>
+        </Layer.Portal>
+      </Layer.Provider>,
+    );
+
+    const hosts = Array.from(document.querySelectorAll("[data-greyui-layer]")).map((node) =>
+      node.getAttribute("data-greyui-layer"),
+    );
+    expect(hosts).toEqual(["menu", "popover", "overlay", "dialog", "toast", "tooltip"]);
+    expect(
+      screen
+        .getByRole("button", { name: "Map POI" })
+        .closest("[data-greyui-layer]")
+        ?.getAttribute("data-greyui-layer"),
+    ).toBe("overlay");
+  });
+
+  it("renders structured Banner content and actions", () => {
+    render(
+      <Banner
+        variant="alert"
+        title="Unsaved changes"
+        description="Review before closing."
+        action={<Banner.Action>Review</Banner.Action>}
+      />,
+    );
+
+    expect(
+      screen.getByText("Unsaved changes").closest("[data-variant]")?.getAttribute("data-variant"),
+    ).toBe("alert");
+    expect(
+      screen.getByText("Unsaved changes").closest("[data-has-icon]")?.getAttribute("data-has-icon"),
+    ).toBe("false");
+    expect(screen.getByRole("button", { name: "Review" }).getAttribute("type")).toBe("button");
+  });
+
+  it("uses navigation semantics for Breadcrumbs", () => {
+    render(
+      <Breadcrumbs>
+        <Breadcrumbs.Link href="/boot">boot</Breadcrumbs.Link>
+        <Breadcrumbs.Separator />
+        <Breadcrumbs.Current>home</Breadcrumbs.Current>
+      </Breadcrumbs>,
+    );
+
+    expect(screen.getByRole("navigation", { name: "Breadcrumb" })).not.toBeNull();
+    expect(screen.getByText("home").getAttribute("aria-current")).toBe("page");
+  });
+
+  it("exposes useful Empty and Loader semantics", () => {
+    render(
+      <>
+        <Empty title="No ROM loaded" commandLine="open chip.bin" />
+        <Loader label="Loading ROM" size="sm" />
+      </>,
+    );
+
+    expect(screen.getByRole("heading", { name: "No ROM loaded" })).not.toBeNull();
+    expect(screen.getByText("$ open chip.bin")).not.toBeNull();
+    expect(screen.getByRole("status", { name: "Loading ROM" }).getAttribute("data-size")).toBe(
+      "sm",
+    );
+  });
+
+  it("clamps Pagination navigation and supports compound controls", () => {
+    function PaginationExample() {
+      const [page, setPage] = useState(2);
+      return (
+        <Pagination page={page} setPage={setPage} perPage={10} totalCount={25}>
+          <Pagination.Info />
+          <Pagination.Separator />
+          <Pagination.Controls />
+        </Pagination>
+      );
+    }
+
+    render(<PaginationExample />);
+    expect(screen.getByText("Showing 11–20 of 25")).not.toBeNull();
+    fireEvent.click(screen.getByRole("button", { name: "Next page" }));
+    expect(screen.getByText("Showing 21–25 of 25")).not.toBeNull();
+    expect(screen.getByRole("button", { name: "Next page" }).hasAttribute("disabled")).toBe(true);
+  });
+
+  it("keeps input pagination bounded for very large result sets", () => {
+    render(
+      <Pagination page={1} setPage={() => undefined} perPage={1} totalCount={1_000_000_000} />,
+    );
+
+    expect(screen.getByRole("spinbutton", { name: "Page number" })).not.toBeNull();
+    expect(document.querySelectorAll("option")).toHaveLength(0);
   });
 
   it("provides structured status bar primitives", () => {

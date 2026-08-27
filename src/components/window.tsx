@@ -1,5 +1,9 @@
 import {
+  createContext,
+  useCallback,
   useId,
+  useContext,
+  useMemo,
   useState,
   type ButtonHTMLAttributes,
   type ComponentPropsWithoutRef,
@@ -9,85 +13,165 @@ import {
 
 export type WindowResponsiveMode = "stacked" | "floating";
 
-export interface WindowProps extends Omit<ComponentPropsWithoutRef<"div">, "title"> {
-  title: ReactNode;
+export interface WindowRootProps extends ComponentPropsWithoutRef<"div"> {
   active?: boolean;
-  controls?: ReactNode;
   as?: ElementType;
-  bodyProps?: ComponentPropsWithoutRef<"div">;
-  collapsible?: boolean;
   collapsed?: boolean;
   defaultCollapsed?: boolean;
   onCollapsedChange?: (collapsed: boolean) => void;
-  collapseLabel?: string;
-  restoreLabel?: string;
   responsive?: WindowResponsiveMode;
+  bodyId?: string | undefined;
 }
 
-export function Window({
-  title,
+interface WindowContextValue {
+  bodyId: string;
+  collapsed: boolean;
+  setCollapsed: (collapsed: boolean) => void;
+}
+
+const WindowContext = createContext<WindowContextValue | null>(null);
+
+function useWindowContext(component: string) {
+  const context = useContext(WindowContext);
+  if (context === null) throw new Error(`${component} must be used inside Window.Root`);
+  return context;
+}
+
+export function WindowRoot({
   active = true,
-  controls,
   as: Component = "div",
-  bodyProps,
-  collapsible = false,
   collapsed: collapsedProp,
   defaultCollapsed = false,
   onCollapsedChange,
-  collapseLabel = "Minimize window",
-  restoreLabel = "Restore window",
   responsive = "stacked",
+  bodyId: bodyIdProp,
   className = "",
   children,
   ...props
-}: WindowProps) {
+}: WindowRootProps) {
   const generatedBodyId = useId();
   const [uncontrolledCollapsed, setUncontrolledCollapsed] = useState(defaultCollapsed);
   const collapsed = collapsedProp ?? uncontrolledCollapsed;
-  const bodyId = bodyProps?.id ?? generatedBodyId;
-  const bodyClassName = bodyProps?.className ?? "";
+  const bodyId = bodyIdProp ?? generatedBodyId;
 
-  function toggleCollapsed() {
-    const nextCollapsed = !collapsed;
-    if (collapsedProp === undefined) setUncontrolledCollapsed(nextCollapsed);
-    onCollapsedChange?.(nextCollapsed);
-  }
+  const setCollapsed = useCallback(
+    (nextCollapsed: boolean) => {
+      if (collapsedProp === undefined) setUncontrolledCollapsed(nextCollapsed);
+      onCollapsedChange?.(nextCollapsed);
+    },
+    [collapsedProp, onCollapsedChange],
+  );
+  const contextValue = useMemo(
+    () => ({ bodyId, collapsed, setCollapsed }),
+    [bodyId, collapsed, setCollapsed],
+  );
 
   return (
-    <Component
-      data-greyui-component="window"
-      data-active={active ? "true" : "false"}
-      data-collapsed={collapsed ? "true" : "false"}
-      data-responsive={responsive}
-      className={`greyui-window ${className}`.trim()}
-      {...props}
-    >
-      <div className="greyui-window-tab">
-        <span className="greyui-window-title">{title}</span>
-        {controls !== undefined || collapsible ? (
-          <span className="greyui-window-controls">
-            {controls}
-            {collapsible ? (
-              <WindowWidget
-                kind={collapsed ? "restore" : "minimize"}
-                label={collapsed ? restoreLabel : collapseLabel}
-                aria-controls={bodyId}
-                aria-expanded={!collapsed}
-                onClick={toggleCollapsed}
-              />
-            ) : null}
-          </span>
-        ) : null}
-      </div>
-      <div
-        {...bodyProps}
-        id={bodyId}
-        hidden={collapsed}
-        className={`greyui-window-body ${bodyClassName}`.trim()}
+    <WindowContext.Provider value={contextValue}>
+      <Component
+        data-greyui-component="window"
+        data-active={active ? "true" : "false"}
+        data-collapsed={collapsed ? "true" : "false"}
+        data-responsive={responsive}
+        className={`greyui-window ${className}`.trim()}
+        {...props}
       >
         {children}
-      </div>
-    </Component>
+      </Component>
+    </WindowContext.Provider>
+  );
+}
+
+export type WindowTitleBarProps = ComponentPropsWithoutRef<"div">;
+export function WindowTitleBar({ className = "", ...props }: WindowTitleBarProps) {
+  return <div className={`greyui-window-tab ${className}`.trim()} {...props} />;
+}
+
+export type WindowTitleProps = ComponentPropsWithoutRef<"span">;
+export function WindowTitle({ className = "", ...props }: WindowTitleProps) {
+  return <span className={`greyui-window-title ${className}`.trim()} {...props} />;
+}
+
+export type WindowControlsProps = ComponentPropsWithoutRef<"span">;
+export function WindowControls({ className = "", ...props }: WindowControlsProps) {
+  return <span className={`greyui-window-controls ${className}`.trim()} {...props} />;
+}
+
+export type WindowBodyProps = ComponentPropsWithoutRef<"div">;
+export function WindowBody({ className = "", hidden, id, ...props }: WindowBodyProps) {
+  const { bodyId, collapsed } = useWindowContext("Window.Body");
+  return (
+    <div
+      id={id ?? bodyId}
+      hidden={collapsed || hidden}
+      className={`greyui-window-body ${className}`.trim()}
+      {...props}
+    />
+  );
+}
+
+export interface WindowCollapseProps extends Omit<WindowWidgetProps, "kind" | "label"> {
+  collapseLabel?: string | undefined;
+  restoreLabel?: string | undefined;
+}
+
+export function WindowCollapse({
+  collapseLabel = "Minimize window",
+  restoreLabel = "Restore window",
+  onClick,
+  ...props
+}: WindowCollapseProps) {
+  const { bodyId, collapsed, setCollapsed } = useWindowContext("Window.Collapse");
+  return (
+    <WindowWidget
+      {...props}
+      kind={collapsed ? "restore" : "minimize"}
+      label={collapsed ? restoreLabel : collapseLabel}
+      aria-controls={bodyId}
+      aria-expanded={!collapsed}
+      onClick={(event) => {
+        onClick?.(event);
+        if (!event.defaultPrevented) setCollapsed(!collapsed);
+      }}
+    />
+  );
+}
+
+export interface WindowProps extends Omit<WindowRootProps, "bodyId" | "children" | "title"> {
+  title: ReactNode;
+  controls?: ReactNode;
+  bodyProps?: WindowBodyProps;
+  collapsible?: boolean;
+  collapseLabel?: string | undefined;
+  restoreLabel?: string | undefined;
+  children?: ReactNode;
+}
+
+function WindowComponent({
+  title,
+  controls,
+  bodyProps,
+  collapsible = false,
+  collapseLabel,
+  restoreLabel,
+  children,
+  ...props
+}: WindowProps) {
+  return (
+    <WindowRoot bodyId={bodyProps?.id} {...props}>
+      <WindowTitleBar>
+        <WindowTitle>{title}</WindowTitle>
+        {controls !== undefined || collapsible ? (
+          <WindowControls>
+            {controls}
+            {collapsible ? (
+              <WindowCollapse collapseLabel={collapseLabel} restoreLabel={restoreLabel} />
+            ) : null}
+          </WindowControls>
+        ) : null}
+      </WindowTitleBar>
+      <WindowBody {...bodyProps}>{children}</WindowBody>
+    </WindowRoot>
   );
 }
 
@@ -186,3 +270,13 @@ export function StatusLight({ className = "", label, state = "idle", ...props }:
     />
   );
 }
+
+export const Window = Object.assign(WindowComponent, {
+  Root: WindowRoot,
+  TitleBar: WindowTitleBar,
+  Title: WindowTitle,
+  Controls: WindowControls,
+  Collapse: WindowCollapse,
+  Body: WindowBody,
+  StatusBar,
+});

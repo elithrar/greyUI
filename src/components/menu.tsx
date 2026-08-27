@@ -1,5 +1,6 @@
 import type { ComponentProps } from "react";
 import { Menu as MenuPrimitive } from "@base-ui/react/menu";
+import { useLayerContainer } from "./layer";
 
 export const MenuRoot = MenuPrimitive.Root;
 
@@ -27,8 +28,9 @@ export function MenuPopup({
   className = "",
   ...props
 }: Omit<ComponentProps<typeof MenuPrimitive.Popup>, "className"> & { className?: string }) {
+  const container = useLayerContainer("menu");
   return (
-    <MenuPrimitive.Portal>
+    <MenuPrimitive.Portal container={container}>
       <MenuPrimitive.Positioner className="greyui-menu-positioner" sideOffset={1} align="start">
         <MenuPrimitive.Popup className={`greyui-menu-popup ${className}`.trim()} {...props} />
       </MenuPrimitive.Positioner>

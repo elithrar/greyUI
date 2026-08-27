@@ -46,14 +46,20 @@ npm install /path/to/greyUI
 
 - Inputs: Input, Textarea, Field, InputGroup, NumberField, Select, Combobox, DatePicker
 - Controls: Button, IconButton, ButtonGroup, ToggleButton, SegmentedControl, Checkbox, RadioGroup, Switch, Slider
-- Desktop UI: Tabs, Menu, ContextMenu, Toolbar, Collapsible, Popover, Tooltip, Dialog, AlertDialog
-- Feedback and content: Progress, Meter, SegmentedMeter, Toast, ScrollArea, Table, Badge, GroupBox, Separator
+- Desktop UI: Tabs, Menu, ContextMenu, Toolbar, Collapsible, Popover, Tooltip, Dialog, AlertDialog, Layer
+- Feedback and content: Banner, Breadcrumbs, Empty, Loader, Pagination, Progress, Meter, SegmentedMeter, Toast, ScrollArea, Table, Badge, GroupBox, Separator
 - Window chrome: Window, WindowWidget, MenuBar, StatusBar, StatusBarItem, StatusBarSeparator, StatusLight
 
 `Window` supports controlled or uncontrolled collapse state and two responsive modes. Existing
 windows default to `responsive="stacked"`; map and dashboard overlays can opt into
 `responsive="floating"`. `Popover.Popup` accepts `positionerProps`, including Base UI virtual
-anchors created with `createVirtualAnchor()`.
+anchors created with `createVirtualAnchor()`. Its backward-compatible shorthand now shares the
+same implementation as `Window.Root`, `Window.TitleBar`, `Window.Title`, `Window.Controls`,
+`Window.Collapse`, `Window.Body`, and `Window.StatusBar`.
+
+Wrap an application in `Layer.Provider` to route menus, popovers, app-owned overlays, dialogs,
+toasts, and tooltips into stable top-level hosts. `Layer.Portal` gives map POIs and other custom
+content the same stacking contract; tooltips intentionally remain the highest default layer.
 
 ## Development
 

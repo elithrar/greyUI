@@ -1,5 +1,6 @@
 import type { ComponentProps, ReactNode } from "react";
 import { Tooltip as TooltipPrimitive } from "@base-ui/react/tooltip";
+import { useLayerContainer } from "./layer";
 
 export const TooltipProvider = TooltipPrimitive.Provider;
 export const TooltipRoot = TooltipPrimitive.Root;
@@ -12,9 +13,10 @@ export function TooltipTrigger({ className = "", ...props }: TriggerProps) {
 }
 
 export function TooltipPopup({ children }: { children: ReactNode }) {
+  const container = useLayerContainer("tooltip");
   return (
-    <TooltipPrimitive.Portal>
-      <TooltipPrimitive.Positioner sideOffset={6}>
+    <TooltipPrimitive.Portal container={container}>
+      <TooltipPrimitive.Positioner className="greyui-tooltip-positioner" sideOffset={6}>
         <TooltipPrimitive.Popup className="greyui-tooltip">{children}</TooltipPrimitive.Popup>
       </TooltipPrimitive.Positioner>
     </TooltipPrimitive.Portal>

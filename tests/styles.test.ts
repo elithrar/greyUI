@@ -35,4 +35,24 @@ describe("default theme contrast", () => {
     expect(mobileRules).toContain('.greyui-window[data-responsive="stacked"]');
     expect(mobileRules).not.toContain('.greyui-window[data-responsive="floating"]');
   });
+
+  it("keeps WorkbenchOS typography and window scale tokens aligned", () => {
+    const css = readFileSync(resolve(process.cwd(), "src/styles.css"), "utf8");
+
+    expect(css).toContain("--greyui-font-size: 12px");
+    expect(css).toContain("--greyui-font-size-small: 11px");
+    expect(css).toContain("--greyui-tab-height: 22px");
+    expect(css).toContain("--greyui-menubar-height: 20px");
+  });
+
+  it("keeps tooltip and app overlay layers above window-level content", () => {
+    const css = readFileSync(resolve(process.cwd(), "src/styles.css"), "utf8");
+    const overlay = Number(css.match(/--greyui-layer-overlay:\s*(\d+)/)?.[1]);
+    const dialog = Number(css.match(/--greyui-layer-dialog:\s*(\d+)/)?.[1]);
+    const tooltip = Number(css.match(/--greyui-layer-tooltip:\s*(\d+)/)?.[1]);
+
+    expect(overlay).toBeGreaterThan(1000);
+    expect(dialog).toBeGreaterThan(overlay);
+    expect(tooltip).toBeGreaterThan(dialog);
+  });
 });

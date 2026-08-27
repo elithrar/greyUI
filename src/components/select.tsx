@@ -1,5 +1,6 @@
 import type { ComponentProps, ReactNode } from "react";
 import { Select as SelectPrimitive } from "@base-ui/react/select";
+import { useLayerContainer } from "./layer";
 
 export interface SelectOption {
   value: string;
@@ -49,6 +50,7 @@ export function Select({
   triggerProps,
   ...rootProps
 }: SelectProps) {
+  const container = useLayerContainer("menu");
   const triggerAccessibleNameProps =
     ariaLabel !== undefined
       ? { "aria-label": ariaLabel }
@@ -73,7 +75,7 @@ export function Select({
           </SelectPrimitive.Icon>
         </SelectPrimitive.Trigger>
       </div>
-      <SelectPrimitive.Portal>
+      <SelectPrimitive.Portal container={container}>
         <SelectPrimitive.Positioner
           className="greyui-select-positioner"
           alignItemWithTrigger={false}
