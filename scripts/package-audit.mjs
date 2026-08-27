@@ -1,7 +1,10 @@
 import { existsSync, readdirSync, readFileSync } from "node:fs";
 import { relative, resolve } from "node:path";
+import { pathToFileURL } from "node:url";
 import { fileURLToPath } from "node:url";
 import { gzipSync } from "node:zlib";
+import React from "react";
+import { renderToStaticMarkup } from "react-dom/server";
 import { build } from "vite";
 
 const rootDir = fileURLToPath(new URL("..", import.meta.url));
@@ -74,6 +77,21 @@ function bareRuntimeImports(source) {
   return imports;
 }
 
+async function verifySsrRender(path, exportName, props, children) {
+  try {
+    const module = await import(`${pathToFileURL(path).href}?package-audit=${Date.now()}`);
+    const Component = module[exportName];
+    if (Component === undefined || Component === null) {
+      fail(`${relative(distDir, path)} does not export ${exportName}`);
+      return;
+    }
+    const markup = renderToStaticMarkup(React.createElement(Component, props, children));
+    if (!markup) fail(`${relative(distDir, path)} produced empty SSR markup for ${exportName}`);
+  } catch (error) {
+    fail(`${relative(distDir, path)} failed DOM-free SSR import/render: ${String(error)}`);
+  }
+}
+
 function packageResolver(source) {
   const virtualId = "virtual:greyui-consumer";
   const resolvedVirtualId = `\0${virtualId}`;
@@ -107,6 +125,7 @@ async function bundleConsumer(source) {
       rolldownOptions: {
         input: "virtual:greyui-consumer",
         external: [/^react(?:\/.*)?$/, /^react-dom(?:\/.*)?$/],
+        preserveEntrySignatures: "strict",
         output: {
           format: "es",
           hoistTransitiveImports: false,
@@ -175,10 +194,16 @@ if (failures.length === 0) {
         fail(`${relative(distDir, file)} leaves unexpected runtime external ${specifier}`);
       }
     }
+    if (/\brequire\s*\(/.test(source) || /\bmodule\.exports\b/.test(source)) {
+      fail(`${relative(distDir, file)} contains a CommonJS runtime primitive unsafe for Workers`);
+    }
     if (file !== rootJs && rootEntryImport.test(source)) {
       fail(`${relative(distDir, file)} imports the root index.js entrypoint`);
     }
   }
+
+  await verifySsrRender(rootJs, "Window", { title: "SSR window" }, "Ready");
+  await verifySsrRender(resolve(distDir, "components/button.js"), "Button", null, "SSR button");
 
   console.log("Component consumer bundle cost:");
   console.log(

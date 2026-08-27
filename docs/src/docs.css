@@ -369,6 +369,10 @@ pre {
   gap: 28px;
   align-items: start;
 }
+
+.docs-floating-window {
+  width: min(100%, 19rem);
+}
 .docs-window-example-body {
   min-height: 90px;
   padding: 14px;

@@ -15,17 +15,26 @@ type PopupProps = Omit<ComponentProps<typeof PopoverPrimitive.Popup>, "className
   children?: ReactNode;
   title?: ReactNode;
   description?: ReactNode;
+  positionerProps?: Omit<
+    ComponentProps<typeof PopoverPrimitive.Positioner>,
+    "className" | "children"
+  >;
 };
 export function PopoverPopup({
   className = "",
   title,
   description,
   children,
+  positionerProps,
   ...props
 }: PopupProps) {
   return (
     <PopoverPrimitive.Portal>
-      <PopoverPrimitive.Positioner sideOffset={5} className="greyui-popover-positioner">
+      <PopoverPrimitive.Positioner
+        sideOffset={5}
+        {...positionerProps}
+        className="greyui-popover-positioner"
+      >
         <PopoverPrimitive.Popup className={`greyui-popover ${className}`.trim()} {...props}>
           {title !== undefined ? (
             <PopoverPrimitive.Title className="greyui-popover-title">
@@ -42,6 +51,41 @@ export function PopoverPopup({
       </PopoverPrimitive.Positioner>
     </PopoverPrimitive.Portal>
   );
+}
+
+export interface VirtualAnchorOptions {
+  x: number;
+  y: number;
+  width?: number;
+  height?: number;
+  contextElement?: Element;
+}
+
+export function createVirtualAnchor({
+  x,
+  y,
+  width = 0,
+  height = 0,
+  contextElement,
+}: VirtualAnchorOptions) {
+  return {
+    contextElement,
+    getBoundingClientRect() {
+      return {
+        x,
+        y,
+        top: y,
+        left: x,
+        right: x + width,
+        bottom: y + height,
+        width,
+        height,
+        toJSON() {
+          return { x, y, top: y, left: x, right: x + width, bottom: y + height, width, height };
+        },
+      };
+    },
+  };
 }
 
 export const Popover = {

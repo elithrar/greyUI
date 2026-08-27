@@ -28,8 +28,8 @@
   --greyui-border-light: #ffffff;
   --greyui-border-dark: #808080;
   --greyui-border-darker: #404040;
-  --greyui-selection: #6698cb;
-  --greyui-selection-dark: #4a7eb5;
+  --greyui-selection: #356c9f;
+  --greyui-selection-dark: #244f75;
   --greyui-selection-text: #ffffff;
   --greyui-keyboard-navigation: #000000;
   --greyui-text: #000000;
@@ -144,6 +144,61 @@
 
 .greyui-button[data-size="sm"]:active:not(:disabled) {
   padding: 0.17rem 0.55rem 0.07rem 0.65rem;
+}
+
+.greyui-icon-button {
+  width: 1.85rem;
+  min-width: 1.85rem;
+  padding-right: 0;
+  padding-left: 0;
+}
+
+.greyui-icon-button[data-size="sm"] {
+  width: 1.65rem;
+  min-width: 1.65rem;
+  padding-right: 0;
+  padding-left: 0;
+}
+
+.greyui-icon-button:active:not(:disabled),
+.greyui-icon-button[data-size="sm"]:active:not(:disabled) {
+  padding: 1px 0 0 1px;
+}
+
+.greyui-icon-button-glyph {
+  display: grid;
+  width: 1em;
+  height: 1em;
+  place-items: center;
+  line-height: 1;
+}
+
+.greyui-button-group {
+  display: inline-flex;
+  min-width: 0;
+  max-width: 100%;
+  border: 1px solid var(--greyui-border-dark);
+  background: var(--greyui-control);
+  box-shadow: var(--greyui-bevel-outset);
+}
+
+.greyui-button-group[data-orientation="vertical"] {
+  flex-direction: column;
+}
+
+.greyui-button-group > .greyui-button {
+  min-width: 0;
+  margin: 0;
+  border: 0;
+  box-shadow: none;
+}
+
+.greyui-button-group[data-orientation="horizontal"] > .greyui-button + .greyui-button {
+  border-left: 1px solid var(--greyui-border-dark);
+}
+
+.greyui-button-group[data-orientation="vertical"] > .greyui-button + .greyui-button {
+  border-top: 1px solid var(--greyui-border-dark);
 }
 
 .greyui-button[data-variant="primary"] {
@@ -953,6 +1008,24 @@
   box-shadow: 2px 2px 4px rgb(0 0 0 / 18%);
 }
 
+.greyui-window[data-collapsed="true"] {
+  width: max-content;
+  min-width: min(12rem, 100%);
+  padding: 0;
+  box-shadow: 2px 2px 4px rgb(0 0 0 / 18%);
+}
+
+.greyui-window[data-collapsed="true"]::before {
+  display: none;
+}
+
+.greyui-window[data-collapsed="true"] .greyui-window-tab {
+  position: relative;
+  width: 100%;
+  max-width: 100%;
+  border-bottom: 1px solid var(--greyui-tab-active-dark);
+}
+
 .greyui-window-tab {
   position: absolute;
   z-index: 3;
@@ -1030,6 +1103,11 @@
   border-left: 1px solid rgb(0 0 0 / 28%);
 }
 
+.greyui-window-widget[data-kind="minimize"],
+.greyui-window-widget[data-kind="restore"] {
+  border-left: 1px solid rgb(0 0 0 / 28%);
+}
+
 .greyui-window-widget:hover {
   background: rgb(0 0 0 / 6%);
   outline: 1px solid var(--greyui-selection);
@@ -1071,6 +1149,22 @@
   content: "";
   position: absolute;
   inset: 2px 3px 3px 2px;
+  border: 1px solid rgb(0 0 0 / 65%);
+}
+
+.greyui-window-widget[data-kind="minimize"] > span::before {
+  content: "";
+  position: absolute;
+  right: 2px;
+  bottom: 2px;
+  left: 2px;
+  border-bottom: 2px solid rgb(0 0 0 / 72%);
+}
+
+.greyui-window-widget[data-kind="restore"] > span::before {
+  content: "";
+  position: absolute;
+  inset: 2px;
   border: 1px solid rgb(0 0 0 / 65%);
 }
 
@@ -1145,6 +1239,48 @@
   font-size: var(--greyui-font-size-small);
 }
 
+.greyui-statusbar-item {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.greyui-statusbar-item[data-grow="true"] {
+  flex: 1 1 auto;
+}
+
+.greyui-statusbar-separator {
+  align-self: stretch;
+  width: 2px;
+  min-height: 13px;
+  margin: 0 0.35rem;
+  border-left: 1px solid var(--greyui-border-dark);
+  border-right: 1px solid var(--greyui-border-light);
+}
+
+.greyui-status-light {
+  width: 8px;
+  height: 8px;
+  flex: 0 0 auto;
+  margin-right: 0.3rem;
+  border: 1px solid var(--greyui-border-darker);
+  background: var(--greyui-border-dark);
+  box-shadow: inset 1px 1px rgb(255 255 255 / 35%);
+}
+
+.greyui-status-light[data-state="ready"] {
+  background: var(--greyui-success);
+}
+
+.greyui-status-light[data-state="loading"] {
+  background: var(--greyui-warning);
+}
+
+.greyui-status-light[data-state="error"] {
+  background: var(--greyui-danger);
+}
+
 .greyui-segmented-control {
   display: inline-flex;
   max-width: 100%;
@@ -1188,7 +1324,7 @@
 }
 
 @media (max-width: 768px), (pointer: coarse) and (max-width: 1024px) {
-  .greyui-window {
+  .greyui-window[data-responsive="stacked"] {
     width: 100%;
     padding: 0;
     border: 1px solid var(--greyui-border-dark);
@@ -1196,15 +1332,15 @@
     box-shadow: var(--greyui-bevel-outset);
   }
 
-  .greyui-window::before {
+  .greyui-window[data-responsive="stacked"]::before {
     display: none;
   }
 
-  .greyui-window[data-active="false"] {
+  .greyui-window[data-responsive="stacked"][data-active="false"] {
     box-shadow: var(--greyui-bevel-outset);
   }
 
-  .greyui-window-tab {
+  .greyui-window[data-responsive="stacked"] .greyui-window-tab {
     position: static;
     width: 100%;
     max-width: none;
@@ -1216,12 +1352,12 @@
     box-shadow: none;
   }
 
-  .greyui-window[data-active="false"] .greyui-window-tab {
+  .greyui-window[data-responsive="stacked"][data-active="false"] .greyui-window-tab {
     border-color: var(--greyui-tab-inactive-dark);
     box-shadow: none;
   }
 
-  .greyui-window-title {
+  .greyui-window[data-responsive="stacked"] .greyui-window-title {
     order: 0;
     flex: 1 1 auto;
     min-width: 0;
@@ -1230,35 +1366,35 @@
     font-size: 0.82rem;
   }
 
-  .greyui-window-widget {
+  .greyui-window[data-responsive="stacked"] .greyui-window-widget {
     order: 1;
     width: 24px;
     min-height: 0;
   }
 
-  .greyui-window-widget[data-kind="close"] {
+  .greyui-window[data-responsive="stacked"] .greyui-window-widget[data-kind="close"] {
     order: 1;
     border-right: 0;
     border-left: 1px solid rgb(0 0 0 / 28%);
   }
 
-  .greyui-window-widget[data-kind="zoom"] {
+  .greyui-window[data-responsive="stacked"] .greyui-window-widget[data-kind="zoom"] {
     display: none;
   }
 
-  .greyui-window-body {
+  .greyui-window[data-responsive="stacked"] .greyui-window-body {
     border: 0;
     box-shadow: none;
   }
 
-  .greyui-window-body > .greyui-menubar {
+  .greyui-window[data-responsive="stacked"] .greyui-window-body > .greyui-menubar {
     margin: 0;
     border-top: 0;
     border-right: 0;
     border-left: 0;
   }
 
-  .greyui-window-body > .greyui-statusbar {
+  .greyui-window[data-responsive="stacked"] .greyui-window-body > .greyui-statusbar {
     margin: 0;
     border-right: 0;
     border-bottom: 0;

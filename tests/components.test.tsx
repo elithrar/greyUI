@@ -3,16 +3,21 @@ import { afterEach, describe, expect, it } from "vitest";
 import {
   AlertDialog,
   Button,
+  ButtonGroup,
   Collapsible,
   Combobox,
   ContextMenu,
+  createVirtualAnchor,
+  DatePicker,
   Dialog,
   Field,
   InputGroup,
+  IconButton,
   Meter,
   NumberField,
   Progress,
   ScrollArea,
+  SegmentedMeter,
   Select,
   Separator,
   Slider,
@@ -21,6 +26,10 @@ import {
   Toolbar,
   Window,
   WindowWidget,
+  StatusBar,
+  StatusBarItem,
+  StatusBarSeparator,
+  StatusLight,
 } from "../src";
 
 afterEach(cleanup);
@@ -62,6 +71,20 @@ describe("native control safety", () => {
     );
 
     expect(screen.getByRole("button", { name: "Browse" }).getAttribute("type")).toBe("button");
+  });
+
+  it("labels compact icon buttons and groups them by orientation", () => {
+    render(
+      <ButtonGroup aria-label="Map zoom" orientation="vertical">
+        <IconButton label="Zoom in">+</IconButton>
+        <IconButton label="Zoom out">−</IconButton>
+      </ButtonGroup>,
+    );
+
+    expect(screen.getByRole("group", { name: "Map zoom" }).getAttribute("data-orientation")).toBe(
+      "vertical",
+    );
+    expect(screen.getByRole("button", { name: "Zoom in" }).getAttribute("type")).toBe("button");
   });
 
   it("keeps ScrollArea behavior props and supports a stable scrollbar gutter", () => {
@@ -191,6 +214,24 @@ describe("accessibility contracts", () => {
     expect(screen.getByRole("meter", { name: "Storage" }).getAttribute("aria-valuenow")).toBe("72");
   });
 
+  it("exposes segmented meter totals and segment detail", () => {
+    render(
+      <SegmentedMeter
+        label="Trail surface"
+        max={20}
+        segments={[
+          { label: "Paved", value: 12 },
+          { label: "Gravel", value: 6 },
+        ]}
+      />,
+    );
+
+    const meter = screen.getByRole("meter", { name: "Trail surface" });
+    expect(meter.getAttribute("aria-valuenow")).toBe("18");
+    expect(meter.getAttribute("aria-valuemax")).toBe("20");
+    expect(meter.getAttribute("aria-valuetext")).toBe("Paved 12, Gravel 6");
+  });
+
   it("marks separators semantically", () => {
     render(<Separator orientation="vertical" />);
 
@@ -313,6 +354,95 @@ describe("accessibility contracts", () => {
     render(<Window title={<span>Preferences</span>}>Content</Window>);
 
     expect(screen.getByText("Preferences")).not.toBeNull();
+  });
+
+  it("manages optional collapse state and keeps the body addressable", () => {
+    render(
+      <Window
+        as="section"
+        title="Route"
+        collapsible
+        responsive="floating"
+        bodyProps={{ id: "route-body", "aria-label": "Route details" }}
+      >
+        Trail details
+      </Window>,
+    );
+
+    const body = screen.getByLabelText("Route details");
+    const toggle = screen.getByRole("button", { name: "Minimize window" });
+    expect(body.closest("section")?.getAttribute("data-responsive")).toBe("floating");
+    expect(toggle.getAttribute("aria-controls")).toBe("route-body");
+    fireEvent.click(toggle);
+    expect(body.hasAttribute("hidden")).toBe(true);
+    expect(screen.getByRole("button", { name: "Restore window" })).not.toBeNull();
+  });
+
+  it("provides structured status bar primitives", () => {
+    render(
+      <StatusBar>
+        <StatusLight state="ready" label="Connected" />
+        <StatusBarItem grow>Ready</StatusBarItem>
+        <StatusBarSeparator />
+        <StatusBarItem>34.0 mi</StatusBarItem>
+      </StatusBar>,
+    );
+
+    expect(screen.getByLabelText("Connected").getAttribute("data-state")).toBe("ready");
+    expect(screen.getByRole("separator").getAttribute("aria-orientation")).toBe("vertical");
+    expect(screen.getByText("Ready").getAttribute("data-grow")).toBe("true");
+  });
+
+  it("builds a stable virtual anchor rectangle for positioned overlays", () => {
+    const anchor = createVirtualAnchor({ x: 80, y: 120, width: 12, height: 16 });
+    const rect = anchor.getBoundingClientRect();
+
+    expect(rect.left).toBe(80);
+    expect(rect.bottom).toBe(136);
+    expect(rect.width).toBe(12);
+  });
+
+  it("selects an in-range date from the compact calendar", () => {
+    render(
+      <DatePicker
+        label="Ride date"
+        locale="en-US"
+        defaultValue="2026-09-05"
+        min="2026-09-01"
+        max="2026-09-16"
+        name="ride-date"
+      />,
+    );
+
+    fireEvent.click(screen.getByRole("button", { name: /Ride date/ }));
+    expect(screen.getAllByRole("row")).toHaveLength(7);
+    const nextDate = screen.getByRole("gridcell", { name: "Sep 6, 2026" });
+    fireEvent.click(nextDate);
+
+    expect(document.querySelector('input[name="ride-date"]')?.getAttribute("value")).toBe(
+      "2026-09-06",
+    );
+  });
+
+  it("preserves the day when paging between calendar months", () => {
+    render(
+      <DatePicker
+        label="Billing date"
+        locale="en-US"
+        defaultValue="2026-01-31"
+        min="2026-01-01"
+        max="2026-03-31"
+      />,
+    );
+
+    fireEvent.click(screen.getByRole("button", { name: /Billing date/ }));
+    fireEvent.keyDown(screen.getByRole("gridcell", { name: "Jan 31, 2026" }), {
+      key: "PageDown",
+    });
+
+    expect(screen.getByRole("gridcell", { name: "Feb 28, 2026" }).getAttribute("tabindex")).toBe(
+      "0",
+    );
   });
 
   it("uses dedicated dialog chrome instead of a window tab and widget", () => {

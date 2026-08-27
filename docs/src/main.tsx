@@ -23,10 +23,9 @@ import {
   Textarea,
   Tooltip,
   Window,
-  WindowWidget,
 } from "../../src";
 import { CopyCommand } from "./CopyCommand";
-import { DesktopDemos, FeedbackDemos, FieldDemos } from "./next-components";
+import { DesktopDemos, FeedbackDemos, FieldDemos, IntegrationDemos } from "./next-components";
 import { GREYUI_VERSION } from "./version";
 import "./docs.css";
 
@@ -39,6 +38,7 @@ const sections = [
   ["selection", "Selection"],
   ["desktop", "Desktop controls"],
   ["feedback", "Feedback"],
+  ["integration", "App primitives"],
   ["tabs", "Tabs"],
   ["overlays", "Menus & overlays"],
   ["content", "Content"],
@@ -107,16 +107,7 @@ function App() {
         </aside>
 
         <main className="docs-main">
-          <Window
-            title="greyUI — Component Reference"
-            controls={
-              <>
-                <WindowWidget kind="close" label="Close" />
-                <WindowWidget kind="zoom" label="Zoom" />
-              </>
-            }
-            className="docs-hero-window"
-          >
+          <Window title="greyUI — Component Reference" collapsible className="docs-hero-window">
             <MenuBar>
               <Menu.Root>
                 <Menu.Trigger>File</Menu.Trigger>
@@ -310,6 +301,14 @@ function App() {
           </Section>
 
           <Section
+            id="integration"
+            title="Application primitives"
+            intro="Compact, accessible pieces for map overlays, dashboards, and single-screen tools: responsive windows, grouped icon actions, structured status, dates, segmented values, and coordinate-driven popovers."
+          >
+            <IntegrationDemos />
+          </Section>
+
+          <Section
             id="tabs"
             title="Tabs"
             intro="Tabs use beveled triggers and an inset white panel for the active view. Window title tabs use the separate yellow/grey active state."
@@ -457,19 +456,11 @@ function App() {
           <Section
             id="window"
             title="Window shell"
-            intro="Window provides chrome only: title tab, optional controls, menu bar, content, and status bar. It does not manage desktop state."
+            intro="Window preserves its chrome while offering optional controlled or uncontrolled collapse state. Stacked mode remains the responsive default; floating mode keeps compact overlay geometry on small screens."
           >
             <Demo title="Active and inactive windows">
               <div className="docs-window-pair">
-                <Window
-                  title="Preferences"
-                  controls={
-                    <>
-                      <WindowWidget kind="close" label="Close" />
-                      <WindowWidget kind="zoom" label="Zoom" />
-                    </>
-                  }
-                >
+                <Window title="Preferences" collapsible>
                   <MenuBar>
                     <Menu.Root>
                       <Menu.Trigger>File</Menu.Trigger>
@@ -490,11 +481,7 @@ function App() {
                   <div className="docs-window-example-body">Active window</div>
                   <StatusBar>Ready</StatusBar>
                 </Window>
-                <Window
-                  title="Tracker"
-                  active={false}
-                  controls={<WindowWidget kind="close" label="Close" />}
-                >
+                <Window title="Tracker" active={false} defaultCollapsed collapsible>
                   <div className="docs-window-example-body">Inactive window</div>
                 </Window>
               </div>
@@ -517,7 +504,7 @@ function App() {
                 ["--greyui-panel", "#d8d8d8"],
                 ["--greyui-control", "#dedede"],
                 ["--greyui-document", "#ffffff"],
-                ["--greyui-selection", "#6698cb"],
+                ["--greyui-selection", "#356c9f"],
                 ["--greyui-border-dark", "#808080"],
               ].map(([name, value]) => (
                 <div className="docs-token" key={name}>

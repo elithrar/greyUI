@@ -1,19 +1,31 @@
 import {
   Button,
+  ButtonGroup,
   Collapsible,
   Combobox,
   ContextMenu,
+  createVirtualAnchor,
+  DatePicker,
   Field,
+  IconButton,
   Input,
   InputGroup,
   Meter,
   NumberField,
   Progress,
+  Popover,
+  SegmentedMeter,
   Separator,
   Slider,
   Toast,
   Toolbar,
+  StatusBar,
+  StatusBarItem,
+  StatusBarSeparator,
+  StatusLight,
+  Window,
 } from "../../src";
+import { useMemo, useRef, useState } from "react";
 
 const themes = ["BeOS R5", "Haiku", "Workbench"];
 
@@ -255,6 +267,96 @@ export function FeedbackDemos() {
 
       <Demo title="Toast">
         <ToastDemo />
+      </Demo>
+    </div>
+  );
+}
+
+function VirtualAnchorDemo() {
+  const triggerRef = useRef<HTMLButtonElement>(null);
+  const [anchor, setAnchor] = useState(() => createVirtualAnchor({ x: 0, y: 0 }));
+
+  return (
+    <Popover.Root>
+      <Popover.Trigger
+        ref={triggerRef}
+        onClick={() => {
+          const contextElement = triggerRef.current;
+          const rect = contextElement?.getBoundingClientRect();
+          if (rect && contextElement) {
+            setAnchor(
+              createVirtualAnchor({
+                x: rect.right,
+                y: rect.top,
+                height: rect.height,
+                contextElement,
+              }),
+            );
+          }
+        }}
+      >
+        Open at coordinate
+      </Popover.Trigger>
+      <Popover.Popup
+        title="Virtual anchor"
+        positionerProps={{ anchor, positionMethod: "fixed", side: "right" }}
+      >
+        Positioned from a runtime rectangle, with viewport collision handling.
+      </Popover.Popup>
+    </Popover.Root>
+  );
+}
+
+export function IntegrationDemos() {
+  const [date, setDate] = useState("2026-09-05");
+  const routeSegments = useMemo(
+    () => [
+      { label: "Paved", value: 22, color: "var(--greyui-selection)" },
+      { label: "Stone dust", value: 12, color: "var(--greyui-tab-active)" },
+    ],
+    [],
+  );
+
+  return (
+    <div className="docs-grid-2 docs-component-grid">
+      <Demo title="Compact date picker">
+        <DatePicker
+          label="Ride date"
+          value={date}
+          onValueChange={setDate}
+          min="2026-09-01"
+          max="2026-09-16"
+        />
+      </Demo>
+
+      <Demo title="Icon button group">
+        <ButtonGroup aria-label="Map zoom" orientation="vertical">
+          <IconButton label="Zoom in">+</IconButton>
+          <IconButton label="Zoom out">−</IconButton>
+        </ButtonGroup>
+      </Demo>
+
+      <Demo title="Segmented meter">
+        <div className="docs-stack docs-control-fill">
+          <span>Trail surface · 34 mi</span>
+          <SegmentedMeter label="Trail surface" max={34} segments={routeSegments} />
+        </div>
+      </Demo>
+
+      <Demo title="Virtual-anchor popover">
+        <VirtualAnchorDemo />
+      </Demo>
+
+      <Demo title="Floating, collapsible window">
+        <Window title="Route" collapsible responsive="floating" className="docs-floating-window">
+          <div className="docs-window-example-body">Map overlays keep their window geometry.</div>
+          <StatusBar>
+            <StatusLight state="ready" label="Route loaded" />
+            <StatusBarItem grow>Ready</StatusBarItem>
+            <StatusBarSeparator />
+            <StatusBarItem>34.0 mi</StatusBarItem>
+          </StatusBar>
+        </Window>
       </Demo>
     </div>
   );

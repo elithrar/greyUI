@@ -6,6 +6,8 @@ import react from "@vitejs/plugin-react";
 
 const rootDir = fileURLToPath(new URL(".", import.meta.url));
 const componentsDir = resolve(rootDir, "src/components");
+const syncStoreShim = resolve(rootDir, "src/vendor/use-sync-external-store-shim.ts");
+const syncStoreSelector = resolve(rootDir, "src/vendor/use-sync-external-store-with-selector.ts");
 
 const componentEntries = Object.fromEntries(
   readdirSync(componentsDir, { withFileTypes: true })
@@ -20,6 +22,12 @@ const componentEntries = Object.fromEntries(
 
 export default defineConfig({
   plugins: [react()],
+  resolve: {
+    alias: [
+      { find: "use-sync-external-store/shim/with-selector", replacement: syncStoreSelector },
+      { find: "use-sync-external-store/shim", replacement: syncStoreShim },
+    ],
+  },
   build: {
     lib: {
       entry: {

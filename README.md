@@ -44,11 +44,16 @@ npm install /path/to/greyUI
 
 ## Components
 
-- Inputs: Input, Textarea, Field, InputGroup, NumberField, Select, Combobox
-- Controls: Button, ToggleButton, SegmentedControl, Checkbox, RadioGroup, Switch, Slider
+- Inputs: Input, Textarea, Field, InputGroup, NumberField, Select, Combobox, DatePicker
+- Controls: Button, IconButton, ButtonGroup, ToggleButton, SegmentedControl, Checkbox, RadioGroup, Switch, Slider
 - Desktop UI: Tabs, Menu, ContextMenu, Toolbar, Collapsible, Popover, Tooltip, Dialog, AlertDialog
-- Feedback and content: Progress, Meter, Toast, ScrollArea, Table, Badge, GroupBox, Separator
-- Window chrome: Window, MenuBar, StatusBar
+- Feedback and content: Progress, Meter, SegmentedMeter, Toast, ScrollArea, Table, Badge, GroupBox, Separator
+- Window chrome: Window, WindowWidget, MenuBar, StatusBar, StatusBarItem, StatusBarSeparator, StatusLight
+
+`Window` supports controlled or uncontrolled collapse state and two responsive modes. Existing
+windows default to `responsive="stacked"`; map and dashboard overlays can opt into
+`responsive="floating"`. `Popover.Popup` accepts `positionerProps`, including Base UI virtual
+anchors created with `createVirtualAnchor()`.
 
 ## Development
 

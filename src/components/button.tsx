@@ -1,4 +1,9 @@
-import { forwardRef, type ButtonHTMLAttributes } from "react";
+import {
+  forwardRef,
+  type ButtonHTMLAttributes,
+  type ComponentPropsWithoutRef,
+  type ReactNode,
+} from "react";
 
 export type ButtonVariant = "secondary" | "primary" | "destructive";
 export type ButtonSize = "sm" | "md";
@@ -33,3 +38,47 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button
     />
   );
 });
+
+export interface IconButtonProps extends Omit<ButtonProps, "aria-label" | "children"> {
+  label: string;
+  children: ReactNode;
+}
+
+export const IconButton = forwardRef<HTMLButtonElement, IconButtonProps>(function IconButton(
+  { className = "", label, children, ...props },
+  ref,
+) {
+  return (
+    <Button
+      ref={ref}
+      aria-label={label}
+      className={`greyui-icon-button ${className}`.trim()}
+      {...props}
+    >
+      <span className="greyui-icon-button-glyph" aria-hidden="true">
+        {children}
+      </span>
+    </Button>
+  );
+});
+
+export interface ButtonGroupProps extends ComponentPropsWithoutRef<"div"> {
+  orientation?: "horizontal" | "vertical";
+}
+
+export function ButtonGroup({
+  className = "",
+  orientation = "horizontal",
+  role = "group",
+  ...props
+}: ButtonGroupProps) {
+  return (
+    <div
+      role={role}
+      data-greyui-component="button-group"
+      data-orientation={orientation}
+      className={`greyui-button-group ${className}`.trim()}
+      {...props}
+    />
+  );
+}
