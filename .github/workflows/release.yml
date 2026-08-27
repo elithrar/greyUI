@@ -4,10 +4,6 @@ on:
   push:
     tags:
       - "*"
-    branches:
-      - main
-    paths:
-      - .github/workflows/release.yml
 
 permissions:
   contents: read
@@ -22,18 +18,13 @@ jobs:
           fetch-depth: 0
           persist-credentials: false
 
-      - name: Verify release tag is on main
+      - name: Verify tag is on main
         shell: bash
         run: |
           git fetch --no-tags origin main:refs/remotes/origin/main
-          if [[ "$GITHUB_REF" == refs/tags/* ]]; then
-            release_tag="$GITHUB_REF_NAME"
-          else
-            release_tag="v$(node -p 'require("./package.json").version')"
-          fi
-          tag_commit="$(git rev-list -n 1 "$release_tag")"
+          tag_commit="$(git rev-list -n 1 "$GITHUB_REF")"
           if ! git merge-base --is-ancestor "$tag_commit" origin/main; then
-            echo "::error::Tag ${release_tag} does not point to a commit on main."
+            echo "::error::Tag ${GITHUB_REF_NAME} does not point to a commit on main."
             exit 1
           fi
 
