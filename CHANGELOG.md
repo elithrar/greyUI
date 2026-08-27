@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+## 0.4.1 — 2026-08-27
+
 - Add shared Layer hosts for menus, popovers, app-owned overlays, dialogs, toasts, and tooltips.
 - Add a compound Window API while preserving the existing shorthand component.
 - Add WorkbenchOS-styled Banner, Breadcrumbs, Empty, Loader, and Pagination components using
