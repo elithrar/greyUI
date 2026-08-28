@@ -1,0 +1,80 @@
+name: Review import guidance and table 0.4.4 v2
+
+on:
+  push:
+    branches:
+      - docs/simplify-import-guidance
+    paths:
+      - .github/workflows/review-import-guidance-0.4.4-v2.yml
+
+permissions:
+  contents: write
+
+jobs:
+  review:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: docs/simplify-import-guidance
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+
+      - name: Apply implementation and version bump
+        run: |
+          python3 .github/review/prepare-simplify-import-guidance.py
+          python3 .github/review/simplify-import-guidance.py
+          npm version 0.4.4 --no-git-tag-version
+
+      - run: npm run format
+      - run: npm run check
+      - run: npm run build
+      - run: npm run pack:check
+      - run: npm run verify:docs
+
+      - name: Install browser review dependency
+        run: |
+          npm install --no-save --package-lock=false playwright@1.55.0
+          npx playwright install --with-deps chromium
+
+      - name: Start local docs
+        run: |
+          npm run dev:docs -- --host 127.0.0.1 --port 4173 > /tmp/greyui-vite.log 2>&1 &
+          for attempt in $(seq 1 60); do
+            if curl --fail --silent http://127.0.0.1:4173 >/dev/null; then
+              exit 0
+            fi
+            sleep 1
+          done
+          cat /tmp/greyui-vite.log
+          exit 1
+
+      - name: Run visual and interaction comparison
+        run: |
+          mkdir -p artifacts/import-guidance-table
+          node .github/review/visual-import-guidance-table.mjs
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: greyui-0.4.4-import-table-review
+          path: artifacts/import-guidance-table
+          retention-days: 14
+
+      - name: Commit reviewed changes and remove review scaffolding
+        run: |
+          rm -rf artifacts/import-guidance-table
+          rm -rf .github/review
+          rm -f .github/workflows/review-import-guidance-0.4.4.yml
+          rm -f .github/workflows/review-import-guidance-0.4.4-v2.yml
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git diff --cached --check
+          git commit -m "Simplify import guidance and refine table rows"
+          git push origin HEAD:docs/simplify-import-guidance
