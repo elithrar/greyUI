@@ -57,9 +57,8 @@ export function CopyCommand({ value, label }: CopyCommandProps) {
 }
 
 function copyWithTemporaryField(value: string) {
-  if (typeof document.execCommand !== "function") {
-    return false;
-  }
+  const copy = document.execCommand?.bind(document);
+  if (!copy) return false;
 
   let field: HTMLTextAreaElement | undefined;
 
@@ -71,7 +70,7 @@ function copyWithTemporaryField(value: string) {
     field.style.left = "-9999px";
     document.body.append(field);
     field.select();
-    return document.execCommand("copy");
+    return copy("copy");
   } catch {
     return false;
   } finally {

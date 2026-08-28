@@ -5,6 +5,7 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import { CopyCommand } from "../docs/src/CopyCommand";
 import { GREYUI_VERSION } from "../docs/src/version";
 
+// SAFETY: package.json is repository-owned and npm requires `version` to be a string.
 const { version: packageVersion } = JSON.parse(
   readFileSync(resolve(process.cwd(), "package.json"), "utf8"),
 ) as { version: string };
@@ -120,7 +121,7 @@ describe("documentation version", () => {
 });
 
 function restoreProperty(
-  target: object,
+  target: Navigator | Document,
   property: PropertyKey,
   descriptor: PropertyDescriptor | undefined,
 ) {

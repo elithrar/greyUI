@@ -40,7 +40,7 @@ describe("high-value component behavior", () => {
       </Autocomplete.Root>,
     );
 
-    const input = screen.getByRole("combobox", { name: "Operating system" });
+    const input = screen.getByRole<HTMLInputElement>("combobox", { name: "Operating system" });
     fireEvent.focus(input);
     fireEvent.input(input, { target: { value: "Hai" }, inputType: "insertText" });
     expect(screen.getByRole("option", { name: "Haiku" })).not.toBeNull();
@@ -48,7 +48,7 @@ describe("high-value component behavior", () => {
 
     fireEvent.change(input, { target: { value: "Custom OS" } });
     fireEvent.blur(input);
-    expect((input as HTMLInputElement).value).toBe("Custom OS");
+    expect(input.value).toBe("Custom OS");
   });
 
   it("opens Accordion panels through their trigger", () => {

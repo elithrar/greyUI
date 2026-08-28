@@ -1,18 +1,22 @@
 import { createContext, useContext, useMemo, useState, type ReactNode } from "react";
 import { createPortal } from "react-dom";
 
-export type LayerName = "menu" | "popover" | "overlay" | "dialog" | "toast" | "tooltip";
+const layerNames = ["menu", "popover", "overlay", "dialog", "toast", "tooltip"] as const;
 
-const layerNames: readonly LayerName[] = [
-  "menu",
-  "popover",
-  "overlay",
-  "dialog",
-  "toast",
-  "tooltip",
-];
+export type LayerName = (typeof layerNames)[number];
 
 type LayerContainers = Record<LayerName, HTMLDivElement | null>;
+
+function createLayerRecord<Value>(createValue: (name: LayerName) => Value) {
+  return {
+    menu: createValue("menu"),
+    popover: createValue("popover"),
+    overlay: createValue("overlay"),
+    dialog: createValue("dialog"),
+    toast: createValue("toast"),
+    tooltip: createValue("tooltip"),
+  } satisfies Record<LayerName, Value>;
+}
 
 const LayerContext = createContext<LayerContainers | null>(null);
 
@@ -23,23 +27,20 @@ export interface LayerProviderProps {
 }
 
 export function LayerProvider({ children, container, zIndex }: LayerProviderProps) {
-  const [containers, setContainers] = useState<LayerContainers>(
-    () => Object.fromEntries(layerNames.map((name) => [name, null])) as LayerContainers,
+  const [containers, setContainers] = useState<LayerContainers>(() =>
+    createLayerRecord(() => null),
   );
   const hostRefs = useMemo(
     () =>
-      Object.fromEntries(
-        layerNames.map((name) => [
-          name,
-          (node: HTMLDivElement | null) =>
-            setContainers((current) =>
-              current[name] === node ? current : { ...current, [name]: node },
-            ),
-        ]),
-      ) as Record<LayerName, (node: HTMLDivElement | null) => void>,
+      createLayerRecord(
+        (name) => (node: HTMLDivElement | null) =>
+          setContainers((current) =>
+            current[name] === node ? current : { ...current, [name]: node },
+          ),
+      ),
     [],
   );
-  const portalTarget = container ?? (typeof document === "undefined" ? null : document.body);
+  const portalTarget = container ?? globalThis.document?.body ?? null;
 
   return (
     <LayerContext.Provider value={containers}>
@@ -75,7 +76,8 @@ export interface LayerPortalProps {
 
 export function LayerPortal({ children, layer = "overlay" }: LayerPortalProps) {
   const context = useContext(LayerContext);
-  if (typeof document === "undefined") return null;
+  const document = globalThis.document;
+  if (!document) return null;
   const target = context === null ? document.body : context[layer];
   if (target === null) return null;
 
