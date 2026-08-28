@@ -1,4 +1,4 @@
-name: Development source artifact
+name: Development browser artifact
 
 on:
   push:
@@ -8,18 +8,17 @@ permissions:
   contents: read
 
 jobs:
-  source:
+  browser:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
       - uses: actions/setup-node@v7
         with:
           node-version: 22
-          cache: npm
-      - run: npm ci
-      - run: tar --exclude=.git -czf /tmp/greyui-dev.tgz .
+      - run: npx --yes playwright@1.57.0 install chromium
+      - run: tar -C "$HOME/.cache" -czf /tmp/ms-playwright.tgz ms-playwright
       - uses: actions/upload-artifact@v4
         with:
-          name: greyui-dev
-          path: /tmp/greyui-dev.tgz
+          name: ms-playwright
+          path: /tmp/ms-playwright.tgz
           retention-days: 1
