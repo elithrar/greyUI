@@ -44,7 +44,7 @@ jobs:
           marker = "cat > /tmp/visual-review.mjs <<'EOF'\n"
           start = source.index(marker) + len(marker)
           end = source.index('\n          EOF', start)
-          Path('/tmp/visual-review.mjs').write_text(dedent(source[start:end]))
+          Path('visual-review-final.mjs').write_text(dedent(source[start:end]))
           PY
 
       - name: Start docs
@@ -62,7 +62,7 @@ jobs:
       - name: Run visual and interaction review
         run: |
           mkdir -p artifacts/visual-review-0.4.3
-          node /tmp/visual-review.mjs
+          node visual-review-final.mjs
 
       - uses: actions/upload-artifact@v4
         with:
