@@ -26,7 +26,7 @@ import {
   Window,
 } from "../../src";
 import { CopyCommand } from "./CopyCommand";
-import { ComponentImportCatalog } from "./component-imports";
+import { ComponentImport } from "./component-imports";
 import { HighValueComponentDemos } from "./high-value-components";
 import {
   DesktopDemos,
@@ -42,7 +42,6 @@ const WORKBENCH_URL = "https://workbench.questionable.services/";
 
 const sections = [
   ["principles", "Principles"],
-  ["imports", "Imports"],
   ["buttons", "Buttons"],
   ["fields", "Fields"],
   ["selection", "Selection"],
@@ -76,17 +75,20 @@ function Section({
   id,
   title,
   intro,
+  imports,
   children,
 }: {
   id: string;
   title: string;
   intro: ReactNode;
+  imports?: readonly string[];
   children: ReactNode;
 }) {
   return (
     <section className="docs-section" id={id}>
       <h2>{title}</h2>
       <p className="docs-lede">{intro}</p>
+      {imports ? <ComponentImport imports={imports} label={title} /> : null}
       {children}
     </section>
   );
@@ -149,6 +151,9 @@ function App() {
                     <span className="docs-install-label">Install with npm</span>
                     <CopyCommand value="npm install greyui" label="npm install command" />
                   </div>
+                  <p className="docs-stylesheet-note">
+                    Import <code>greyui/styles.css</code> once in your application.
+                  </p>
                 </div>
                 <GroupBox title="Clone source">
                   <code>git clone https://github.com/elithrar/greyUI.git</code>
@@ -161,6 +166,7 @@ function App() {
               id="principles"
               title="Principles"
               intro="Compact controls, neutral panels, white document surfaces, and BeOS-style window chrome."
+              imports={["GroupBox"]}
             >
               <div className="docs-principles">
                 <GroupBox title="Visual language">
@@ -186,17 +192,10 @@ function App() {
             </Section>
 
             <Section
-              id="imports"
-              title="Component imports"
-              intro="Copy the granular ESM import for any component. Import the shared stylesheet once from greyui/styles.css."
-            >
-              <ComponentImportCatalog />
-            </Section>
-
-            <Section
               id="buttons"
               title="Buttons"
               intro="Compact beveled buttons. The defaultAction prop adds the default-action outline."
+              imports={["Button", "SegmentedControl", "ToggleButton"]}
             >
               <Demo
                 title="Variants"
@@ -236,6 +235,15 @@ function App() {
               id="fields"
               title="Fields"
               intro="Inputs, textareas, selects, number fields, and comboboxes use white inset editing surfaces."
+              imports={[
+                "Combobox",
+                "Field",
+                "Input",
+                "InputGroup",
+                "NumberField",
+                "Select",
+                "Textarea",
+              ]}
             >
               <div className="docs-grid-2">
                 <Demo title="Input">
@@ -269,6 +277,7 @@ function App() {
               id="selection"
               title="Selection controls"
               intro="Checkboxes, radios, and switches use compact system-control sizing. Base UI handles state and keyboard behavior."
+              imports={["Checkbox", "RadioGroup", "Switch"]}
             >
               <Demo title="Checkbox, radio and switch">
                 <div className="docs-selection-grid">
@@ -303,6 +312,14 @@ function App() {
                   compact geometry used by <a href={WORKBENCH_URL}>WorkbenchOS</a>.
                 </>
               }
+              imports={[
+                "Accordion",
+                "Autocomplete",
+                "Checkbox",
+                "CheckboxGroup",
+                "Fieldset",
+                "ToggleGroup",
+              ]}
             >
               <HighValueComponentDemos />
             </Section>
@@ -316,6 +333,7 @@ function App() {
                   same compact control geometry used by <a href={WORKBENCH_URL}>WorkbenchOS</a>.
                 </>
               }
+              imports={["Button", "Collapsible", "ContextMenu", "Separator", "Slider", "Toolbar"]}
             >
               <DesktopDemos />
             </Section>
@@ -330,6 +348,7 @@ function App() {
                   notification panel rather than card styling.
                 </>
               }
+              imports={["Button", "Meter", "Progress", "Toast"]}
             >
               <FeedbackDemos />
             </Section>
@@ -338,6 +357,7 @@ function App() {
               id="patterns"
               title="Application patterns"
               intro="Kumo-inspired APIs adapted to WorkbenchOS: compact feedback, Tracker paths, empty states, busy indicators, and page controls without modern card styling."
+              imports={["Banner", "Breadcrumbs", "Button", "Empty", "Loader", "Pagination"]}
             >
               <KumoPatternDemos />
             </Section>
@@ -346,6 +366,19 @@ function App() {
               id="integration"
               title="Application primitives"
               intro="Compact, accessible pieces for map overlays, dashboards, and single-screen tools: responsive windows, grouped icon actions, structured status, dates, segmented values, and coordinate-driven popovers."
+              imports={[
+                "ButtonGroup",
+                "DatePicker",
+                "IconButton",
+                "Popover",
+                "SegmentedMeter",
+                "StatusBar",
+                "StatusBarItem",
+                "StatusBarSeparator",
+                "StatusLight",
+                "Window",
+                "createVirtualAnchor",
+              ]}
             >
               <IntegrationDemos />
             </Section>
@@ -354,6 +387,7 @@ function App() {
               id="tabs"
               title="Tabs"
               intro="Tabs use beveled triggers and an inset white panel for the active view. Window title tabs use the separate yellow/grey active state."
+              imports={["Tabs"]}
             >
               <Demo title="Related views">
                 <Tabs
@@ -383,6 +417,7 @@ function App() {
               id="overlays"
               title="Menus & overlays"
               intro="Menus, popovers, tooltips, toasts, app-owned overlays, and dialogs use Layer.Provider to escape map and window stacking contexts in a stable order."
+              imports={["AlertDialog", "Dialog", "Layer", "Menu", "Popover", "Tooltip"]}
             >
               <Demo title="Interactive overlays">
                 <div className="docs-row">
@@ -449,6 +484,7 @@ function App() {
               id="content"
               title="Content surfaces"
               intro="Tables and scroll areas use dense, undecorated layouts."
+              imports={["Badge", "ScrollArea", "Table"]}
             >
               <div className="docs-grid-2">
                 <Demo title="Table">
@@ -501,6 +537,7 @@ function App() {
               id="window"
               title="Window shell"
               intro="Window preserves its chrome while offering optional controlled or uncontrolled collapse state. Stacked mode remains the responsive default; floating mode keeps compact overlay geometry on small screens."
+              imports={["Menu", "MenuBar", "StatusBar", "Window", "WindowWidget"]}
             >
               <Demo title="Active and inactive windows">
                 <div className="docs-window-pair">

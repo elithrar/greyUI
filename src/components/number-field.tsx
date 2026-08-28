@@ -3,6 +3,12 @@ import { NumberField as NumberFieldPrimitive } from "@base-ui/react/number-field
 
 type WithClassName<T> = Omit<T, "className"> & { className?: string };
 
+function NumberFieldStepIcon({ direction }: { direction: "increment" | "decrement" }) {
+  return (
+    <span aria-hidden="true" className="greyui-number-field-step-icon" data-direction={direction} />
+  );
+}
+
 export function NumberFieldRoot({
   className = "",
   ...props
@@ -60,7 +66,7 @@ type StepButtonProps = WithClassName<ComponentProps<typeof NumberFieldPrimitive.
 
 export function NumberFieldDecrement({
   "aria-label": ariaLabel = "Decrease",
-  children = "▾",
+  children,
   className = "",
   ...props
 }: StepButtonProps) {
@@ -70,14 +76,14 @@ export function NumberFieldDecrement({
       className={`greyui-number-field-step greyui-number-field-decrement ${className}`.trim()}
       {...props}
     >
-      {children}
+      {children === undefined ? <NumberFieldStepIcon direction="decrement" /> : children}
     </NumberFieldPrimitive.Decrement>
   );
 }
 
 export function NumberFieldIncrement({
   "aria-label": ariaLabel = "Increase",
-  children = "▴",
+  children,
   className = "",
   ...props
 }: StepButtonProps) {
@@ -87,7 +93,7 @@ export function NumberFieldIncrement({
       className={`greyui-number-field-step greyui-number-field-increment ${className}`.trim()}
       {...props}
     >
-      {children}
+      {children === undefined ? <NumberFieldStepIcon direction="increment" /> : children}
     </NumberFieldPrimitive.Increment>
   );
 }

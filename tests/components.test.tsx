@@ -181,6 +181,31 @@ describe("accessibility contracts", () => {
     expect((input as HTMLInputElement).value).toBe("11");
   });
 
+  it("renders matched NumberField step icons without font glyphs", () => {
+    const { container } = render(
+      <NumberField.Root defaultValue={10}>
+        <NumberField.Group>
+          <NumberField.Input aria-label="Count" />
+          <NumberField.Increment />
+          <NumberField.Decrement />
+        </NumberField.Group>
+      </NumberField.Root>,
+    );
+
+    const incrementIcon = screen
+      .getByRole("button", { name: "Increase" })
+      .querySelector(".greyui-number-field-step-icon");
+    const decrementIcon = screen
+      .getByRole("button", { name: "Decrease" })
+      .querySelector(".greyui-number-field-step-icon");
+
+    expect(incrementIcon?.textContent).toBe("");
+    expect(decrementIcon?.textContent).toBe("");
+    expect(incrementIcon?.getAttribute("data-direction")).toBe("increment");
+    expect(decrementIcon?.getAttribute("data-direction")).toBe("decrement");
+    expect(container.querySelectorAll(".greyui-number-field-step-icon")).toHaveLength(2);
+  });
+
   it("labels Slider thumbs through Slider.Label", () => {
     render(
       <Slider.Root defaultValue={50}>

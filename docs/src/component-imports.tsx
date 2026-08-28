@@ -67,25 +67,17 @@ export function granularImport(spec: ComponentImportSpec): string {
   return `import { ${imports.join(", ")} } from "greyui/components/${spec.path}";`;
 }
 
-export function ComponentImport(spec: ComponentImportSpec) {
-  const statement = granularImport(spec);
-  return (
-    <div className="docs-component-import">
-      <span className="docs-component-import-label">Import</span>
-      <CopyCommand value={statement} label={`${spec.name} import`} />
-    </div>
-  );
+export function groupedImport(imports: readonly string[]): string {
+  return `import { ${imports.join(", ")} } from "greyui";`;
 }
 
-export function ComponentImportCatalog() {
+export function ComponentImport({ imports, label }: { imports: readonly string[]; label: string }) {
+  const statement = groupedImport(imports);
+
   return (
-    <div className="docs-import-catalog">
-      {COMPONENT_IMPORTS.map((spec) => (
-        <div className="docs-import-catalog-row" key={spec.name}>
-          <strong>{spec.name}</strong>
-          <ComponentImport {...spec} />
-        </div>
-      ))}
+    <div className="docs-section-import">
+      <span className="docs-section-import-label">Import</span>
+      <CopyCommand value={statement} label={`${label} import`} />
     </div>
   );
 }
