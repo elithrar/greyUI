@@ -73,4 +73,19 @@ describe("default theme contrast", () => {
     expect(css).toMatch(/\.greyui-fieldset\s*\{[\s\S]*?background:\s*var\(--greyui-panel\)/);
     expect(css).toMatch(/\.greyui-accordion-panel\s*\{[\s\S]*?background:\s*var\(--greyui-panel\)/);
   });
+
+  it("paints table row fills through every cell edge", () => {
+    const css = readFileSync(resolve(process.cwd(), "src/styles.css"), "utf8");
+
+    expect(css).toMatch(/\.greyui-table\s*\{[\s\S]*?background:\s*var\(--greyui-panel-light\)/);
+    expect(css).toMatch(
+      /\.greyui-table tbody td\s*\{[\s\S]*?background:\s*var\(--greyui-panel-light\)/,
+    );
+    expect(css).toMatch(
+      /\.greyui-table tbody tr:nth-child\(even\) td\s*\{[\s\S]*?background:\s*var\(--greyui-panel\)/,
+    );
+    expect(css).toMatch(
+      /\.greyui-table tbody tr\[aria-selected="true"\] td\s*\{[\s\S]*?background:\s*var\(--greyui-selection\)/,
+    );
+  });
 });

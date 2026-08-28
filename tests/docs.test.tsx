@@ -81,6 +81,28 @@ describe("documentation copy command", () => {
   });
 });
 
+describe("documentation structure", () => {
+  it("keeps imports in one explicit GroupBox guide", () => {
+    const main = readFileSync(resolve(process.cwd(), "docs/src/main.tsx"), "utf8");
+    const highValue = readFileSync(
+      resolve(process.cwd(), "docs/src/high-value-components.tsx"),
+      "utf8",
+    );
+    const nextComponents = readFileSync(
+      resolve(process.cwd(), "docs/src/next-components.tsx"),
+      "utf8",
+    );
+    const componentDocs = `${main}
+${highValue}
+${nextComponents}`;
+
+    expect(componentDocs).not.toContain("ComponentImport");
+    expect(main).toContain('title="GroupBox component"');
+    expect(main).toContain('import { Button, GroupBox, Select, Window } from "greyui";');
+    expect(main).toContain('label="git clone command"');
+  });
+});
+
 describe("documentation version", () => {
   it("uses the package version injected by the build", () => {
     expect(GREYUI_VERSION).toBe(packageVersion);

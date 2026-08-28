@@ -31,23 +31,13 @@ import {
   Window,
 } from "../../src";
 import { useMemo, useRef, useState } from "react";
-import { ComponentImport } from "./component-imports";
 
 const themes = ["BeOS R5", "Haiku", "Workbench"];
 
-function Demo({
-  title,
-  children,
-  imports,
-}: {
-  title: string;
-  children: React.ReactNode;
-  imports: readonly string[];
-}) {
+function Demo({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <div className="docs-demo">
       <div className="docs-demo-title">{title}</div>
-      <ComponentImport imports={imports} label={title} />
       <div className="docs-demo-canvas">{children}</div>
     </div>
   );
@@ -57,7 +47,7 @@ export function FieldDemos() {
   return (
     <>
       <div className="docs-grid-2 docs-component-grid">
-        <Demo title="Field" imports={["Field"]}>
+        <Demo title="Field">
           <Field.Root>
             <Field.Label>ROM name</Field.Label>
             <Field.Control defaultValue="89-911-28P-4K-SW.bin" />
@@ -65,7 +55,7 @@ export function FieldDemos() {
           </Field.Root>
         </Demo>
 
-        <Demo title="Input group" imports={["InputGroup"]}>
+        <Demo title="Input group">
           <div className="docs-stack docs-control-fill">
             <InputGroup.Root>
               <InputGroup.Addon>Path</InputGroup.Addon>
@@ -79,7 +69,7 @@ export function FieldDemos() {
           </div>
         </Demo>
 
-        <Demo title="Number field" imports={["NumberField"]}>
+        <Demo title="Number field">
           <NumberField.Root defaultValue={6500} min={5000} max={8000} step={100}>
             <NumberField.ScrubArea>Rev limit</NumberField.ScrubArea>
             <NumberField.Group>
@@ -90,7 +80,7 @@ export function FieldDemos() {
           </NumberField.Root>
         </Demo>
 
-        <Demo title="Combobox" imports={["Combobox"]}>
+        <Demo title="Combobox">
           <Combobox.Root items={themes}>
             <Combobox.InputGroup>
               <Combobox.Input aria-label="Theme" placeholder="Find a theme…" />
@@ -112,7 +102,7 @@ export function FieldDemos() {
         </Demo>
       </div>
 
-      <Demo title="Form state matrix" imports={["Input", "NumberField"]}>
+      <Demo title="Form state matrix">
         <div className="docs-state-grid">
           <label className="docs-field">
             <span>Enabled input</span>
@@ -139,7 +129,7 @@ export function FieldDemos() {
 export function DesktopDemos() {
   return (
     <>
-      <Demo title="Toolbar" imports={["Toolbar"]}>
+      <Demo title="Toolbar">
         <Toolbar.Root aria-label="Document toolbar">
           <Toolbar.Group>
             <Toolbar.Button>New</Toolbar.Button>
@@ -155,7 +145,7 @@ export function DesktopDemos() {
       </Demo>
 
       <div className="docs-grid-2 docs-component-grid">
-        <Demo title="Slider" imports={["Slider"]}>
+        <Demo title="Slider">
           <div className="docs-stack docs-control-fill">
             <Slider.Root defaultValue={65}>
               <Slider.Label>Volume</Slider.Label>
@@ -180,7 +170,7 @@ export function DesktopDemos() {
           </div>
         </Demo>
 
-        <Demo title="Context menu" imports={["ContextMenu"]}>
+        <Demo title="Context menu">
           <ContextMenu.Root>
             <ContextMenu.Trigger className="docs-context-target" tabIndex={0}>
               Right-click this Tracker row
@@ -194,7 +184,7 @@ export function DesktopDemos() {
           </ContextMenu.Root>
         </Demo>
 
-        <Demo title="Collapsible" imports={["Button", "Collapsible"]}>
+        <Demo title="Collapsible">
           <Collapsible.Root defaultOpen>
             <Collapsible.Trigger>Advanced settings</Collapsible.Trigger>
             <Collapsible.Panel>
@@ -206,7 +196,7 @@ export function DesktopDemos() {
           </Collapsible.Root>
         </Demo>
 
-        <Demo title="Separator" imports={["Button", "Separator"]}>
+        <Demo title="Separator">
           <div className="docs-stack docs-control-fill">
             <span>General</span>
             <Separator />
@@ -252,7 +242,7 @@ function ToastDemo() {
 export function FeedbackDemos() {
   return (
     <div className="docs-grid-2 docs-component-grid">
-      <Demo title="Progress" imports={["Progress"]}>
+      <Demo title="Progress">
         <div className="docs-stack docs-control-fill">
           <Progress.Root value={64}>
             <Progress.Label>Writing ROM</Progress.Label>
@@ -270,7 +260,7 @@ export function FeedbackDemos() {
         </div>
       </Demo>
 
-      <Demo title="Meter" imports={["Meter"]}>
+      <Demo title="Meter">
         <Meter.Root value={72}>
           <Meter.Label>Storage used</Meter.Label>
           <Meter.Value />
@@ -280,7 +270,7 @@ export function FeedbackDemos() {
         </Meter.Root>
       </Demo>
 
-      <Demo title="Toast" imports={["Button", "Toast"]}>
+      <Demo title="Toast">
         <ToastDemo />
       </Demo>
     </div>
@@ -292,7 +282,7 @@ export function KumoPatternDemos() {
 
   return (
     <div className="docs-grid-2 docs-component-grid">
-      <Demo title="Inline banners" imports={["Banner"]}>
+      <Demo title="Inline banners">
         <div className="docs-stack docs-control-fill">
           <Banner
             title="Update available"
@@ -303,7 +293,7 @@ export function KumoPatternDemos() {
         </div>
       </Demo>
 
-      <Demo title="Tracker breadcrumbs" imports={["Breadcrumbs"]}>
+      <Demo title="Tracker breadcrumbs">
         <Breadcrumbs>
           <Breadcrumbs.Link href="#">boot</Breadcrumbs.Link>
           <Breadcrumbs.Separator />
@@ -313,7 +303,7 @@ export function KumoPatternDemos() {
         </Breadcrumbs>
       </Demo>
 
-      <Demo title="Empty state" imports={["Button", "Empty"]}>
+      <Demo title="Empty state">
         <Empty
           size="sm"
           icon={<span className="docs-empty-folder" />}
@@ -323,7 +313,7 @@ export function KumoPatternDemos() {
         />
       </Demo>
 
-      <Demo title="Loaders" imports={["Loader"]}>
+      <Demo title="Loaders">
         <div className="docs-row">
           <Loader size="sm" label="Loading inline data" />
           <Loader label="Loading document" />
@@ -331,7 +321,7 @@ export function KumoPatternDemos() {
         </div>
       </Demo>
 
-      <Demo title="Pagination" imports={["Pagination"]}>
+      <Demo title="Pagination">
         <Pagination page={page} setPage={setPage} perPage={10} totalCount={86} />
       </Demo>
     </div>
@@ -385,7 +375,7 @@ export function IntegrationDemos() {
 
   return (
     <div className="docs-grid-2 docs-component-grid">
-      <Demo title="Compact date picker" imports={["DatePicker"]}>
+      <Demo title="Compact date picker">
         <DatePicker
           label="Ride date"
           value={date}
@@ -395,28 +385,25 @@ export function IntegrationDemos() {
         />
       </Demo>
 
-      <Demo title="Icon button group" imports={["ButtonGroup", "IconButton"]}>
+      <Demo title="Icon button group">
         <ButtonGroup aria-label="Map zoom" orientation="vertical">
           <IconButton label="Zoom in">+</IconButton>
           <IconButton label="Zoom out">−</IconButton>
         </ButtonGroup>
       </Demo>
 
-      <Demo title="Segmented meter" imports={["SegmentedMeter"]}>
+      <Demo title="Segmented meter">
         <div className="docs-stack docs-control-fill">
           <span>Trail surface · 34 mi</span>
           <SegmentedMeter label="Trail surface" max={34} segments={routeSegments} />
         </div>
       </Demo>
 
-      <Demo title="Virtual-anchor popover" imports={["Popover", "createVirtualAnchor"]}>
+      <Demo title="Virtual-anchor popover">
         <VirtualAnchorDemo />
       </Demo>
 
-      <Demo
-        title="Floating, collapsible window"
-        imports={["StatusBar", "StatusBarItem", "StatusBarSeparator", "StatusLight", "Window"]}
-      >
+      <Demo title="Floating, collapsible window">
         <Window title="Route" collapsible responsive="floating" className="docs-floating-window">
           <div className="docs-window-example-body">Map overlays keep their window geometry.</div>
           <StatusBar>
