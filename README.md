@@ -25,6 +25,16 @@ import "greyui/styles.css";
 
 Both forms use the same build graph. CI checks that representative root imports tree-shake to comparable consumer bundles as their component subpaths. React and React DOM remain peer dependencies.
 
+## API conventions
+
+- Simple controls accept native props; compound controls use `Root` plus named parts and Base UI behavior. Use the [Base UI reference](https://base-ui.com/react/components) for exhaustive primitive props.
+- Consumers provide labels and accessible names. Wrap overlay-heavy apps in `Layer.Provider`.
+
+## Common distinctions
+
+- `Select` is fixed-list; `Combobox` searches listed values; `Autocomplete` keeps free-form text valid.
+- `GroupBox` is visual grouping; `Fieldset` adds form semantics. `Progress` tracks work; `Meter` measures a value.
+
 ## Use locally
 
 Build greyUI:
@@ -50,16 +60,9 @@ npm install /path/to/greyUI
 - Feedback and content: Banner, Breadcrumbs, Empty, Loader, Pagination, Progress, Meter, SegmentedMeter, Toast, ScrollArea, Table, Badge, GroupBox, Separator
 - Window chrome: Window, WindowWidget, MenuBar, StatusBar, StatusBarItem, StatusBarSeparator, StatusLight
 
-`Window` supports controlled or uncontrolled collapse state and two responsive modes. Existing
-windows default to `responsive="stacked"`; map and dashboard overlays can opt into
-`responsive="floating"`. `Popover.Popup` accepts `positionerProps`, including Base UI virtual
-anchors created with `createVirtualAnchor()`. Its backward-compatible shorthand now shares the
-same implementation as `Window.Root`, `Window.TitleBar`, `Window.Title`, `Window.Controls`,
-`Window.Collapse`, `Window.Body`, and `Window.StatusBar`.
+`Window` supports controlled/uncontrolled collapse and `responsive="stacked"` or `"floating"`. `Popover.Popup.positionerProps` accepts Base UI positioning options such as virtual anchors.
 
-Wrap an application in `Layer.Provider` to route menus, popovers, app-owned overlays, dialogs,
-toasts, and tooltips into stable top-level hosts. `Layer.Portal` gives map POIs and other custom
-content the same stacking contract; tooltips intentionally remain the highest default layer.
+`Layer.Provider` routes overlays into stable top-level hosts; `Layer.Portal` exposes the same contract for custom content.
 
 ## Development
 
@@ -70,7 +73,7 @@ npm run build
 npm run perf:package
 ```
 
-`npm run check` runs Oxfmt, Oxlint, TypeScript, and Vitest. `npm run perf:package` checks package entrypoints and reports component and consumer-bundle costs. CI also validates the package tarball and docs deployment configuration.
+`npm run check` runs Oxfmt, Oxlint + anti-slop, TypeScript, and Vitest. `npm run perf:package` checks package entrypoints and bundle costs; CI also validates the tarball and docs deployment.
 
 ## Docs
 

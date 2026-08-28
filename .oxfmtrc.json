@@ -4,5 +4,11 @@
   "semi": true,
   "singleQuote": false,
   "trailingComma": "all",
-  "ignorePatterns": ["dist/**", "docs/dist/**", ".wrangler/**", "node_modules/**"]
+  "ignorePatterns": [
+    "dist/**",
+    "docs/dist/**",
+    ".wrangler/**",
+    "node_modules/**",
+    "tools/oxlint/anti-slop/**"
+  ]
 }

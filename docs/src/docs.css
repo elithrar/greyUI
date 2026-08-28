@@ -258,33 +258,56 @@ pre {
   padding-left: 18px;
   line-height: 1.55;
 }
-.docs-import-guide {
-  grid-column: 1 / -1;
+.docs-groupbox-guide {
   margin-bottom: 14px;
 }
-.docs-import-guide .greyui-groupbox-body {
-  grid-template-columns: minmax(0, 1.15fr) minmax(15rem, 0.85fr);
-  align-items: start;
-  gap: 12px;
-}
-.docs-import-guide-example {
-  display: grid;
-  min-width: 0;
-  gap: 6px;
-}
-.docs-import-guide p,
-.docs-import-guide ul {
+.docs-groupbox-guide p,
+.docs-groupbox-guide ul {
   margin-top: 0;
   margin-bottom: 0;
 }
-.docs-import-guide p {
+.docs-groupbox-guide p {
   line-height: 1.4;
 }
-.docs-import-guide .docs-copy-command {
-  width: 100%;
-}
-.docs-import-guide code {
+.docs-groupbox-guide code {
   font-size: inherit;
+}
+
+.docs-guidance {
+  min-width: 0;
+  margin: 0 0 12px;
+  padding: 8px 10px;
+  border-top: 1px solid var(--greyui-control-border);
+  border-bottom: 1px solid var(--greyui-control-border);
+  border-left: 3px solid var(--greyui-border-dark);
+}
+.docs-guidance-title {
+  display: block;
+  margin-bottom: 4px;
+  font-size: 11px;
+}
+.docs-guidance-body > :first-child {
+  margin-top: 0;
+}
+.docs-guidance-body > :last-child {
+  margin-bottom: 0;
+}
+.docs-guidance ul {
+  margin: 0;
+  padding-left: 18px;
+  line-height: 1.45;
+}
+.docs-guidance li + li {
+  margin-top: 2px;
+}
+.docs-guidance a {
+  color: inherit;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+.docs-guidance .docs-copy-command {
+  width: min(100%, 720px);
+  margin-top: 7px;
 }
 
 .docs-demo {
@@ -315,15 +338,34 @@ pre {
   min-width: 0;
   padding: 18px;
 }
+.docs-code-details {
+  border-top: 1px solid var(--greyui-border-dark);
+}
+.docs-code-details summary {
+  padding: 5px 7px;
+  color: var(--greyui-text-muted);
+  cursor: pointer;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+.docs-code-details[open] summary {
+  border-bottom: 1px solid var(--greyui-control-border);
+}
 .docs-code {
   margin: 0;
   padding: 10px 12px;
   overflow: auto;
-  border-top: 1px solid var(--greyui-border-dark);
   background: #fff;
   box-shadow: inset 0 1px #ddd;
   font-size: 11px;
   line-height: 1.45;
+}
+.docs-guidance .docs-code-details {
+  margin-top: 7px;
+  border: 1px solid var(--greyui-control-border);
+  background: var(--greyui-panel-light);
 }
 .docs-row {
   display: flex;
@@ -527,9 +569,6 @@ pre {
   }
   .docs-demo-canvas {
     padding: 12px;
-  }
-  .docs-import-guide .greyui-groupbox-body {
-    grid-template-columns: minmax(0, 1fr);
   }
   .docs-grid-2 > *,
   .docs-principles > *,

@@ -14,6 +14,17 @@ export interface SegmentedMeterProps extends Omit<ComponentPropsWithoutRef<"div"
 
 type SegmentStyle = CSSProperties & { "--greyui-segment-color"?: string };
 
+function getSegmentStyle(segment: SegmentedMeterSegment): SegmentStyle {
+  const style: SegmentStyle = {
+    flexGrow: Math.max(0, segment.value),
+    flexBasis: 0,
+  };
+  if (segment.color !== undefined) {
+    style["--greyui-segment-color"] = segment.color;
+  }
+  return style;
+}
+
 export function SegmentedMeter({
   className = "",
   label,
@@ -43,13 +54,7 @@ export function SegmentedMeter({
           aria-hidden="true"
           data-label={segment.label}
           className="greyui-segmented-meter-segment"
-          style={
-            {
-              flexGrow: Math.max(0, segment.value),
-              flexBasis: 0,
-              "--greyui-segment-color": segment.color,
-            } as SegmentStyle
-          }
+          style={getSegmentStyle(segment)}
           title={`${segment.label}: ${segment.value}`}
         />
       ))}

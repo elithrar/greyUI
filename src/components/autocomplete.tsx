@@ -1,16 +1,20 @@
-import type { ComponentProps, ReactNode } from "react";
+import type { ComponentProps, ReactElement, ReactNode } from "react";
 import { Autocomplete as AutocompletePrimitive } from "@base-ui/react/autocomplete";
 import { useLayerContainer } from "./layer";
+
+type AutocompleteRootImplementation = <ItemValue>(
+  props: AutocompletePrimitive.Root.Props<ItemValue>,
+) => ReactElement;
+
+// SAFETY: Base UI 1.7 implements Root with Root.Props<ItemValue>; its public
+// overloads narrow `items` only to improve flat/grouped inference at call sites.
+const renderAutocompleteRoot = AutocompletePrimitive.Root as AutocompleteRootImplementation;
 
 export function AutocompleteRoot<ItemValue>({
   openOnInputClick = true,
   ...props
 }: AutocompletePrimitive.Root.Props<ItemValue>) {
-  const rootProps = props as Omit<AutocompletePrimitive.Root.Props<ItemValue>, "items"> & {
-    items?: readonly ItemValue[];
-  };
-
-  return <AutocompletePrimitive.Root openOnInputClick={openOnInputClick} {...rootProps} />;
+  return renderAutocompleteRoot({ openOnInputClick, ...props });
 }
 
 type WithClassName<T> = Omit<T, "className"> & { className?: string };

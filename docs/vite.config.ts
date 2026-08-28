@@ -11,6 +11,7 @@ const syncStoreSelector = resolve(
   projectRoot,
   "src/vendor/use-sync-external-store-with-selector.ts",
 );
+// SAFETY: package.json is repository-owned and npm requires `version` to be a string.
 const { version: packageVersion } = JSON.parse(
   readFileSync(new URL("../package.json", import.meta.url), "utf8"),
 ) as { version: string };

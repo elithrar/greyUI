@@ -132,6 +132,12 @@ export interface PaginationInfoProps extends Omit<ComponentPropsWithoutRef<"span
   children?: ReactNode | PaginationInfoRenderer;
 }
 
+function isPaginationInfoRenderer(
+  children: PaginationInfoProps["children"],
+): children is PaginationInfoRenderer {
+  return typeof children === "function";
+}
+
 export function PaginationInfo({ children, className = "", ...props }: PaginationInfoProps) {
   const {
     controls: _controls,
@@ -139,10 +145,9 @@ export function PaginationInfo({ children, className = "", ...props }: Paginatio
     setPage: _setPage,
     ...value
   } = usePaginationContext("Pagination.Info");
-  const content =
-    typeof children === "function"
-      ? children(value)
-      : (children ?? `Showing ${value.pageShowingRange} of ${value.totalCount}`);
+  const content = isPaginationInfoRenderer(children)
+    ? children(value)
+    : (children ?? `Showing ${value.pageShowingRange} of ${value.totalCount}`);
 
   return (
     <span className={`greyui-pagination-info ${className}`.trim()} {...props}>

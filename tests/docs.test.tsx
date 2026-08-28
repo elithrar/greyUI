@@ -5,6 +5,7 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import { CopyCommand } from "../docs/src/CopyCommand";
 import { GREYUI_VERSION } from "../docs/src/version";
 
+// SAFETY: package.json is repository-owned and npm requires `version` to be a string.
 const { version: packageVersion } = JSON.parse(
   readFileSync(resolve(process.cwd(), "package.json"), "utf8"),
 ) as { version: string };
@@ -92,9 +93,7 @@ describe("documentation structure", () => {
       resolve(process.cwd(), "docs/src/next-components.tsx"),
       "utf8",
     );
-    const componentDocs = `${main}
-${highValue}
-${nextComponents}`;
+    const componentDocs = `${main}\n${highValue}\n${nextComponents}`;
 
     const principlesSection = main.slice(
       main.indexOf('id="principles"'),
@@ -107,7 +106,15 @@ ${nextComponents}`;
 
     expect(componentDocs).not.toContain("ComponentImport");
     expect(principlesSection).not.toContain('title="GroupBox component"');
+    expect(principlesSection).toContain('title="API conventions"');
     expect(patternsSection).toContain('title="GroupBox component"');
+    expect(patternsSection).toContain("<code>Fieldset</code> instead");
+    expect(main).toContain('title="Choose the field"');
+    expect(main).toContain('title="Composition choices"');
+    expect(main).toContain('title="Choose feedback"');
+    expect(main).toContain('title="Overlay contract"');
+    expect(main).toContain('title="Theme overrides"');
+    expect(main).toContain("href={BASE_UI_COMPONENTS_URL}");
     expect(main).toContain('import { Button, GroupBox, Select, Window } from "greyui";');
     expect(main).toContain('label="git clone command"');
   });
@@ -120,7 +127,7 @@ describe("documentation version", () => {
 });
 
 function restoreProperty(
-  target: object,
+  target: Navigator | Document,
   property: PropertyKey,
   descriptor: PropertyDescriptor | undefined,
 ) {

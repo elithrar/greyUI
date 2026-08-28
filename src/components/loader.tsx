@@ -7,7 +7,13 @@ export interface LoaderProps extends Omit<ComponentPropsWithoutRef<"span">, "chi
   size?: LoaderSize;
 }
 
+type LoaderStyle = CSSProperties & { "--greyui-loader-size": string };
+
 const loaderSizes = { sm: 16, base: 24, lg: 32 } as const;
+
+function isCustomLoaderSize(size: LoaderSize): size is number {
+  return typeof size === "number";
+}
 
 export function Loader({
   className = "",
@@ -16,15 +22,16 @@ export function Loader({
   style,
   ...props
 }: LoaderProps) {
-  const pixelSize = typeof size === "number" ? size : loaderSizes[size];
-  const loaderStyle = { "--greyui-loader-size": `${pixelSize}px`, ...style } as CSSProperties;
+  const customSize = isCustomLoaderSize(size);
+  const pixelSize = customSize ? size : loaderSizes[size];
+  const loaderStyle: LoaderStyle = { "--greyui-loader-size": `${pixelSize}px`, ...style };
 
   return (
     <span
       role="status"
       aria-label={label}
       data-greyui-component="loader"
-      data-size={typeof size === "number" ? "custom" : size}
+      data-size={customSize ? "custom" : size}
       className={`greyui-loader ${className}`.trim()}
       style={loaderStyle}
       {...props}

@@ -121,7 +121,7 @@ describe("accessibility contracts", () => {
       />,
     );
 
-    expect(screen.getByRole("combobox", { name: "Theme" })).not.toBeNull();
+    expect(screen.getByRole<HTMLInputElement>("combobox", { name: "Theme" })).not.toBeNull();
   });
 
   it("supports an aria-only Select label", () => {
@@ -133,7 +133,7 @@ describe("accessibility contracts", () => {
       />,
     );
 
-    expect(screen.getByRole("combobox", { name: "Theme" })).not.toBeNull();
+    expect(screen.getByRole<HTMLInputElement>("combobox", { name: "Theme" })).not.toBeNull();
   });
 
   it("renders one explicit Select arrow without Base UI fallback text", () => {
@@ -174,11 +174,11 @@ describe("accessibility contracts", () => {
       </NumberField.Root>,
     );
 
-    const input = screen.getByRole("textbox", { name: "Count" });
+    const input = screen.getByRole<HTMLInputElement>("textbox", { name: "Count" });
     expect(input.getAttribute("aria-roledescription")).toBe("Number field");
-    expect((input as HTMLInputElement).value).toBe("10");
+    expect(input.value).toBe("10");
     fireEvent.click(screen.getByRole("button", { name: "Increase" }));
-    expect((input as HTMLInputElement).value).toBe("11");
+    expect(input.value).toBe("11");
   });
 
   it("renders matched NumberField step icons without font glyphs", () => {
@@ -318,16 +318,16 @@ describe("accessibility contracts", () => {
       </Combobox.Root>,
     );
 
-    const input = screen.getByRole("combobox", { name: "Theme" });
+    const input = screen.getByRole<HTMLInputElement>("combobox", { name: "Theme" });
     fireEvent.click(screen.getByRole("button", { name: "Show options" }));
     fireEvent.change(input, { target: { value: "Hai" } });
 
     expect(screen.queryByRole("option", { name: "BeOS R5" })).toBeNull();
     fireEvent.click(screen.getByRole("option", { name: "Haiku" }));
-    expect((input as HTMLInputElement).value).toBe("Haiku");
+    expect(input.value).toBe("Haiku");
 
     fireEvent.click(screen.getByRole("button", { name: "Clear selection" }));
-    expect((input as HTMLInputElement).value).toBe("");
+    expect(input.value).toBe("");
   });
 
   it("toggles Collapsible panels through the Base UI trigger", () => {

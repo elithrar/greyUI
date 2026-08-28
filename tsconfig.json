@@ -17,6 +17,7 @@
     "docs/src",
     "tests",
     "vite.config.ts",
+    "oxlint.config.ts",
     "docs/vite.config.ts",
     "vitest.config.ts"
   ]

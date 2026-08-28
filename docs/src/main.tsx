@@ -38,6 +38,7 @@ import { GREYUI_VERSION } from "./version";
 import "./docs.css";
 
 const WORKBENCH_URL = "https://workbench.questionable.services/";
+const BASE_UI_COMPONENTS_URL = "https://base-ui.com/react/components";
 const CLONE_COMMAND = "git clone https://github.com/elithrar/greyUI.git";
 const COMPONENT_IMPORT_EXAMPLE = 'import { Button, GroupBox, Select, Window } from "greyui";';
 
@@ -58,16 +59,22 @@ const sections = [
   ["tokens", "Tokens"],
 ] as const;
 
-function Demo({ title, children, code }: { title: string; children: ReactNode; code?: string }) {
+function CodeDetails({ code, label = "Usage" }: { code: string; label?: string }) {
+  return (
+    <details className="docs-code-details">
+      <summary>{label}</summary>
+      <pre className="docs-code">
+        <code>{code}</code>
+      </pre>
+    </details>
+  );
+}
+
+function Demo({ title, children }: { title: string; children: ReactNode }) {
   return (
     <div className="docs-demo">
       <div className="docs-demo-title">{title}</div>
       <div className="docs-demo-canvas">{children}</div>
-      {code ? (
-        <pre className="docs-code">
-          <code>{code}</code>
-        </pre>
-      ) : null}
     </div>
   );
 }
@@ -92,6 +99,32 @@ function Section({
   );
 }
 
+function Guidance({
+  title,
+  children,
+  code,
+  codeLabel,
+}: {
+  title: string;
+  children: ReactNode;
+  code?: string;
+  codeLabel?: string;
+}) {
+  return (
+    <aside className="docs-guidance" aria-label={title}>
+      <strong className="docs-guidance-title">{title}</strong>
+      <div className="docs-guidance-body">{children}</div>
+      {code ? (
+        codeLabel ? (
+          <CodeDetails code={code} label={codeLabel} />
+        ) : (
+          <CodeDetails code={code} />
+        )
+      ) : null}
+    </aside>
+  );
+}
+
 function App() {
   const [viewMode, setViewMode] = useState<"list" | "icons">("list");
 
@@ -113,9 +146,9 @@ function App() {
               ))}
             </nav>
             <div className="docs-deskbar-footer">
-              React 19
+              React
               <br />
-              Base UI 1.7
+              Base UI
             </div>
           </aside>
 
@@ -185,19 +218,24 @@ function App() {
                   </ul>
                 </GroupBox>
               </div>
+              <Guidance title="API conventions">
+                <p>
+                  Import <code>greyui/styles.css</code> once. Simple controls accept native props;
+                  compound controls use <code>Root</code> plus named parts and Base UI behavior.
+                  Consumers still provide labels and accessible names. See the
+                  <a href={BASE_UI_COMPONENTS_URL}> Base UI reference</a> for exhaustive primitive
+                  props.
+                </p>
+                <CopyCommand value={COMPONENT_IMPORT_EXAMPLE} label="component import example" />
+              </Guidance>
             </Section>
 
             <Section
               id="buttons"
               title="Buttons"
-              intro="Compact beveled buttons. The defaultAction prop adds the default-action outline."
+              intro='Compact beveled buttons. Button defaults to type="button"; defaultAction only adds the default-action outline.'
             >
-              <Demo
-                title="Variants"
-                code={
-                  '<Button>Cancel</Button>\n<Button defaultAction variant="primary">Apply</Button>\n<Button variant="destructive">Delete</Button>'
-                }
-              >
+              <Demo title="Variants">
                 <div className="docs-row">
                   <Button>Cancel</Button>
                   <Button defaultAction variant="primary">
@@ -231,6 +269,12 @@ function App() {
               title="Fields"
               intro="Inputs, textareas, selects, number fields, and comboboxes use white inset editing surfaces."
             >
+              <Guidance title="Choose the field">
+                <p>
+                  <code>Select</code> is fixed-list; <code>Combobox</code> searches and selects
+                  listed values; <code>Autocomplete</code> keeps free-form text valid.
+                </p>
+              </Guidance>
               <div className="docs-grid-2">
                 <Demo title="Input">
                   <label className="docs-field">
@@ -298,6 +342,19 @@ function App() {
                 </>
               }
             >
+              <Guidance title="Composition choices">
+                <ul>
+                  <li>
+                    <code>ToggleGroup</code> owns values; <code>SegmentedControl</code> only groups
+                    caller-controlled <code>ToggleButton</code>s.
+                  </li>
+                  <li>
+                    <code>Fieldset</code> adds form semantics and shared disabled state.
+                    <code> Accordion</code> groups disclosures; <code>Collapsible</code> handles
+                    one.
+                  </li>
+                </ul>
+              </Guidance>
               <HighValueComponentDemos />
             </Section>
 
@@ -325,6 +382,17 @@ function App() {
                 </>
               }
             >
+              <Guidance
+                title="Choose feedback"
+                code={"<Toast.Provider>\n  <App />\n  <Toast.Toaster />\n</Toast.Provider>"}
+                codeLabel="Toast setup"
+              >
+                <p>
+                  <code>Progress</code> tracks work; <code>Meter</code> measures a value.
+                  <code> Banner</code> is inline; <code>Toast</code> is transient and requires a
+                  provider/toaster pair.
+                </p>
+              </Guidance>
               <FeedbackDemos />
             </Section>
 
@@ -339,26 +407,11 @@ function App() {
                 </>
               }
             >
-              <GroupBox title="GroupBox component" className="docs-import-guide">
-                <div className="docs-import-guide-example">
-                  <p>
-                    <code>GroupBox</code> is greyUI&apos;s titled, inset container for related
-                    controls and content.
-                  </p>
-                  <CopyCommand value={COMPONENT_IMPORT_EXAMPLE} label="component import example" />
-                </div>
-                <ul>
-                  <li>
-                    Import <code>greyui/styles.css</code> once in your application entry point.
-                  </li>
-                  <li>
-                    Use the root entry shown here, or granular entries under
-                    <code> greyui/components/*</code>.
-                  </li>
-                  <li>
-                    Use <code>GroupBox</code> for compact titled groups like this one.
-                  </li>
-                </ul>
+              <GroupBox title="GroupBox component" className="docs-groupbox-guide">
+                <p>
+                  Visual grouping for related controls or content; use <code>Fieldset</code> instead
+                  when form semantics or shared disabled state matter.
+                </p>
               </GroupBox>
               <KumoPatternDemos />
             </Section>
@@ -405,6 +458,17 @@ function App() {
               title="Menus & overlays"
               intro="Menus, popovers, tooltips, toasts, app-owned overlays, and dialogs use Layer.Provider to escape map and window stacking contexts in a stable order."
             >
+              <Guidance
+                title="Overlay contract"
+                code={"<Layer.Provider>\n  <App />\n</Layer.Provider>"}
+                codeLabel="Application setup"
+              >
+                <p>
+                  Mount one <code>Layer.Provider</code> near the app root. Use
+                  <code> AlertDialog</code> for confirmation decisions; context menus should not be
+                  the only path to important actions.
+                </p>
+              </Guidance>
               <div className="docs-grid-2 docs-component-grid">
                 <Demo title="Menu and tooltip">
                   <div className="docs-row">
@@ -583,6 +647,15 @@ function App() {
                 </>
               }
             >
+              <Guidance
+                title="Theme overrides"
+                code={
+                  '[data-greyui-theme="custom"] {\n  --greyui-panel: #d4d4d4;\n  --greyui-selection: #356c9f;\n}'
+                }
+                codeLabel="CSS example"
+              >
+                <p>Override tokens at a theme boundary; avoid styling component internals.</p>
+              </Guidance>
               <div className="docs-token-grid">
                 {[
                   ["--greyui-tab-active", "#d8cb00"],
@@ -601,9 +674,7 @@ function App() {
               </div>
             </Section>
 
-            <footer className="docs-footer">
-              greyUI {GREYUI_VERSION} · React 19 · Base UI 1.7
-            </footer>
+            <footer className="docs-footer">greyUI {GREYUI_VERSION} · React · Base UI</footer>
           </main>
         </div>
       </Tooltip.Provider>
@@ -611,7 +682,10 @@ function App() {
   );
 }
 
-createRoot(document.getElementById("root")!).render(
+const rootElement = document.getElementById("root");
+if (!rootElement) throw new Error("greyUI docs root element is missing.");
+
+createRoot(rootElement).render(
   <StrictMode>
     <App />
   </StrictMode>,
