@@ -861,6 +861,7 @@
 .greyui-table {
   width: 100%;
   border-collapse: collapse;
+  background: var(--greyui-panel-light);
   color: var(--greyui-text);
   font-size: 0.8rem;
 }
@@ -878,7 +879,11 @@
   font-weight: 700;
 }
 
-.greyui-table tbody tr:nth-child(even) {
+.greyui-table tbody td {
+  background: var(--greyui-panel-light);
+}
+
+.greyui-table tbody tr:nth-child(even) td {
   background: var(--greyui-panel);
 }
 
@@ -886,7 +891,7 @@
   border-bottom: 0;
 }
 
-.greyui-table tbody tr[aria-selected="true"] {
+.greyui-table tbody tr[aria-selected="true"] td {
   background: var(--greyui-selection);
   color: var(--greyui-selection-text);
 }

@@ -26,7 +26,6 @@ import {
   Window,
 } from "../../src";
 import { CopyCommand } from "./CopyCommand";
-import { ComponentImport } from "./component-imports";
 import { HighValueComponentDemos } from "./high-value-components";
 import {
   DesktopDemos,
@@ -39,6 +38,8 @@ import { GREYUI_VERSION } from "./version";
 import "./docs.css";
 
 const WORKBENCH_URL = "https://workbench.questionable.services/";
+const CLONE_COMMAND = "git clone https://github.com/elithrar/greyUI.git";
+const COMPONENT_IMPORT_EXAMPLE = 'import { Button, GroupBox, Select, Window } from "greyui";';
 
 const sections = [
   ["principles", "Principles"],
@@ -57,21 +58,10 @@ const sections = [
   ["tokens", "Tokens"],
 ] as const;
 
-function Demo({
-  title,
-  children,
-  code,
-  imports,
-}: {
-  title: string;
-  children: ReactNode;
-  code?: string;
-  imports?: readonly string[];
-}) {
+function Demo({ title, children, code }: { title: string; children: ReactNode; code?: string }) {
   return (
     <div className="docs-demo">
       <div className="docs-demo-title">{title}</div>
-      {imports ? <ComponentImport imports={imports} label={title} /> : null}
       <div className="docs-demo-canvas">{children}</div>
       {code ? (
         <pre className="docs-code">
@@ -158,14 +148,13 @@ function App() {
                   <div className="docs-install">
                     <span className="docs-install-label">Install with npm</span>
                     <CopyCommand value="npm install greyui" label="npm install command" />
+                    <span className="docs-install-label">Clone source</span>
+                    <CopyCommand value={CLONE_COMMAND} label="git clone command" />
                   </div>
                   <p className="docs-stylesheet-note">
                     Import <code>greyui/styles.css</code> once in your application.
                   </p>
                 </div>
-                <GroupBox title="Clone source">
-                  <code>git clone https://github.com/elithrar/greyUI.git</code>
-                </GroupBox>
               </div>
               <StatusBar>{GREYUI_VERSION} · ESM · CSS tokens</StatusBar>
             </Window>
@@ -175,7 +164,6 @@ function App() {
               title="Principles"
               intro="Compact controls, neutral panels, white document surfaces, and BeOS-style window chrome."
             >
-              <ComponentImport imports={["GroupBox"]} label="Group boxes" />
               <div className="docs-principles">
                 <GroupBox title="Visual language">
                   <ul>
@@ -196,6 +184,30 @@ function App() {
                     </li>
                   </ul>
                 </GroupBox>
+                <GroupBox title="GroupBox component" className="docs-import-guide">
+                  <div className="docs-import-guide-example">
+                    <p>
+                      <code>GroupBox</code> is greyUI&apos;s titled, inset container for related
+                      controls and content.
+                    </p>
+                    <CopyCommand
+                      value={COMPONENT_IMPORT_EXAMPLE}
+                      label="component import example"
+                    />
+                  </div>
+                  <ul>
+                    <li>
+                      Import <code>greyui/styles.css</code> once in your application entry point.
+                    </li>
+                    <li>
+                      Use the root entry shown here, or granular entries under
+                      <code> greyui/components/*</code>.
+                    </li>
+                    <li>
+                      Use <code>GroupBox</code> for compact titled groups like this one.
+                    </li>
+                  </ul>
+                </GroupBox>
               </div>
             </Section>
 
@@ -206,7 +218,6 @@ function App() {
             >
               <Demo
                 title="Variants"
-                imports={["Button", "SegmentedControl", "ToggleButton"]}
                 code={
                   '<Button>Cancel</Button>\n<Button defaultAction variant="primary">Apply</Button>\n<Button variant="destructive">Delete</Button>'
                 }
@@ -244,7 +255,6 @@ function App() {
               title="Fields"
               intro="Inputs, textareas, selects, number fields, and comboboxes use white inset editing surfaces."
             >
-              <ComponentImport imports={["Input", "Textarea", "Select"]} label="Basic fields" />
               <div className="docs-grid-2">
                 <Demo title="Input">
                   <label className="docs-field">
@@ -278,10 +288,7 @@ function App() {
               title="Selection controls"
               intro="Checkboxes, radios, and switches use compact system-control sizing. Base UI handles state and keyboard behavior."
             >
-              <Demo
-                title="Checkbox, radio and switch"
-                imports={["Checkbox", "RadioGroup", "Switch"]}
-              >
+              <Demo title="Checkbox, radio and switch">
                 <div className="docs-selection-grid">
                   <div className="docs-stack">
                     <Checkbox defaultChecked label="Show decoded values" />
@@ -372,7 +379,7 @@ function App() {
               title="Tabs"
               intro="Tabs use beveled triggers and an inset white panel for the active view. Window title tabs use the separate yellow/grey active state."
             >
-              <Demo title="Related views" imports={["Tabs"]}>
+              <Demo title="Related views">
                 <Tabs
                   defaultValue="general"
                   items={[
@@ -402,7 +409,7 @@ function App() {
               intro="Menus, popovers, tooltips, toasts, app-owned overlays, and dialogs use Layer.Provider to escape map and window stacking contexts in a stable order."
             >
               <div className="docs-grid-2 docs-component-grid">
-                <Demo title="Menu and tooltip" imports={["Menu", "Tooltip"]}>
+                <Demo title="Menu and tooltip">
                   <div className="docs-row">
                     <Menu.Root>
                       <Menu.Trigger>Actions</Menu.Trigger>
@@ -421,7 +428,7 @@ function App() {
                   </div>
                 </Demo>
 
-                <Demo title="Popover" imports={["Popover"]}>
+                <Demo title="Popover">
                   <Popover.Root>
                     <Popover.Trigger>Details…</Popover.Trigger>
                     <Popover.Popup
@@ -435,7 +442,7 @@ function App() {
                   </Popover.Root>
                 </Demo>
 
-                <Demo title="Dialogs" imports={["AlertDialog", "Dialog", "Layer"]}>
+                <Demo title="Dialogs">
                   <div className="docs-row">
                     <Dialog.Root>
                       <Dialog.Trigger>Open dialog…</Dialog.Trigger>
@@ -479,7 +486,7 @@ function App() {
               intro="Tables and scroll areas use dense, undecorated layouts."
             >
               <div className="docs-grid-2">
-                <Demo title="Table" imports={["Badge", "Table"]}>
+                <Demo title="Table">
                   <Table>
                     <thead>
                       <tr>
@@ -513,7 +520,7 @@ function App() {
                     </tbody>
                   </Table>
                 </Demo>
-                <Demo title="Scroll area" imports={["ScrollArea"]}>
+                <Demo title="Scroll area">
                   <ScrollArea className="docs-scroll-demo" stableGutter>
                     <div className="docs-scroll-content">
                       {Array.from({ length: 18 }, (_, index) => (
@@ -530,10 +537,7 @@ function App() {
               title="Window shell"
               intro="Window preserves its chrome while offering optional controlled or uncontrolled collapse state. Stacked mode remains the responsive default; floating mode keeps compact overlay geometry on small screens."
             >
-              <Demo
-                title="Active and inactive windows"
-                imports={["Menu", "MenuBar", "StatusBar", "Window", "WindowWidget"]}
-              >
+              <Demo title="Active and inactive windows">
                 <div className="docs-window-pair">
                   <Window title="Preferences" collapsible>
                     <MenuBar>

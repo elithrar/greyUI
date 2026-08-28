@@ -101,10 +101,11 @@ pre {
 }
 .docs-hero {
   display: grid;
-  grid-template-columns: 1.7fr 1fr;
-  gap: 26px;
-  align-items: center;
+  grid-template-columns: minmax(0, 1fr);
   padding: 30px 26px 28px;
+}
+.docs-hero > div {
+  width: min(100%, 680px);
 }
 .docs-hero h1 {
   margin: 1px 0 7px;
@@ -121,12 +122,15 @@ pre {
 .docs-install {
   display: grid;
   gap: 5px;
-  width: min(100%, 260px);
+  width: min(100%, 440px);
   margin-top: 16px;
 }
 .docs-install-label {
   font-size: 11px;
   font-weight: 700;
+}
+.docs-install-label:not(:first-child) {
+  margin-top: 3px;
 }
 .docs-hero .docs-stylesheet-note {
   margin: 7px 0 0;
@@ -219,12 +223,6 @@ pre {
   text-transform: uppercase;
   letter-spacing: 0.08em;
 }
-.docs-hero .greyui-groupbox code {
-  display: block;
-  padding: 4px 2px;
-  font-size: 11px;
-  overflow-wrap: anywhere;
-}
 
 .docs-section {
   scroll-margin-top: 18px;
@@ -259,6 +257,33 @@ pre {
   margin: 2px 0 0;
   padding-left: 18px;
   line-height: 1.55;
+}
+.docs-import-guide {
+  grid-column: 1 / -1;
+}
+.docs-import-guide .greyui-groupbox-body {
+  grid-template-columns: minmax(0, 1.15fr) minmax(15rem, 0.85fr);
+  align-items: start;
+  gap: 12px;
+}
+.docs-import-guide-example {
+  display: grid;
+  min-width: 0;
+  gap: 6px;
+}
+.docs-import-guide p,
+.docs-import-guide ul {
+  margin-top: 0;
+  margin-bottom: 0;
+}
+.docs-import-guide p {
+  line-height: 1.4;
+}
+.docs-import-guide .docs-copy-command {
+  width: 100%;
+}
+.docs-import-guide code {
+  font-size: inherit;
 }
 
 .docs-demo {
@@ -502,6 +527,9 @@ pre {
   .docs-demo-canvas {
     padding: 12px;
   }
+  .docs-import-guide .greyui-groupbox-body {
+    grid-template-columns: minmax(0, 1fr);
+  }
   .docs-grid-2 > *,
   .docs-principles > *,
   .docs-selection-grid > *,
@@ -513,67 +541,6 @@ pre {
   .docs-dialog-actions > .greyui-button {
     flex: 1 1 auto;
   }
-}
-
-/* Contextual component imports */
-.docs-component-import {
-  display: grid;
-  min-width: 0;
-  grid-template-columns: auto minmax(0, 1fr);
-  align-items: center;
-  gap: 6px;
-  padding: 4px 5px;
-  border-top: 1px solid var(--greyui-border-dark);
-  border-bottom: 1px solid var(--greyui-border-dark);
-  background: var(--greyui-panel-dark);
-  box-shadow: inset 1px 1px 0 var(--greyui-border-light);
-  color: var(--greyui-text);
-}
-
-.docs-section > .docs-component-import {
-  width: min(100%, 760px);
-  margin: -6px 0 12px;
-  border: 1px solid var(--greyui-border-dark);
-}
-
-.docs-component-import-label {
-  color: var(--greyui-text-muted);
-  font-size: 10px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-}
-
-.docs-component-import .docs-copy-command {
-  width: 100%;
-  min-width: 0;
-  max-width: 100%;
-  padding: 2px 3px 2px 5px;
-  border-color: var(--greyui-border-dark);
-  background: var(--greyui-document);
-  box-shadow: var(--greyui-bevel-inset);
-  color: var(--greyui-text);
-  font-size: 11px;
-  line-height: 1.35;
-}
-
-.docs-component-import .docs-copy-command-text {
-  min-width: 0;
-  overflow-x: auto;
-  overflow-y: hidden;
-  text-overflow: clip;
-  white-space: pre;
-  scrollbar-width: thin;
-}
-
-.docs-component-import .docs-copy-command:hover,
-.docs-component-import .docs-copy-command:focus-visible {
-  outline: 1px solid var(--greyui-keyboard-navigation);
-  outline-offset: 0;
-}
-
-.docs-component-import .docs-copy-command-icon {
-  flex: 0 0 auto;
 }
 
 .docs-high-value-grid {

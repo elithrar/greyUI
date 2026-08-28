@@ -1,23 +1,13 @@
 import { Accordion, Autocomplete, Checkbox, CheckboxGroup, Fieldset, ToggleGroup } from "../../src";
-import { ComponentImport } from "./component-imports";
 
 const suggestions = ["BeOS R5", "Haiku", "Zeta", "NewOS"];
 
-function ComponentDemo({
-  name,
-  imports,
-  children,
-}: {
-  name: string;
-  imports: readonly string[];
-  children: React.ReactNode;
-}) {
+function ComponentDemo({ name, children }: { name: string; children: React.ReactNode }) {
   return (
     <article className="docs-high-value-demo">
       <div className="docs-high-value-demo-header">
         <h3>{name}</h3>
       </div>
-      <ComponentImport imports={imports} label={name} />
       <div className="docs-high-value-demo-canvas">{children}</div>
     </article>
   );
@@ -26,7 +16,7 @@ function ComponentDemo({
 export function HighValueComponentDemos() {
   return (
     <div className="docs-high-value-grid">
-      <ComponentDemo name="ToggleGroup" imports={["ToggleGroup"]}>
+      <ComponentDemo name="ToggleGroup">
         <ToggleGroup.Root aria-label="Editor options" defaultValue={["grid"]}>
           <ToggleGroup.Item value="grid">Grid</ToggleGroup.Item>
           <ToggleGroup.Item value="snap">Snap</ToggleGroup.Item>
@@ -37,7 +27,7 @@ export function HighValueComponentDemos() {
         </ToggleGroup.Root>
       </ComponentDemo>
 
-      <ComponentDemo name="Autocomplete" imports={["Autocomplete"]}>
+      <ComponentDemo name="Autocomplete">
         <div className="docs-high-value-stack">
           <Autocomplete.Root items={suggestions}>
             <Autocomplete.InputGroup>
@@ -60,7 +50,7 @@ export function HighValueComponentDemos() {
         </div>
       </ComponentDemo>
 
-      <ComponentDemo name="Accordion" imports={["Accordion"]}>
+      <ComponentDemo name="Accordion">
         <Accordion.Root defaultValue={["general"]}>
           <Accordion.Item value="general">
             <Accordion.Header>
@@ -83,7 +73,7 @@ export function HighValueComponentDemos() {
         </Accordion.Root>
       </ComponentDemo>
 
-      <ComponentDemo name="CheckboxGroup" imports={["Checkbox", "CheckboxGroup"]}>
+      <ComponentDemo name="CheckboxGroup">
         <CheckboxGroup aria-label="Build output" defaultValue={["symbols"]}>
           <Checkbox value="symbols" label="Debug symbols" />
           <Checkbox value="map" label="Source map" />
@@ -91,7 +81,7 @@ export function HighValueComponentDemos() {
         </CheckboxGroup>
       </ComponentDemo>
 
-      <ComponentDemo name="Fieldset" imports={["Checkbox", "CheckboxGroup", "Fieldset"]}>
+      <ComponentDemo name="Fieldset">
         <div className="docs-fieldset-pair">
           <Fieldset.Root>
             <Fieldset.Legend>Build output</Fieldset.Legend>
