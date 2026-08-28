@@ -47,6 +47,21 @@ describe("default theme contrast", () => {
     expect(css).toMatch(/\.greyui-button\s*\{[\s\S]*?font-weight:\s*400/);
   });
 
+  it("keeps window control hover chrome off touch devices", () => {
+    const css = readFileSync(resolve(process.cwd(), "src/styles.css"), "utf8");
+    const hoverMediaStart = css.indexOf("@media (hover: hover)");
+    const focusRuleStart = css.indexOf(".greyui-window-widget:focus-visible");
+    const hoverMedia = css.slice(hoverMediaStart, focusRuleStart);
+
+    expect(hoverMediaStart).toBeGreaterThan(-1);
+    expect(hoverMedia).toContain(".greyui-window-widget:hover");
+    expect(hoverMedia).toContain("outline: 1px solid var(--greyui-selection)");
+    expect(css).toMatch(/\.greyui-window-widget\s*\{[\s\S]*?outline:\s*0/);
+    expect(css).toMatch(
+      /\.greyui-window-widget:focus-visible\s*\{[\s\S]*?outline:\s*1px solid var\(--greyui-keyboard-navigation\)/,
+    );
+  });
+
   it("keeps tooltip and app overlay layers above window-level content", () => {
     const css = readFileSync(resolve(process.cwd(), "src/styles.css"), "utf8");
     const overlay = Number(css.match(/--greyui-layer-overlay:\s*(\d+)/)?.[1]);

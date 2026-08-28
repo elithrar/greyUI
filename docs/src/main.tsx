@@ -596,7 +596,7 @@ function App() {
             <Section
               id="window"
               title="Window shell"
-              intro="Window preserves its chrome while offering optional controlled or uncontrolled collapse state. Stacked mode remains the responsive default; floating mode keeps compact overlay geometry on small screens."
+              intro="Window preserves its chrome while offering optional controlled or uncontrolled collapse state. Controls stay neutral after pointer or touch activation while retaining keyboard-visible focus. Stacked mode remains the responsive default; floating mode keeps compact overlay geometry on small screens."
             >
               <Demo title="Active and inactive windows">
                 <div className="docs-window-pair">

@@ -1161,6 +1161,7 @@
   min-height: calc(var(--greyui-tab-height) - 1px);
   padding: 0;
   border: 0;
+  outline: 0;
   background: transparent;
   color: var(--greyui-text);
   font: inherit;
@@ -1182,10 +1183,12 @@
   border-left: 1px solid rgb(0 0 0 / 28%);
 }
 
-.greyui-window-widget:hover {
-  background: rgb(0 0 0 / 6%);
-  outline: 1px solid var(--greyui-selection);
-  outline-offset: -1px;
+@media (hover: hover) {
+  .greyui-window-widget:hover {
+    background: rgb(0 0 0 / 6%);
+    outline: 1px solid var(--greyui-selection);
+    outline-offset: -1px;
+  }
 }
 
 .greyui-window-widget:focus-visible {
