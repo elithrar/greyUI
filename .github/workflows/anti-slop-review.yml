@@ -25,6 +25,7 @@ jobs:
           cache: npm
 
       - run: npm ci
+      - run: python3 .github/review/fix-layer-inference.py
       - run: python3 .github/review/apply-anti-slop-fixes.py
       - run: npm run format
       - run: npm run lint
