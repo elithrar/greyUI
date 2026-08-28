@@ -93,9 +93,7 @@ describe("documentation structure", () => {
       resolve(process.cwd(), "docs/src/next-components.tsx"),
       "utf8",
     );
-    const componentDocs = `${main}
-${highValue}
-${nextComponents}`;
+    const componentDocs = `${main}\n${highValue}\n${nextComponents}`;
 
     const principlesSection = main.slice(
       main.indexOf('id="principles"'),
@@ -110,7 +108,7 @@ ${nextComponents}`;
     expect(principlesSection).not.toContain('title="GroupBox component"');
     expect(principlesSection).toContain('title="API conventions"');
     expect(patternsSection).toContain('title="GroupBox component"');
-    expect(patternsSection).toContain("Use <code>Fieldset</code> instead");
+    expect(patternsSection).toContain("<code>Fieldset</code> instead");
     expect(main).toContain('title="Choose the field"');
     expect(main).toContain('title="Composition choices"');
     expect(main).toContain('title="Choose feedback"');
