@@ -1,0 +1,76 @@
+name: Review Select popup sizing
+
+on:
+  push:
+    branches:
+      - fix/select-group-surfaces-import-banner
+    paths:
+      - .github/workflows/review-select-popup.yml
+
+permissions:
+  contents: write
+
+jobs:
+  review:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: fix/select-group-surfaces-import-banner
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+      - run: python3 .github/review/fix-select-popup.py
+      - run: mv .github/review/visual-select-popup.mjs /tmp/visual-select-popup.mjs
+      - run: npm run format
+      - run: npm run check
+      - run: npm run build
+      - run: npm run pack:check
+      - run: npm run verify:docs
+
+      - name: Install browser review dependency
+        run: |
+          npm install --no-save --package-lock=false playwright@1.55.0
+          npx playwright install --with-deps chromium
+          cp /tmp/visual-select-popup.mjs visual-select-popup.mjs
+
+      - name: Start docs
+        run: |
+          npm run dev:docs -- --host 127.0.0.1 --port 4173 > /tmp/greyui-vite.log 2>&1 &
+          for attempt in $(seq 1 60); do
+            if curl --fail --silent http://127.0.0.1:4173 >/dev/null; then
+              exit 0
+            fi
+            sleep 1
+          done
+          cat /tmp/greyui-vite.log
+          exit 1
+
+      - name: Run visual review
+        run: |
+          mkdir -p artifacts/select-popup
+          node visual-select-popup.mjs
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: greyui-select-popup-review
+          path: artifacts/select-popup
+          retention-days: 14
+
+      - name: Commit reviewed correction
+        run: |
+          rm -rf artifacts/select-popup
+          rm -f visual-select-popup.mjs
+          rm -f .github/review/fix-select-popup.py
+          rm -f .github/workflows/review-select-popup.yml
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add src tests .github/review .github/workflows/review-select-popup.yml
+          git diff --cached --check
+          git commit -m "Keep Select options single-line and fully visible"
+          git push origin HEAD:fix/select-group-surfaces-import-banner
