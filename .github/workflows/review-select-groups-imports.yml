@@ -26,6 +26,8 @@ jobs:
 
       - run: npm ci
       - run: python3 .github/review/apply-select-groups-imports.py
+      - name: Keep the browser harness outside the lint target
+        run: mv .github/review/visual-select-groups-imports.mjs /tmp/visual-select-groups-imports.mjs
       - run: npm run format
       - run: npm run check
       - run: npm run build
@@ -36,6 +38,7 @@ jobs:
         run: |
           npm install --no-save --package-lock=false playwright@1.55.0
           npx playwright install --with-deps chromium
+          cp /tmp/visual-select-groups-imports.mjs visual-select-groups-imports.mjs
 
       - name: Start docs
         run: |
@@ -52,7 +55,7 @@ jobs:
       - name: Run visual and interaction review
         run: |
           mkdir -p artifacts/select-groups-imports
-          node .github/review/visual-select-groups-imports.mjs
+          node visual-select-groups-imports.mjs
 
       - uses: actions/upload-artifact@v4
         with:
@@ -63,8 +66,8 @@ jobs:
       - name: Commit reviewed changes
         run: |
           rm -rf artifacts/select-groups-imports
+          rm -f visual-select-groups-imports.mjs
           rm -f .github/review/apply-select-groups-imports.py
-          rm -f .github/review/visual-select-groups-imports.mjs
           rm -f .github/workflows/review-select-groups-imports.yml
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
