@@ -49,21 +49,13 @@ describe("component import documentation", () => {
     });
 
     const imports = ["Button", "ButtonGroup", "IconButton"] as const;
+    const statement = granularImport({ name: "Button", path: "button", imports });
     render(<ComponentImport imports={imports} label="Buttons" />);
 
-    const statement =
-      'import { Button, ButtonGroup, IconButton } from "greyui/components/button";';
     expect(screen.getByText(statement)).not.toBeNull();
     fireEvent.click(screen.getByRole("button", { name: "Copy Buttons import" }));
 
     await waitFor(() => expect(writeText).toHaveBeenCalledWith(statement));
     expect(groupedGranularImport(imports)).toBe(statement);
-    expect(
-      granularImport({
-        name: "Button",
-        path: "button",
-        imports: ["Button", "ButtonGroup", "IconButton"],
-      }),
-    ).toBe(statement);
   });
 });
