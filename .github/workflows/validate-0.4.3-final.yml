@@ -1,0 +1,71 @@
+name: Validate greyUI 0.4.3 final
+
+on:
+  push:
+    branches:
+      - fix/number-field-imports-0.4.3
+    paths:
+      - .github/workflows/validate-0.4.3-final.yml
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: fix/number-field-imports-0.4.3
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+      - run: npm run check
+      - run: npm run build
+      - run: npm run pack:check
+      - run: npm run verify:docs
+
+      - name: Install browser review dependency
+        run: |
+          npm install --no-save --package-lock=false playwright@1.55.0
+          npx playwright install --with-deps chromium
+
+      - name: Extract browser review
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          from textwrap import dedent
+
+          source = Path('.github/workflows/validate-0.4.3.yml').read_text()
+          marker = "cat > /tmp/visual-review.mjs <<'EOF'\n"
+          start = source.index(marker) + len(marker)
+          end = source.index('\n          EOF', start)
+          Path('/tmp/visual-review.mjs').write_text(dedent(source[start:end]))
+          PY
+
+      - name: Start docs
+        run: |
+          npm run dev:docs -- --host 127.0.0.1 --port 4173 > /tmp/greyui-vite.log 2>&1 &
+          for attempt in $(seq 1 60); do
+            if curl --fail --silent http://127.0.0.1:4173 >/dev/null; then
+              exit 0
+            fi
+            sleep 1
+          done
+          cat /tmp/greyui-vite.log
+          exit 1
+
+      - name: Run visual and interaction review
+        run: |
+          mkdir -p artifacts/visual-review-0.4.3
+          node /tmp/visual-review.mjs
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: greyui-0.4.3-granular-import-review-final
+          path: artifacts/visual-review-0.4.3
+          retention-days: 14
