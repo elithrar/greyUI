@@ -128,10 +128,10 @@ pre {
   font-size: 11px;
   font-weight: 700;
 }
-.docs-stylesheet-note {
-  margin: 7px 0 0 !important;
+.docs-hero .docs-stylesheet-note {
+  margin: 7px 0 0;
   color: var(--greyui-text-muted);
-  font-size: 11px !important;
+  font-size: 11px;
 }
 .docs-stylesheet-note code {
   font-size: inherit;
