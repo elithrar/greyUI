@@ -356,7 +356,13 @@ function App() {
             <Section
               id="patterns"
               title="Application patterns"
-              intro="Kumo-inspired APIs adapted to WorkbenchOS: compact feedback, Tracker paths, empty states, busy indicators, and page controls without modern card styling."
+              intro={
+                <>
+                  Kumo-inspired APIs adapted to <a href={WORKBENCH_URL}>WorkbenchOS</a>: compact
+                  feedback, Tracker paths, empty states, busy indicators, and page controls without
+                  modern card styling.
+                </>
+              }
               imports={["Banner", "Breadcrumbs", "Button", "Empty", "Loader", "Pagination"]}
             >
               <KumoPatternDemos />
