@@ -108,7 +108,15 @@ ${nextComponents}`;
 
     expect(componentDocs).not.toContain("ComponentImport");
     expect(principlesSection).not.toContain('title="GroupBox component"');
+    expect(principlesSection).toContain('title="API conventions"');
     expect(patternsSection).toContain('title="GroupBox component"');
+    expect(patternsSection).toContain("Use <code>Fieldset</code> instead");
+    expect(main).toContain('title="Choose the field"');
+    expect(main).toContain('title="Composition choices"');
+    expect(main).toContain('title="Choose feedback"');
+    expect(main).toContain('title="Overlay contract"');
+    expect(main).toContain('title="Theme overrides"');
+    expect(main).toContain("href={BASE_UI_COMPONENTS_URL}");
     expect(main).toContain('import { Button, GroupBox, Select, Window } from "greyui";');
     expect(main).toContain('label="git clone command"');
   });

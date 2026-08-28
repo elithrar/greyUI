@@ -25,6 +25,20 @@ import "greyui/styles.css";
 
 Both forms use the same build graph. CI checks that representative root imports tree-shake to comparable consumer bundles as their component subpaths. React and React DOM remain peer dependencies.
 
+## API conventions
+
+- Simple controls accept the corresponding native element props. Compound controls use `Root` plus named parts and preserve Base UI keyboard, focus, positioning, and ARIA behavior.
+- The greyUI docs describe greyUI-specific defaults, composition, and visual behavior. Use the [Base UI component reference](https://base-ui.com/react/components) for exhaustive primitive props.
+- `Button` defaults to `type="button"`; opt into submit behavior explicitly.
+- Wrap applications that use menus, popovers, dialogs, toasts, or tooltips in `Layer.Provider` so overlays share stable top-level hosts.
+
+## Choosing components
+
+- `Select` is for a fixed list; `Combobox` is for searchable selection; `Autocomplete` keeps free-form text valid while offering suggestions.
+- `GroupBox` is visual grouping. Use `Fieldset` when related form controls need fieldset/legend semantics or shared disabled state.
+- `Progress` reports task completion or indeterminate work. `Meter` reports a bounded measurement.
+- `Accordion` groups related disclosures; `Collapsible` handles a single disclosure.
+
 ## Use locally
 
 Build greyUI:
@@ -70,7 +84,7 @@ npm run build
 npm run perf:package
 ```
 
-`npm run check` runs Oxfmt, Oxlint, TypeScript, and Vitest. `npm run perf:package` checks package entrypoints and reports component and consumer-bundle costs. CI also validates the package tarball and docs deployment configuration.
+`npm run check` runs Oxfmt, Oxlint with the vendored anti-slop rules, TypeScript, and Vitest. `npm run perf:package` checks package entrypoints and reports component and consumer-bundle costs. CI also validates the package tarball and docs deployment configuration.
 
 ## Docs
 
