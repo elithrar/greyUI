@@ -82,7 +82,7 @@ describe("documentation copy command", () => {
 });
 
 describe("documentation structure", () => {
-  it("keeps imports in one explicit GroupBox guide", () => {
+  it("keeps imports in one explicit GroupBox guide under Application patterns", () => {
     const main = readFileSync(resolve(process.cwd(), "docs/src/main.tsx"), "utf8");
     const highValue = readFileSync(
       resolve(process.cwd(), "docs/src/high-value-components.tsx"),
@@ -96,8 +96,18 @@ describe("documentation structure", () => {
 ${highValue}
 ${nextComponents}`;
 
+    const principlesSection = main.slice(
+      main.indexOf('id="principles"'),
+      main.indexOf('id="buttons"'),
+    );
+    const patternsSection = main.slice(
+      main.indexOf('id="patterns"'),
+      main.indexOf('id="integration"'),
+    );
+
     expect(componentDocs).not.toContain("ComponentImport");
-    expect(main).toContain('title="GroupBox component"');
+    expect(principlesSection).not.toContain('title="GroupBox component"');
+    expect(patternsSection).toContain('title="GroupBox component"');
     expect(main).toContain('import { Button, GroupBox, Select, Window } from "greyui";');
     expect(main).toContain('label="git clone command"');
   });
