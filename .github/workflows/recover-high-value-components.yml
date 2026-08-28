@@ -44,6 +44,20 @@ jobs:
           PY
 
       - run: python3 scripts/apply_high_value_components.py
+
+      - name: Type the generated clipboard mock
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+
+          path = Path("tests/component-imports.test.tsx")
+          source = path.read_text().replace(
+              "const writeText = vi.fn().mockResolvedValue(undefined);",
+              "const writeText = vi.fn<(text: string) => Promise<void>>().mockResolvedValue(undefined);",
+          )
+          path.write_text(source)
+          PY
+
       - run: npm run format
       - run: npm run check
       - run: npm run build
