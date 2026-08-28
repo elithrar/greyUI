@@ -184,6 +184,7 @@
   width: 18px;
   min-width: 0;
   min-height: 0;
+  box-sizing: border-box;
   padding: 0;
   place-items: center;
   border: 0;
@@ -193,6 +194,22 @@
   color: var(--greyui-text);
   font: 700 8px / 1 var(--greyui-font-ui);
   cursor: pointer;
+}
+
+.greyui-number-field-step-icon {
+  display: block;
+  width: 0;
+  height: 0;
+  border-right: 4px solid transparent;
+  border-left: 4px solid transparent;
+}
+
+.greyui-number-field-step-icon[data-direction="increment"] {
+  border-bottom: 5px solid currentcolor;
+}
+
+.greyui-number-field-step-icon[data-direction="decrement"] {
+  border-top: 5px solid currentcolor;
 }
 
 .greyui-number-field-increment {

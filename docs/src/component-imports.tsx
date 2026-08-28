@@ -20,6 +20,7 @@ export const COMPONENT_IMPORTS: readonly ComponentImportSpec[] = [
   { name: "Collapsible", path: "collapsible" },
   { name: "Combobox", path: "combobox" },
   { name: "ContextMenu", path: "context-menu" },
+  { name: "createVirtualAnchor", path: "popover" },
   { name: "DatePicker", path: "date-picker" },
   { name: "Dialog", path: "dialog" },
   { name: "Empty", path: "empty" },
@@ -62,30 +63,42 @@ export const COMPONENT_IMPORTS: readonly ComponentImportSpec[] = [
   { name: "WindowWidget", path: "window" },
 ] as const;
 
+const componentImportByName = new Map(COMPONENT_IMPORTS.map((spec) => [spec.name, spec]));
+
 export function granularImport(spec: ComponentImportSpec): string {
   const imports = spec.imports ?? [spec.name];
   return `import { ${imports.join(", ")} } from "greyui/components/${spec.path}";`;
 }
 
-export function ComponentImport(spec: ComponentImportSpec) {
-  const statement = granularImport(spec);
-  return (
-    <div className="docs-component-import">
-      <span className="docs-component-import-label">Import</span>
-      <CopyCommand value={statement} label={`${spec.name} import`} />
-    </div>
-  );
+export function groupedGranularImport(imports: readonly string[]): string {
+  const importsByPath = new Map<string, string[]>();
+
+  for (const name of imports) {
+    const spec = componentImportByName.get(name);
+    if (spec === undefined) {
+      throw new Error(`No granular import is documented for ${name}.`);
+    }
+
+    const pathImports = importsByPath.get(spec.path);
+    if (pathImports === undefined) {
+      importsByPath.set(spec.path, [name]);
+    } else {
+      pathImports.push(name);
+    }
+  }
+
+  return Array.from(importsByPath, ([path, pathImports]) =>
+    granularImport({ name: pathImports[0] ?? path, path, imports: pathImports }),
+  ).join(" ");
 }
 
-export function ComponentImportCatalog() {
+export function ComponentImport({ imports, label }: { imports: readonly string[]; label: string }) {
+  const statement = groupedGranularImport(imports);
+
   return (
-    <div className="docs-import-catalog">
-      {COMPONENT_IMPORTS.map((spec) => (
-        <div className="docs-import-catalog-row" key={spec.name}>
-          <strong>{spec.name}</strong>
-          <ComponentImport {...spec} />
-        </div>
-      ))}
+    <div className="docs-section-import">
+      <span className="docs-section-import-label">Import</span>
+      <CopyCommand value={statement} label={`${label} import`} />
     </div>
   );
 }
