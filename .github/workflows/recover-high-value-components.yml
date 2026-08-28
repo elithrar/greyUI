@@ -45,17 +45,28 @@ jobs:
 
       - run: python3 scripts/apply_high_value_components.py
 
-      - name: Type the generated clipboard mock
+      - name: Update generated type contracts
         run: |
           python3 - <<'PY'
           from pathlib import Path
 
-          path = Path("tests/component-imports.test.tsx")
-          source = path.read_text().replace(
+          test_path = Path("tests/component-imports.test.tsx")
+          test_source = test_path.read_text().replace(
               "const writeText = vi.fn().mockResolvedValue(undefined);",
               "const writeText = vi.fn<(text: string) => Promise<void>>().mockResolvedValue(undefined);",
           )
-          path.write_text(source)
+          test_path.write_text(test_source)
+
+          docs_path = Path("docs/src/high-value-components.tsx")
+          docs_source = docs_path.read_text().replace(
+              "        <ComponentImport name={name} path={path} imports={imports} />",
+              """        {imports === undefined ? (
+          <ComponentImport name={name} path={path} />
+        ) : (
+          <ComponentImport name={name} path={path} imports={imports} />
+        )}""",
+          )
+          docs_path.write_text(docs_source)
           PY
 
       - run: npm run format
