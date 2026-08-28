@@ -6,7 +6,7 @@ import {
   COMPONENT_IMPORTS,
   ComponentImport,
   granularImport,
-  groupedImport,
+  groupedGranularImport,
 } from "../docs/src/component-imports";
 
 afterEach(cleanup);
@@ -23,7 +23,25 @@ describe("component import documentation", () => {
     expect(documentedModules).toEqual(sourceModules);
   });
 
-  it("renders and copies one grouped import for a component section", async () => {
+  it("groups exports that share a granular endpoint", () => {
+    expect(
+      groupedGranularImport([
+        "Button",
+        "ButtonGroup",
+        "IconButton",
+        "SegmentedControl",
+        "ToggleButton",
+      ]),
+    ).toBe(
+      'import { Button, ButtonGroup, IconButton } from "greyui/components/button"; ' +
+        'import { SegmentedControl, ToggleButton } from "greyui/components/toggle-button";',
+    );
+    expect(() => groupedGranularImport(["UnknownComponent"])).toThrow(
+      "No granular import is documented for UnknownComponent.",
+    );
+  });
+
+  it("renders and copies the grouped granular imports for a component section", async () => {
     const writeText = vi.fn<(text: string) => Promise<void>>().mockResolvedValue(undefined);
     Object.defineProperty(navigator, "clipboard", {
       configurable: true,
@@ -33,18 +51,19 @@ describe("component import documentation", () => {
     const imports = ["Button", "ButtonGroup", "IconButton"] as const;
     render(<ComponentImport imports={imports} label="Buttons" />);
 
-    const statement = 'import { Button, ButtonGroup, IconButton } from "greyui";';
+    const statement =
+      'import { Button, ButtonGroup, IconButton } from "greyui/components/button";';
     expect(screen.getByText(statement)).not.toBeNull();
     fireEvent.click(screen.getByRole("button", { name: "Copy Buttons import" }));
 
     await waitFor(() => expect(writeText).toHaveBeenCalledWith(statement));
-    expect(groupedImport(imports)).toBe(statement);
+    expect(groupedGranularImport(imports)).toBe(statement);
     expect(
       granularImport({
         name: "Button",
         path: "button",
         imports: ["Button", "ButtonGroup", "IconButton"],
       }),
-    ).toBe('import { Button, ButtonGroup, IconButton } from "greyui/components/button";');
+    ).toBe(statement);
   });
 });
