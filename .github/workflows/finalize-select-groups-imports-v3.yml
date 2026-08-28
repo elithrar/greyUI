@@ -1,0 +1,94 @@
+name: Finalize Select, groups, and imports v3
+
+on:
+  push:
+    branches:
+      - fix/select-group-surfaces-import-banner
+    paths:
+      - .github/workflows/finalize-select-groups-imports-v3.yml
+
+permissions:
+  contents: write
+
+jobs:
+  finalize:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: fix/select-group-surfaces-import-banner
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+      - name: Apply reviewed implementation
+        run: |
+          python3 .github/review/finalize-select-groups-imports.py
+          python3 .github/review/split-overlay-imports.py
+      - run: npm run format
+      - run: npm run check
+      - run: npm run build
+      - run: npm run pack:check
+      - run: npm run verify:docs
+
+      - name: Install browser review dependency
+        run: |
+          npm install --no-save --package-lock=false playwright@1.55.0
+          npx playwright install --with-deps chromium
+
+      - name: Extract browser review
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          from textwrap import dedent
+
+          source = Path('.github/workflows/finalize-select-groups-imports.yml').read_text()
+          marker = "cat > visual-review.mjs <<'EOF'\n"
+          start = source.index(marker) + len(marker)
+          end = source.index('\n          EOF', start)
+          Path('visual-review.mjs').write_text(dedent(source[start:end]))
+          PY
+
+      - name: Start docs
+        run: |
+          npm run dev:docs -- --host 127.0.0.1 --port 4173 > /tmp/greyui-vite.log 2>&1 &
+          for attempt in $(seq 1 60); do
+            if curl --fail --silent http://127.0.0.1:4173 >/dev/null; then
+              exit 0
+            fi
+            sleep 1
+          done
+          cat /tmp/greyui-vite.log
+          exit 1
+
+      - name: Run visual and interaction review
+        run: |
+          mkdir -p artifacts/select-groups-imports
+          node visual-review.mjs
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: greyui-select-groups-imports-final
+          path: artifacts/select-groups-imports
+          retention-days: 14
+
+      - name: Commit reviewed changes and remove review scaffolding
+        run: |
+          rm -rf artifacts/select-groups-imports
+          rm -f visual-review.mjs
+          rm -rf .github/review
+          rm -f .github/workflows/diagnose-select-popup.yml
+          rm -f .github/workflows/review-select-popup.yml
+          rm -f .github/workflows/finalize-select-groups-imports.yml
+          rm -f .github/workflows/finalize-select-groups-imports-v2.yml
+          rm -f .github/workflows/finalize-select-groups-imports-v3.yml
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git diff --cached --check
+          git commit -m "Fix Select rows and contextualize component imports"
+          git push origin HEAD:fix/select-group-surfaces-import-banner
