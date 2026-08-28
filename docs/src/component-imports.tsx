@@ -20,6 +20,7 @@ export const COMPONENT_IMPORTS: readonly ComponentImportSpec[] = [
   { name: "Collapsible", path: "collapsible" },
   { name: "Combobox", path: "combobox" },
   { name: "ContextMenu", path: "context-menu" },
+  { name: "createVirtualAnchor", path: "popover" },
   { name: "DatePicker", path: "date-picker" },
   { name: "Dialog", path: "dialog" },
   { name: "Empty", path: "empty" },
@@ -62,17 +63,37 @@ export const COMPONENT_IMPORTS: readonly ComponentImportSpec[] = [
   { name: "WindowWidget", path: "window" },
 ] as const;
 
+const componentImportByName = new Map(COMPONENT_IMPORTS.map((spec) => [spec.name, spec]));
+
 export function granularImport(spec: ComponentImportSpec): string {
   const imports = spec.imports ?? [spec.name];
   return `import { ${imports.join(", ")} } from "greyui/components/${spec.path}";`;
 }
 
-export function groupedImport(imports: readonly string[]): string {
-  return `import { ${imports.join(", ")} } from "greyui";`;
+export function groupedGranularImport(imports: readonly string[]): string {
+  const importsByPath = new Map<string, string[]>();
+
+  for (const name of imports) {
+    const spec = componentImportByName.get(name);
+    if (spec === undefined) {
+      throw new Error(`No granular import is documented for ${name}.`);
+    }
+
+    const pathImports = importsByPath.get(spec.path);
+    if (pathImports === undefined) {
+      importsByPath.set(spec.path, [name]);
+    } else {
+      pathImports.push(name);
+    }
+  }
+
+  return Array.from(importsByPath, ([path, pathImports]) =>
+    granularImport({ name: pathImports[0] ?? path, path, imports: pathImports }),
+  ).join(" ");
 }
 
 export function ComponentImport({ imports, label }: { imports: readonly string[]; label: string }) {
-  const statement = groupedImport(imports);
+  const statement = groupedGranularImport(imports);
 
   return (
     <div className="docs-section-import">
