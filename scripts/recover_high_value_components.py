@@ -179,8 +179,8 @@ interactions = read("tests/high-value-components.test.tsx")
 interactions = replace_once(
     interactions,
     '    fireEvent.focus(input);\n    fireEvent.change(input, { target: { value: "Hai" } });',
-    '    fireEvent.click(input);\n    fireEvent.change(input, { target: { value: "Hai" } });',
-    "Autocomplete open interaction",
+    '    fireEvent.focus(input);\n    fireEvent.input(input, { target: { value: "Hai" }, inputType: "insertText" });',
+    "Autocomplete typed input interaction",
 )
 interactions = replace_once(
     interactions,
