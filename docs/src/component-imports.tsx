@@ -89,14 +89,14 @@ export function groupedGranularImport(imports: readonly string[]): string {
 
   return Array.from(importsByPath, ([path, pathImports]) =>
     granularImport({ name: pathImports[0] ?? path, path, imports: pathImports }),
-  ).join(" ");
+  ).join("\n");
 }
 
 export function ComponentImport({ imports, label }: { imports: readonly string[]; label: string }) {
   const statement = groupedGranularImport(imports);
 
   return (
-    <div className="docs-section-import">
+    <div className="docs-section-import" role="note" aria-label={`${label} imports`}>
       <span className="docs-section-import-label">Import</span>
       <CopyCommand value={statement} label={`${label} import`} />
     </div>

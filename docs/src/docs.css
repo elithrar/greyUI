@@ -517,17 +517,23 @@ pre {
 
 /* Section imports */
 .docs-section-import {
-  display: flex;
+  display: grid;
   width: min(100%, 760px);
   min-width: 0;
-  align-items: center;
-  gap: 6px;
-  margin: -7px 0 13px;
-  color: var(--greyui-text-muted);
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: start;
+  gap: 8px;
+  margin: -6px 0 14px;
+  padding: 5px 6px;
+  border: 1px solid var(--greyui-control-border);
+  background: var(--greyui-panel);
+  box-shadow: var(--greyui-bevel-inset);
+  color: var(--greyui-text);
 }
 
 .docs-section-import-label {
-  flex: 0 0 auto;
+  padding-top: 1px;
+  color: var(--greyui-text-muted);
   font-size: 10px;
   font-weight: 700;
   text-transform: uppercase;
@@ -535,20 +541,29 @@ pre {
 }
 
 .docs-section-import .docs-copy-command {
-  width: auto;
+  width: 100%;
+  min-width: 0;
   max-width: 100%;
-  flex: 1 1 auto;
+  align-items: start;
   padding: 0;
   border: 0;
   background: transparent;
   box-shadow: none;
-  color: inherit;
+  color: var(--greyui-text);
   font-size: 11px;
+  line-height: 1.35;
+}
+
+.docs-section-import .docs-copy-command-text {
+  min-width: 0;
+  overflow: visible;
+  text-overflow: clip;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
 }
 
 .docs-section-import .docs-copy-command:hover,
 .docs-section-import .docs-copy-command:focus-visible {
-  color: var(--greyui-text);
   outline: 1px dotted var(--greyui-keyboard-navigation);
   outline-offset: 2px;
 }
@@ -565,9 +580,8 @@ pre {
   border: 0;
   background: transparent;
   box-shadow: none;
-  color: currentcolor;
+  color: var(--greyui-text-muted);
   font: 700 9px / 1 var(--greyui-font-ui);
-  opacity: 0.72;
   text-transform: uppercase;
   letter-spacing: 0.03em;
 }
@@ -621,7 +635,7 @@ pre {
 .docs-high-value-demo-canvas {
   min-width: 0;
   padding: 10px;
-  background: var(--greyui-document);
+  background: var(--greyui-panel);
 }
 
 .docs-high-value-stack,

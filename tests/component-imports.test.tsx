@@ -33,7 +33,7 @@ describe("component import documentation", () => {
         "ToggleButton",
       ]),
     ).toBe(
-      'import { Button, ButtonGroup, IconButton } from "greyui/components/button"; ' +
+      'import { Button, ButtonGroup, IconButton } from "greyui/components/button";\n' +
         'import { SegmentedControl, ToggleButton } from "greyui/components/toggle-button";',
     );
     expect(() => groupedGranularImport(["UnknownComponent"])).toThrow(
@@ -52,6 +52,7 @@ describe("component import documentation", () => {
     const statement = granularImport({ name: "Button", path: "button", imports });
     render(<ComponentImport imports={imports} label="Buttons" />);
 
+    expect(screen.getByRole("note", { name: "Buttons imports" })).not.toBeNull();
     expect(screen.getByText(statement)).not.toBeNull();
     fireEvent.click(screen.getByRole("button", { name: "Copy Buttons import" }));
 

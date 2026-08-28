@@ -515,19 +515,30 @@
 }
 
 .greyui-select-list {
+  min-width: max-content;
   padding: 0;
 }
 
 .greyui-select-item {
   display: grid;
-  grid-template-columns: 1rem minmax(0, 1fr);
-  gap: 0.35rem;
-  align-items: center;
+  width: 100%;
   min-height: 24px;
+  box-sizing: border-box;
+  grid-template-columns: 1rem minmax(0, 1fr);
+  align-items: center;
+  gap: 0.35rem;
   padding: 0.3rem 0.5rem;
   color: var(--greyui-text);
   outline: none;
   cursor: pointer;
+  white-space: nowrap;
+}
+
+.greyui-select-item-text {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .greyui-select-item[data-highlighted],

@@ -93,7 +93,9 @@ export function Select({
                   <SelectPrimitive.ItemIndicator className="greyui-select-item-indicator">
                     ✓
                   </SelectPrimitive.ItemIndicator>
-                  <SelectPrimitive.ItemText>{option.label}</SelectPrimitive.ItemText>
+                  <SelectPrimitive.ItemText className="greyui-select-item-text">
+                    {option.label}
+                  </SelectPrimitive.ItemText>
                 </SelectPrimitive.Item>
               ))}
             </SelectPrimitive.List>
