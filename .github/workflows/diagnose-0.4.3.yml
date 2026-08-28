@@ -17,7 +17,7 @@ jobs:
       - uses: actions/checkout@v7
         with:
           ref: fix/number-field-imports-0.4.3
-      - name: Decode and print failing region
+      - name: Decode and print review script
         run: |
           python3 - <<'PY'
           import base64
@@ -31,4 +31,4 @@ jobs:
               raise RuntimeError(f'Expected two embedded payloads, found {len(payloads)}')
           Path('/tmp/visual-review.mjs').write_bytes(gzip.decompress(base64.b64decode(payloads[1])))
           PY
-          nl -ba /tmp/visual-review.mjs | sed -n '50,80p'
+          nl -ba /tmp/visual-review.mjs | sed -n '1,120p'
