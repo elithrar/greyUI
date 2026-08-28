@@ -45,13 +45,23 @@ jobs:
 
       - run: python3 scripts/apply_high_value_components.py
 
-      - name: Update generated type contracts
+      - name: Fix generated contracts and interactions
         run: |
           python3 - <<'PY'
           from pathlib import Path
+          import re
 
           test_path = Path("tests/component-imports.test.tsx")
-          test_source = test_path.read_text().replace(
+          test_source = test_path.read_text()
+          test_source = test_source.replace(
+              'import { fileURLToPath } from "node:url";',
+              'import { resolve } from "node:path";',
+          )
+          test_source = test_source.replace(
+              'fileURLToPath(new URL("../src/components", import.meta.url))',
+              'resolve(process.cwd(), "src/components")',
+          )
+          test_source = test_source.replace(
               "const writeText = vi.fn().mockResolvedValue(undefined);",
               "const writeText = vi.fn<(text: string) => Promise<void>>().mockResolvedValue(undefined);",
           )
@@ -70,6 +80,114 @@ jobs:
               replacement,
           )
           docs_path.write_text(docs_source)
+
+          context_path = Path("src/fieldset-context.ts")
+          context_path.write_text(
+              "\n".join(
+                  [
+                      'import { createContext, useContext } from "react";',
+                      "",
+                      "export const FieldsetDisabledContext = createContext(false);",
+                      "",
+                      "export function useFieldsetDisabled() {",
+                      "  return useContext(FieldsetDisabledContext);",
+                      "}",
+                      "",
+                  ]
+              )
+          )
+
+          fieldset_path = Path("src/components/fieldset.tsx")
+          fieldset_source = fieldset_path.read_text()
+          fieldset_source = fieldset_source.replace(
+              'import { Fieldset as FieldsetPrimitive } from "@base-ui/react/fieldset";',
+              'import { Fieldset as FieldsetPrimitive } from "@base-ui/react/fieldset";\nimport { FieldsetDisabledContext, useFieldsetDisabled } from "../fieldset-context";',
+          )
+          fieldset_root = "\n".join(
+              [
+                  "export function FieldsetRoot({",
+                  '  className = "",',
+                  "  disabled = false,",
+                  "  children,",
+                  "  ...props",
+                  "}: WithClassName<ComponentProps<typeof FieldsetPrimitive.Root>>) {",
+                  "  const parentDisabled = useFieldsetDisabled();",
+                  "  const resolvedDisabled = parentDisabled || disabled;",
+                  "",
+                  "  return (",
+                  "    <FieldsetDisabledContext.Provider value={resolvedDisabled}>",
+                  "      <FieldsetPrimitive.Root",
+                  '        data-greyui-component="fieldset"',
+                  "        disabled={resolvedDisabled}",
+                  '        className={`greyui-fieldset ${className}`.trim()}',
+                  "        {...props}",
+                  "      >",
+                  "        {children}",
+                  "      </FieldsetPrimitive.Root>",
+                  "    </FieldsetDisabledContext.Provider>",
+                  "  );",
+                  "}",
+              ]
+          )
+          fieldset_source, count = re.subn(
+              r"export function FieldsetRoot\(\{.*?\n\}\n\n(?=export function FieldsetLegend)",
+              fieldset_root + "\n\n",
+              fieldset_source,
+              count=1,
+              flags=re.S,
+          )
+          if count != 1:
+              raise RuntimeError("Could not replace generated Fieldset root")
+          fieldset_path.write_text(fieldset_source)
+
+          checkbox_path = Path("src/components/checkbox.tsx")
+          checkbox_source = checkbox_path.read_text()
+          checkbox_source = checkbox_source.replace(
+              'import { Checkbox as CheckboxPrimitive } from "@base-ui/react/checkbox";',
+              'import { Checkbox as CheckboxPrimitive } from "@base-ui/react/checkbox";\nimport { useFieldsetDisabled } from "../fieldset-context";',
+          )
+          checkbox_source = checkbox_source.replace(
+              "}: CheckboxProps) {\n  const control = (",
+              "}: CheckboxProps) {\n  const fieldsetDisabled = useFieldsetDisabled();\n  const resolvedDisabled = fieldsetDisabled || disabled === true;\n\n  const control = (",
+          )
+          checkbox_source = checkbox_source.replace("      disabled={disabled}\n", "      disabled={resolvedDisabled}\n")
+          checkbox_source = checkbox_source.replace(
+              'data-disabled={disabled ? "" : undefined}',
+              'data-disabled={resolvedDisabled ? "" : undefined}',
+          )
+          checkbox_path.write_text(checkbox_source)
+
+          autocomplete_path = Path("src/components/autocomplete.tsx")
+          autocomplete_source = autocomplete_path.read_text().replace(
+              "export const AutocompleteRoot = AutocompletePrimitive.Root;",
+              "\n".join(
+                  [
+                      "export function AutocompleteRoot<ItemValue>({",
+                      "  openOnInputClick = true,",
+                      "  ...props",
+                      "}: AutocompletePrimitive.Root.Props<ItemValue>) {",
+                      "  return (",
+                      "    <AutocompletePrimitive.Root",
+                      "      openOnInputClick={openOnInputClick}",
+                      "      {...props}",
+                      "    />",
+                      "  );",
+                      "}",
+                  ]
+              ),
+          )
+          autocomplete_path.write_text(autocomplete_source)
+
+          interaction_path = Path("tests/high-value-components.test.tsx")
+          interaction_source = interaction_path.read_text().replace(
+              "    fireEvent.focus(input);\n    fireEvent.change(input, { target: { value: \"Hai\" } });",
+              "    fireEvent.click(input);\n    fireEvent.change(input, { target: { value: \"Hai\" } });",
+          )
+          interaction_source = interaction_source.replace(
+              '    expect(\n      checkbox.hasAttribute("disabled") ||\n        checkbox.hasAttribute("data-disabled") ||\n        checkbox.getAttribute("aria-disabled") === "true",\n    ).toBe(true);',
+              '    expect(checkbox.hasAttribute("data-disabled")).toBe(true);\n    fireEvent.click(checkbox);\n    expect(checkbox.getAttribute("aria-checked")).toBe("false");',
+          )
+          interaction_path.write_text(interaction_source)
           PY
 
       - run: npm run format
