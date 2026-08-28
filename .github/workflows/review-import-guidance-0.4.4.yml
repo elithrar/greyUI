@@ -1,0 +1,304 @@
+name: Review import guidance and table 0.4.4
+
+on:
+  push:
+    branches:
+      - docs/simplify-import-guidance
+    paths:
+      - .github/workflows/review-import-guidance-0.4.4.yml
+
+permissions:
+  contents: write
+
+jobs:
+  review:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: docs/simplify-import-guidance
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+
+      - name: Apply implementation and version bump
+        run: |
+          python3 .github/review/simplify-import-guidance.py
+          npm version 0.4.4 --no-git-tag-version
+
+      - run: npm run format
+      - run: npm run check
+      - run: npm run build
+      - run: npm run pack:check
+      - run: npm run verify:docs
+
+      - name: Install browser review dependency
+        run: |
+          npm install --no-save --package-lock=false playwright@1.55.0
+          npx playwright install --with-deps chromium
+
+      - name: Start local docs
+        run: |
+          npm run dev:docs -- --host 127.0.0.1 --port 4173 > /tmp/greyui-vite.log 2>&1 &
+          for attempt in $(seq 1 60); do
+            if curl --fail --silent http://127.0.0.1:4173 >/dev/null; then
+              exit 0
+            fi
+            sleep 1
+          done
+          cat /tmp/greyui-vite.log
+          exit 1
+
+      - name: Run visual and interaction comparison
+        run: |
+          mkdir -p artifacts/import-guidance-table
+          cat > visual-review.mjs <<'EOF'
+          import assert from "node:assert/strict";
+          import { writeFile } from "node:fs/promises";
+          import { chromium } from "playwright";
+
+          const browser = await chromium.launch();
+          const widths = [1280, 768, 390, 320];
+          const expectedImport = 'import { Button, GroupBox, Select, Window } from "greyui";';
+          const expectedClone = "git clone https://github.com/elithrar/greyUI.git";
+          const report = { local: [], live: [] };
+          let localTokens;
+
+          async function tokenReport(page, prefix) {
+            return page.evaluate((tokenPrefix) => {
+              const root = getComputedStyle(document.documentElement);
+              const names = [
+                "panel",
+                "panel-light",
+                "panel-dark",
+                "control-border",
+                "border-dark",
+                "document",
+                "selection",
+              ];
+              return Object.fromEntries(
+                names.map((name) => [name, root.getPropertyValue(`--${tokenPrefix}-${name}`).trim().toLowerCase()]),
+              );
+            }, prefix);
+          }
+
+          async function resolvedTokenColors(page, prefix) {
+            return page.evaluate((tokenPrefix) => {
+              const names = [
+                "panel",
+                "panel-light",
+                "panel-dark",
+                "control-border",
+                "border-dark",
+                "document",
+                "selection",
+              ];
+              const probe = document.createElement("span");
+              probe.style.position = "fixed";
+              probe.style.left = "-9999px";
+              document.body.append(probe);
+              const result = {};
+              for (const name of names) {
+                probe.style.backgroundColor = `var(--${tokenPrefix}-${name})`;
+                result[name] = getComputedStyle(probe).backgroundColor;
+              }
+              probe.remove();
+              return result;
+            }, prefix);
+          }
+
+          for (const width of widths) {
+            const context = await browser.newContext({
+              viewport: { width, height: 1000 },
+              deviceScaleFactor: 1,
+              reducedMotion: "reduce",
+              permissions: ["clipboard-read", "clipboard-write"],
+            });
+            const page = await context.newPage();
+            await page.goto("http://127.0.0.1:4173", { waitUntil: "networkidle" });
+
+            const pageSize = await page.evaluate(() => ({
+              clientWidth: document.documentElement.clientWidth,
+              scrollWidth: document.documentElement.scrollWidth,
+            }));
+            assert.ok(pageSize.scrollWidth <= pageSize.clientWidth + 1, `Page overflow at ${width}px`);
+            assert.equal(await page.locator(".docs-component-import").count(), 0);
+            assert.equal(await page.getByText("IMPORT", { exact: true }).count(), 0);
+
+            const principles = page.locator("#principles");
+            const groupBoxes = principles.locator(".greyui-groupbox");
+            assert.equal(await groupBoxes.count(), 3);
+            const guide = groupBoxes.filter({ has: page.getByRole("heading", { name: "GroupBox component" }) });
+            assert.equal(await guide.count(), 1);
+            assert.equal(await guide.locator("li").count(), 3);
+            assert.equal((await guide.getByRole("button", { name: "Copy component import example" }).textContent())?.trim(), expectedImport);
+
+            await guide.getByRole("button", { name: "Copy component import example" }).click();
+            assert.equal(await page.evaluate(() => navigator.clipboard.readText()), expectedImport);
+
+            const install = page.locator(".docs-install");
+            const labels = await install.locator(".docs-install-label").allTextContents();
+            assert.deepEqual(labels.map((label) => label.trim()), ["Install with npm", "Clone source"]);
+            const commands = install.locator(".docs-copy-command");
+            assert.equal(await commands.count(), 2);
+            assert.equal((await commands.nth(0).textContent())?.trim(), "npm install greyui");
+            assert.equal((await commands.nth(1).textContent())?.trim(), expectedClone);
+            await page.getByRole("button", { name: "Copy git clone command" }).click();
+            assert.equal(await page.evaluate(() => navigator.clipboard.readText()), expectedClone);
+
+            const guideBox = await guide.boundingBox();
+            assert.ok(guideBox);
+            assert.ok(guideBox.width > Math.min(500, width - 40));
+            assert.ok(guideBox.height < (width <= 390 ? 300 : 190), `GroupBox guide too tall at ${width}px`);
+
+            const tokens = await tokenReport(page, "greyui");
+            const colors = await resolvedTokenColors(page, "greyui");
+            localTokens ??= tokens;
+
+            const table = page.locator("#content .greyui-table");
+            assert.equal(await table.count(), 1);
+            const tableMetrics = await table.evaluate((node) => {
+              const tableBox = node.getBoundingClientRect();
+              const rows = Array.from(node.querySelectorAll("tbody tr"));
+              const wrapper = node.closest(".greyui-table-wrap");
+              const firstRowCells = Array.from(rows[0]?.querySelectorAll("td") ?? []);
+              const secondRowCells = Array.from(rows[1]?.querySelectorAll("td") ?? []);
+              const lastRowCells = Array.from(rows.at(-1)?.querySelectorAll("td") ?? []);
+              const metrics = (cells) =>
+                cells.map((cell) => {
+                  const box = cell.getBoundingClientRect();
+                  const style = getComputedStyle(cell);
+                  return {
+                    left: box.left,
+                    right: box.right,
+                    backgroundColor: style.backgroundColor,
+                    borderBottomColor: style.borderBottomColor,
+                    borderBottomWidth: style.borderBottomWidth,
+                  };
+                });
+              return {
+                table: { left: tableBox.left, right: tableBox.right },
+                wrapperBackground: wrapper ? getComputedStyle(wrapper).backgroundColor : null,
+                first: metrics(firstRowCells),
+                second: metrics(secondRowCells),
+                last: metrics(lastRowCells),
+              };
+            });
+            assert.equal(tableMetrics.wrapperBackground, colors["panel-light"]);
+            for (const cell of tableMetrics.first) {
+              assert.equal(cell.backgroundColor, colors["panel-light"]);
+              assert.equal(cell.borderBottomColor, colors["control-border"]);
+              assert.equal(cell.borderBottomWidth, "1px");
+            }
+            for (const cell of tableMetrics.second) {
+              assert.equal(cell.backgroundColor, colors.panel);
+              assert.equal(cell.borderBottomColor, colors["control-border"]);
+              assert.equal(cell.borderBottomWidth, "1px");
+            }
+            for (const cell of tableMetrics.last) {
+              assert.equal(cell.borderBottomWidth, "0px");
+            }
+            assert.ok(Math.abs(tableMetrics.first[0].left - tableMetrics.table.left) <= 1);
+            assert.ok(Math.abs(tableMetrics.first.at(-1).right - tableMetrics.table.right) <= 1);
+
+            await page.locator(".docs-hero-window").screenshot({
+              path: `artifacts/import-guidance-table/hero-${width}.png`,
+            });
+            await principles.screenshot({
+              path: `artifacts/import-guidance-table/principles-${width}.png`,
+            });
+            await page.locator("#content").screenshot({
+              path: `artifacts/import-guidance-table/table-${width}.png`,
+            });
+
+            report.local.push({ width, pageSize, guideBox, tokens, colors, tableMetrics });
+            await context.close();
+          }
+
+          for (const width of [1280, 390]) {
+            const context = await browser.newContext({
+              viewport: { width, height: 1000 },
+              deviceScaleFactor: 1,
+              reducedMotion: "reduce",
+            });
+            const page = await context.newPage();
+            await page.goto("https://workbench.questionable.services/", {
+              waitUntil: "domcontentloaded",
+              timeout: 60000,
+            });
+            await page.waitForTimeout(2500);
+
+            const tokens = await tokenReport(page, "beos");
+            for (const [name, value] of Object.entries(localTokens)) {
+              assert.ok(tokens[name], `Live WorkbenchOS token --beos-${name} is missing`);
+              assert.equal(value, tokens[name], `Palette mismatch for ${name}`);
+            }
+
+            const tableRules = await page.evaluate(() => {
+              const matches = [];
+              const visit = (rules) => {
+                for (const rule of Array.from(rules ?? [])) {
+                  if ("cssRules" in rule) visit(rule.cssRules);
+                  if ("selectorText" in rule && rule.selectorText?.includes(".beos-table")) {
+                    matches.push({ selector: rule.selectorText, cssText: rule.style.cssText });
+                  }
+                }
+              };
+              for (const sheet of Array.from(document.styleSheets)) {
+                try {
+                  visit(sheet.cssRules);
+                } catch {
+                  // Ignore third-party cross-origin sheets; WorkbenchOS assets are same-origin.
+                }
+              }
+              return matches;
+            });
+            assert.ok(tableRules.length >= 5, "Live WorkbenchOS table rules were not found");
+
+            const liveGroupBox = page.locator(".beos-groupbox").first();
+            const groupBoxCount = await page.locator(".beos-groupbox").count();
+            if (groupBoxCount > 0) {
+              await liveGroupBox.screenshot({
+                path: `artifacts/import-guidance-table/workbenchos-groupbox-${width}.png`,
+              });
+            }
+            await page.screenshot({
+              path: `artifacts/import-guidance-table/workbenchos-${width}.png`,
+              fullPage: false,
+            });
+
+            report.live.push({ width, tokens, tableRules, groupBoxCount });
+            await context.close();
+          }
+
+          await browser.close();
+          await writeFile(
+            "artifacts/import-guidance-table/report.json",
+            `${JSON.stringify(report, null, 2)}\n`,
+          );
+          EOF
+          node visual-review.mjs
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: greyui-0.4.4-import-table-review
+          path: artifacts/import-guidance-table
+          retention-days: 14
+
+      - name: Commit reviewed changes and remove review scaffolding
+        run: |
+          rm -rf artifacts/import-guidance-table
+          rm -f visual-review.mjs
+          rm -rf .github/review
+          rm -f .github/workflows/review-import-guidance-0.4.4.yml
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git diff --cached --check
+          git commit -m "Simplify import guidance and refine table rows"
+          git push origin HEAD:docs/simplify-import-guidance
