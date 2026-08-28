@@ -1400,9 +1400,9 @@
   min-width: 0;
   margin: 0;
   padding: 0.55rem 0.6rem 0.65rem;
-  border: 1px solid var(--greyui-border-dark);
+  border: 1px solid var(--greyui-control-border);
   background: var(--greyui-panel);
-  box-shadow: inset 1px 1px 0 var(--greyui-border-light);
+  box-shadow: var(--greyui-bevel-inset);
 }
 
 .greyui-fieldset-legend {
@@ -1494,9 +1494,9 @@
 .greyui-accordion-panel {
   min-width: 0;
   padding: 0.5rem 0.55rem;
-  border: 1px solid var(--greyui-border-dark);
+  border: 1px solid var(--greyui-control-border);
   border-top: 0;
-  background: var(--greyui-document);
+  background: var(--greyui-panel);
   box-shadow: var(--greyui-bevel-inset);
 }
 

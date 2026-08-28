@@ -57,4 +57,20 @@ describe("default theme contrast", () => {
     expect(dialog).toBeGreaterThan(overlay);
     expect(tooltip).toBeGreaterThan(dialog);
   });
+
+  it("keeps Select menu labels single-line within a content-sized popup", () => {
+    const css = readFileSync(resolve(process.cwd(), "src/styles.css"), "utf8");
+
+    expect(css).toMatch(/\.greyui-select-list\s*\{[\s\S]*?min-width:\s*max-content/);
+    expect(css).toMatch(/\.greyui-select-item-text\s*\{[\s\S]*?grid-column:\s*2/);
+    expect(css).toMatch(/\.greyui-select-item-text\s*\{[\s\S]*?white-space:\s*nowrap/);
+    expect(css).toMatch(/\.greyui-select-item-indicator\s*\{[\s\S]*?grid-column:\s*1/);
+  });
+
+  it("uses standard panel surfaces for grouped controls", () => {
+    const css = readFileSync(resolve(process.cwd(), "src/components-v2.css"), "utf8");
+
+    expect(css).toMatch(/\.greyui-fieldset\s*\{[\s\S]*?background:\s*var\(--greyui-panel\)/);
+    expect(css).toMatch(/\.greyui-accordion-panel\s*\{[\s\S]*?background:\s*var\(--greyui-panel\)/);
+  });
 });

@@ -515,79 +515,65 @@ pre {
   }
 }
 
-/* Section imports */
-.docs-section-import {
-  display: flex;
-  width: min(100%, 760px);
+/* Contextual component imports */
+.docs-component-import {
+  display: grid;
   min-width: 0;
+  grid-template-columns: auto minmax(0, 1fr);
   align-items: center;
   gap: 6px;
-  margin: -7px 0 13px;
-  color: var(--greyui-text-muted);
+  padding: 4px 5px;
+  border-top: 1px solid var(--greyui-border-dark);
+  border-bottom: 1px solid var(--greyui-border-dark);
+  background: var(--greyui-panel-dark);
+  box-shadow: inset 1px 1px 0 var(--greyui-border-light);
+  color: var(--greyui-text);
 }
 
-.docs-section-import-label {
-  flex: 0 0 auto;
+.docs-section > .docs-component-import {
+  width: min(100%, 760px);
+  margin: -6px 0 12px;
+  border: 1px solid var(--greyui-border-dark);
+}
+
+.docs-component-import-label {
+  color: var(--greyui-text-muted);
   font-size: 10px;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.04em;
 }
 
-.docs-section-import .docs-copy-command {
-  width: auto;
+.docs-component-import .docs-copy-command {
+  width: 100%;
+  min-width: 0;
   max-width: 100%;
-  flex: 1 1 auto;
-  padding: 0;
-  border: 0;
-  background: transparent;
-  box-shadow: none;
-  color: inherit;
-  font-size: 11px;
-}
-
-.docs-section-import .docs-copy-command:hover,
-.docs-section-import .docs-copy-command:focus-visible {
+  padding: 2px 3px 2px 5px;
+  border-color: var(--greyui-border-dark);
+  background: var(--greyui-document);
+  box-shadow: var(--greyui-bevel-inset);
   color: var(--greyui-text);
-  outline: 1px dotted var(--greyui-keyboard-navigation);
-  outline-offset: 2px;
+  font-size: 11px;
+  line-height: 1.35;
 }
 
-.docs-section-import .docs-copy-command:active,
-.docs-section-import .docs-copy-command[data-copied="true"] {
-  background: transparent;
-  box-shadow: none;
+.docs-component-import .docs-copy-command-text {
+  min-width: 0;
+  overflow-x: auto;
+  overflow-y: hidden;
+  text-overflow: clip;
+  white-space: pre;
+  scrollbar-width: thin;
 }
 
-.docs-section-import .docs-copy-command-icon {
-  width: auto;
-  height: auto;
-  border: 0;
-  background: transparent;
-  box-shadow: none;
-  color: currentcolor;
-  font: 700 9px / 1 var(--greyui-font-ui);
-  opacity: 0.72;
-  text-transform: uppercase;
-  letter-spacing: 0.03em;
+.docs-component-import .docs-copy-command:hover,
+.docs-component-import .docs-copy-command:focus-visible {
+  outline: 1px solid var(--greyui-keyboard-navigation);
+  outline-offset: 0;
 }
 
-.docs-section-import .docs-copy-command-icon::before {
-  content: "Copy";
-  position: static;
-  width: auto;
-  height: auto;
-  border: 0;
-  background: transparent;
-  box-shadow: none;
-}
-
-.docs-section-import .docs-copy-command[data-copied="true"] .docs-copy-command-icon::before {
-  content: "Copied";
-}
-
-.docs-section-import .docs-copy-command[data-copied="true"] .docs-copy-command-icon::after {
-  content: none;
+.docs-component-import .docs-copy-command-icon {
+  flex: 0 0 auto;
 }
 
 .docs-high-value-grid {
@@ -621,7 +607,7 @@ pre {
 .docs-high-value-demo-canvas {
   min-width: 0;
   padding: 10px;
-  background: var(--greyui-document);
+  background: var(--greyui-panel);
 }
 
 .docs-high-value-stack,

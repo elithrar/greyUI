@@ -70,7 +70,7 @@ export function granularImport(spec: ComponentImportSpec): string {
   return `import { ${imports.join(", ")} } from "greyui/components/${spec.path}";`;
 }
 
-export function groupedGranularImport(imports: readonly string[]): string {
+export function groupedGranularImports(imports: readonly string[]): readonly string[] {
   const importsByPath = new Map<string, string[]>();
 
   for (const name of imports) {
@@ -89,15 +89,19 @@ export function groupedGranularImport(imports: readonly string[]): string {
 
   return Array.from(importsByPath, ([path, pathImports]) =>
     granularImport({ name: pathImports[0] ?? path, path, imports: pathImports }),
-  ).join(" ");
+  );
+}
+
+export function groupedGranularImport(imports: readonly string[]): string {
+  return groupedGranularImports(imports).join("\n");
 }
 
 export function ComponentImport({ imports, label }: { imports: readonly string[]; label: string }) {
   const statement = groupedGranularImport(imports);
 
   return (
-    <div className="docs-section-import">
-      <span className="docs-section-import-label">Import</span>
+    <div className="docs-component-import" role="note" aria-label={`${label} imports`}>
+      <span className="docs-component-import-label">Import</span>
       <CopyCommand value={statement} label={`${label} import`} />
     </div>
   );
