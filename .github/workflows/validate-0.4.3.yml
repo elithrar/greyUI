@@ -1,0 +1,242 @@
+name: Validate greyUI 0.4.3
+
+on:
+  push:
+    branches:
+      - fix/number-field-imports-0.4.3
+    paths:
+      - .github/workflows/validate-0.4.3.yml
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: fix/number-field-imports-0.4.3
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+      - run: npm run check
+      - run: npm run build
+      - run: npm run pack:check
+      - run: npm run verify:docs
+
+      - name: Install browser review dependency
+        run: |
+          npm install --no-save --package-lock=false playwright@1.55.0
+          npx playwright install --with-deps chromium
+
+      - name: Start docs
+        run: |
+          npm run dev:docs -- --host 127.0.0.1 --port 4173 > /tmp/greyui-vite.log 2>&1 &
+          for attempt in $(seq 1 60); do
+            if curl --fail --silent http://127.0.0.1:4173 >/dev/null; then
+              exit 0
+            fi
+            sleep 1
+          done
+          cat /tmp/greyui-vite.log
+          exit 1
+
+      - name: Run visual and interaction review
+        run: |
+          mkdir -p artifacts/visual-review-0.4.3
+          cat > /tmp/visual-review.mjs <<'EOF'
+          import assert from "node:assert/strict";
+          import { writeFile } from "node:fs/promises";
+          import { chromium } from "playwright";
+
+          const browser = await chromium.launch();
+          const widths = [1280, 768, 390, 320];
+          const report = [];
+
+          for (const width of widths) {
+            const context = await browser.newContext({
+              viewport: { width, height: 1000 },
+              deviceScaleFactor: 1,
+              reducedMotion: "reduce",
+              permissions: ["clipboard-read", "clipboard-write"],
+            });
+            const page = await context.newPage();
+            await page.goto("http://127.0.0.1:4173", { waitUntil: "networkidle" });
+
+            const overflow = await page.evaluate(() => ({
+              clientWidth: document.documentElement.clientWidth,
+              scrollWidth: document.documentElement.scrollWidth,
+            }));
+            assert.ok(
+              overflow.scrollWidth <= overflow.clientWidth + 1,
+              `Horizontal overflow at ${width}px: ${overflow.scrollWidth} > ${overflow.clientWidth}`,
+            );
+
+            assert.equal(await page.getByRole("link", { name: "Imports" }).count(), 0);
+            assert.equal(await page.getByRole("heading", { name: "Component imports" }).count(), 0);
+            assert.equal(await page.locator(".docs-import-catalog").count(), 0);
+
+            const importRows = page.locator(".docs-section-import");
+            assert.equal(await importRows.count(), 13);
+            const importMetrics = await importRows.evaluateAll((rows) =>
+              rows.map((row) => {
+                const box = row.getBoundingClientRect();
+                const section = row.closest(".docs-section");
+                const children = section ? Array.from(section.children) : [];
+                const button = row.querySelector(".docs-copy-command");
+                const buttonStyle = button ? getComputedStyle(button) : null;
+                const statement = row.querySelector("code")?.textContent ?? "";
+                const endpoints = Array.from(
+                  statement.matchAll(/greyui\/components\/([^\"]+)/g),
+                  (match) => match[1],
+                );
+                return {
+                  section: section?.id ?? null,
+                  childIndex: children.indexOf(row),
+                  height: box.height,
+                  left: box.left,
+                  right: box.right,
+                  statement,
+                  endpoints,
+                  borderWidth: buttonStyle?.borderTopWidth ?? null,
+                  boxShadow: buttonStyle?.boxShadow ?? null,
+                };
+              }),
+            );
+
+            for (const metric of importMetrics) {
+              assert.equal(metric.childIndex, 2, `${metric.section} import is not above its components`);
+              assert.ok(metric.height <= 24, `${metric.section} import is too tall: ${metric.height}px`);
+              assert.ok(metric.left >= -1);
+              assert.ok(metric.right <= width + 1);
+              assert.ok(metric.statement.includes('from "greyui/components/'));
+              assert.ok(!metric.statement.includes('from "greyui";'));
+              assert.equal(new Set(metric.endpoints).size, metric.endpoints.length);
+              assert.equal(metric.borderWidth, "0px");
+              assert.equal(metric.boxShadow, "none");
+            }
+
+            const buttonImport = page.locator("#buttons > .docs-section-import");
+            const buttonStatement =
+              'import { Button } from "greyui/components/button"; ' +
+              'import { SegmentedControl, ToggleButton } from "greyui/components/toggle-button";';
+            assert.equal(
+              await buttonImport.locator(".docs-copy-command-text").textContent(),
+              buttonStatement,
+            );
+            const copyButton = buttonImport.getByRole("button", { name: "Copy Buttons import" });
+            await copyButton.click();
+            await page.waitForFunction(
+              () =>
+                document
+                  .querySelector("#buttons .docs-copy-command")
+                  ?.getAttribute("data-copied") === "true",
+            );
+            assert.equal(await page.evaluate(() => navigator.clipboard.readText()), buttonStatement);
+
+            const fieldsStatement =
+              (await page.locator("#fields .docs-copy-command-text").textContent()) ?? "";
+            assert.ok(
+              fieldsStatement.includes(
+                'import { Input, Textarea } from "greyui/components/input";',
+              ),
+            );
+            assert.equal(
+              Array.from(fieldsStatement.matchAll(/greyui\/components\/input\"/g)).length,
+              1,
+            );
+
+            const numberDemo = page
+              .locator("#fields .docs-demo")
+              .filter({ has: page.getByText("Number field", { exact: true }) });
+            const numberMetrics = await numberDemo.evaluate((node) => {
+              const increment = node.querySelector(".greyui-number-field-increment");
+              const decrement = node.querySelector(".greyui-number-field-decrement");
+              const incrementIcon = increment?.querySelector(".greyui-number-field-step-icon");
+              const decrementIcon = decrement?.querySelector(".greyui-number-field-step-icon");
+              if (
+                !(increment instanceof HTMLElement) ||
+                !(decrement instanceof HTMLElement) ||
+                !(incrementIcon instanceof HTMLElement) ||
+                !(decrementIcon instanceof HTMLElement)
+              ) {
+                return null;
+              }
+
+              const buttonMetric = (button, icon) => {
+                const buttonBox = button.getBoundingClientRect();
+                const iconBox = icon.getBoundingClientRect();
+                return {
+                  width: buttonBox.width,
+                  height: buttonBox.height,
+                  iconWidth: iconBox.width,
+                  iconHeight: iconBox.height,
+                  centerOffsetX:
+                    iconBox.left + iconBox.width / 2 - (buttonBox.left + buttonBox.width / 2),
+                  centerOffsetY:
+                    iconBox.top + iconBox.height / 2 - (buttonBox.top + buttonBox.height / 2),
+                };
+              };
+
+              return {
+                increment: buttonMetric(increment, incrementIcon),
+                decrement: buttonMetric(decrement, decrementIcon),
+              };
+            });
+            assert.ok(numberMetrics !== null);
+            assert.equal(numberMetrics.increment.width, numberMetrics.decrement.width);
+            assert.equal(numberMetrics.increment.height, numberMetrics.decrement.height);
+            assert.equal(numberMetrics.increment.iconWidth, 8);
+            assert.equal(numberMetrics.decrement.iconWidth, 8);
+            assert.equal(numberMetrics.increment.iconHeight, 5);
+            assert.equal(numberMetrics.decrement.iconHeight, 5);
+            for (const metric of [numberMetrics.increment, numberMetrics.decrement]) {
+              assert.ok(Math.abs(metric.centerOffsetX) <= 0.75);
+              assert.ok(Math.abs(metric.centerOffsetY) <= 0.75);
+            }
+
+            const numberInput = numberDemo.getByRole("textbox", { name: "Rev limit" });
+            assert.equal(await numberInput.inputValue(), "6,500");
+            await numberDemo.getByRole("button", { name: "Increase" }).click();
+            assert.equal(await numberInput.inputValue(), "6,600");
+            await numberDemo.getByRole("button", { name: "Decrease" }).click();
+            assert.equal(await numberInput.inputValue(), "6,500");
+            await numberInput.focus();
+            await page.keyboard.press("ArrowUp");
+            assert.equal(await numberInput.inputValue(), "6,600");
+            await page.keyboard.press("ArrowDown");
+            assert.equal(await numberInput.inputValue(), "6,500");
+
+            await page.locator("#fields").screenshot({
+              path: `artifacts/visual-review-0.4.3/fields-${width}.png`,
+            });
+            await page.locator("#buttons").screenshot({
+              path: `artifacts/visual-review-0.4.3/buttons-${width}.png`,
+            });
+            await page.screenshot({
+              path: `artifacts/visual-review-0.4.3/full-${width}.png`,
+              fullPage: true,
+            });
+
+            report.push({ width, overflow, importMetrics, numberMetrics });
+            await context.close();
+          }
+
+          await browser.close();
+          await writeFile(
+            "artifacts/visual-review-0.4.3/report.json",
+            `${JSON.stringify(report, null, 2)}\n`,
+          );
+          EOF
+          node /tmp/visual-review.mjs
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: greyui-0.4.3-granular-import-review
+          path: artifacts/visual-review-0.4.3
+          retention-days: 14
