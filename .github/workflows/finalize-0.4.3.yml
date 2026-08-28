@@ -89,24 +89,23 @@ jobs:
           path = Path('visual-review-0.4.3.mjs')
           path.write_bytes(gzip.decompress(base64.b64decode(payload)))
           source = path.read_text()
-          old = '''  await buttonImport.getByRole("button", { name: "Copy Buttons import" }).click();
-  assert.equal(
-    await buttonImport.getByRole("button", { name: "Copy Buttons import" }).getAttribute(
-      "data-copied",
-    ),
-    "true",
-  );'''
-          new = '''  const copyButton = buttonImport.getByRole("button", { name: "Copy Buttons import" });
-  await copyButton.click();
-  const copyButtonHandle = await copyButton.elementHandle();
-  assert.ok(copyButtonHandle);
-  await page.waitForFunction(
-    (button) => button.getAttribute("data-copied") === "true",
-    copyButtonHandle,
-  );'''
-          if old not in source:
+          start_marker = '  await buttonImport.getByRole("button", { name: "Copy Buttons import" }).click();'
+          end_marker = '\n\n  const highValue'
+          start = source.find(start_marker)
+          end = source.find(end_marker, start)
+          if start < 0 or end < 0:
               raise RuntimeError('Could not find copy assertion to make asynchronous')
-          path.write_text(source.replace(old, new))
+          replacement = '\n'.join([
+              '  const copyButton = buttonImport.getByRole("button", { name: "Copy Buttons import" });',
+              '  await copyButton.click();',
+              '  const copyButtonHandle = await copyButton.elementHandle();',
+              '  assert.ok(copyButtonHandle);',
+              '  await page.waitForFunction(',
+              '    (button) => button.getAttribute("data-copied") === "true",',
+              '    copyButtonHandle,',
+              '  );',
+          ])
+          path.write_text(source[:start] + replacement + source[end:])
           PY
 
       - name: Start docs
