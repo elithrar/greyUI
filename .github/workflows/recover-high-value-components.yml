@@ -58,13 +58,16 @@ jobs:
           test_path.write_text(test_source)
 
           docs_path = Path("docs/src/high-value-components.tsx")
+          replacement = (
+              "        {imports === undefined ? (\n"
+              "          <ComponentImport name={name} path={path} />\n"
+              "        ) : (\n"
+              "          <ComponentImport name={name} path={path} imports={imports} />\n"
+              "        )}"
+          )
           docs_source = docs_path.read_text().replace(
               "        <ComponentImport name={name} path={path} imports={imports} />",
-              """        {imports === undefined ? (
-          <ComponentImport name={name} path={path} />
-        ) : (
-          <ComponentImport name={name} path={path} imports={imports} />
-        )}""",
+              replacement,
           )
           docs_path.write_text(docs_source)
           PY
