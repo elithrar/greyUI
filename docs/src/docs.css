@@ -515,24 +515,28 @@ pre {
   }
 }
 
-/* Section imports */
-.docs-section-import {
+/* Contextual component imports */
+.docs-component-import {
   display: grid;
-  width: min(100%, 760px);
   min-width: 0;
   grid-template-columns: auto minmax(0, 1fr);
-  align-items: start;
-  gap: 8px;
-  margin: -6px 0 14px;
-  padding: 5px 6px;
-  border: 1px solid var(--greyui-control-border);
-  background: var(--greyui-panel);
-  box-shadow: var(--greyui-bevel-inset);
+  align-items: center;
+  gap: 6px;
+  padding: 4px 5px;
+  border-top: 1px solid var(--greyui-border-dark);
+  border-bottom: 1px solid var(--greyui-border-dark);
+  background: var(--greyui-panel-dark);
+  box-shadow: inset 1px 1px 0 var(--greyui-border-light);
   color: var(--greyui-text);
 }
 
-.docs-section-import-label {
-  padding-top: 1px;
+.docs-section > .docs-component-import {
+  width: min(100%, 760px);
+  margin: -6px 0 12px;
+  border: 1px solid var(--greyui-border-dark);
+}
+
+.docs-component-import-label {
   color: var(--greyui-text-muted);
   font-size: 10px;
   font-weight: 700;
@@ -540,68 +544,36 @@ pre {
   letter-spacing: 0.04em;
 }
 
-.docs-section-import .docs-copy-command {
+.docs-component-import .docs-copy-command {
   width: 100%;
   min-width: 0;
   max-width: 100%;
-  align-items: start;
-  padding: 0;
-  border: 0;
-  background: transparent;
-  box-shadow: none;
+  padding: 2px 3px 2px 5px;
+  border-color: var(--greyui-border-dark);
+  background: var(--greyui-document);
+  box-shadow: var(--greyui-bevel-inset);
   color: var(--greyui-text);
   font-size: 11px;
   line-height: 1.35;
 }
 
-.docs-section-import .docs-copy-command-text {
+.docs-component-import .docs-copy-command-text {
   min-width: 0;
-  overflow: visible;
+  overflow-x: auto;
+  overflow-y: hidden;
   text-overflow: clip;
-  white-space: pre-wrap;
-  overflow-wrap: anywhere;
+  white-space: pre;
+  scrollbar-width: thin;
 }
 
-.docs-section-import .docs-copy-command:hover,
-.docs-section-import .docs-copy-command:focus-visible {
-  outline: 1px dotted var(--greyui-keyboard-navigation);
-  outline-offset: 2px;
+.docs-component-import .docs-copy-command:hover,
+.docs-component-import .docs-copy-command:focus-visible {
+  outline: 1px solid var(--greyui-keyboard-navigation);
+  outline-offset: 0;
 }
 
-.docs-section-import .docs-copy-command:active,
-.docs-section-import .docs-copy-command[data-copied="true"] {
-  background: transparent;
-  box-shadow: none;
-}
-
-.docs-section-import .docs-copy-command-icon {
-  width: auto;
-  height: auto;
-  border: 0;
-  background: transparent;
-  box-shadow: none;
-  color: var(--greyui-text-muted);
-  font: 700 9px / 1 var(--greyui-font-ui);
-  text-transform: uppercase;
-  letter-spacing: 0.03em;
-}
-
-.docs-section-import .docs-copy-command-icon::before {
-  content: "Copy";
-  position: static;
-  width: auto;
-  height: auto;
-  border: 0;
-  background: transparent;
-  box-shadow: none;
-}
-
-.docs-section-import .docs-copy-command[data-copied="true"] .docs-copy-command-icon::before {
-  content: "Copied";
-}
-
-.docs-section-import .docs-copy-command[data-copied="true"] .docs-copy-command-icon::after {
-  content: none;
+.docs-component-import .docs-copy-command-icon {
+  flex: 0 0 auto;
 }
 
 .docs-high-value-grid {

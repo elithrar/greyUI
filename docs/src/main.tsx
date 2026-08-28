@@ -57,10 +57,21 @@ const sections = [
   ["tokens", "Tokens"],
 ] as const;
 
-function Demo({ title, children, code }: { title: string; children: ReactNode; code?: string }) {
+function Demo({
+  title,
+  children,
+  code,
+  imports,
+}: {
+  title: string;
+  children: ReactNode;
+  code?: string;
+  imports?: readonly string[];
+}) {
   return (
     <div className="docs-demo">
       <div className="docs-demo-title">{title}</div>
+      {imports ? <ComponentImport imports={imports} label={title} /> : null}
       <div className="docs-demo-canvas">{children}</div>
       {code ? (
         <pre className="docs-code">
@@ -75,20 +86,17 @@ function Section({
   id,
   title,
   intro,
-  imports,
   children,
 }: {
   id: string;
   title: string;
   intro: ReactNode;
-  imports?: readonly string[];
   children: ReactNode;
 }) {
   return (
     <section className="docs-section" id={id}>
       <h2>{title}</h2>
       <p className="docs-lede">{intro}</p>
-      {imports ? <ComponentImport imports={imports} label={title} /> : null}
       {children}
     </section>
   );
@@ -166,8 +174,8 @@ function App() {
               id="principles"
               title="Principles"
               intro="Compact controls, neutral panels, white document surfaces, and BeOS-style window chrome."
-              imports={["GroupBox"]}
             >
+              <ComponentImport imports={["GroupBox"]} label="Group boxes" />
               <div className="docs-principles">
                 <GroupBox title="Visual language">
                   <ul>
@@ -195,10 +203,10 @@ function App() {
               id="buttons"
               title="Buttons"
               intro="Compact beveled buttons. The defaultAction prop adds the default-action outline."
-              imports={["Button", "SegmentedControl", "ToggleButton"]}
             >
               <Demo
                 title="Variants"
+                imports={["Button", "SegmentedControl", "ToggleButton"]}
                 code={
                   '<Button>Cancel</Button>\n<Button defaultAction variant="primary">Apply</Button>\n<Button variant="destructive">Delete</Button>'
                 }
@@ -235,16 +243,8 @@ function App() {
               id="fields"
               title="Fields"
               intro="Inputs, textareas, selects, number fields, and comboboxes use white inset editing surfaces."
-              imports={[
-                "Combobox",
-                "Field",
-                "Input",
-                "InputGroup",
-                "NumberField",
-                "Select",
-                "Textarea",
-              ]}
             >
+              <ComponentImport imports={["Input", "Textarea", "Select"]} label="Basic fields" />
               <div className="docs-grid-2">
                 <Demo title="Input">
                   <label className="docs-field">
@@ -277,9 +277,11 @@ function App() {
               id="selection"
               title="Selection controls"
               intro="Checkboxes, radios, and switches use compact system-control sizing. Base UI handles state and keyboard behavior."
-              imports={["Checkbox", "RadioGroup", "Switch"]}
             >
-              <Demo title="Checkbox, radio and switch">
+              <Demo
+                title="Checkbox, radio and switch"
+                imports={["Checkbox", "RadioGroup", "Switch"]}
+              >
                 <div className="docs-selection-grid">
                   <div className="docs-stack">
                     <Checkbox defaultChecked label="Show decoded values" />
@@ -312,14 +314,6 @@ function App() {
                   compact geometry used by <a href={WORKBENCH_URL}>WorkbenchOS</a>.
                 </>
               }
-              imports={[
-                "Accordion",
-                "Autocomplete",
-                "Checkbox",
-                "CheckboxGroup",
-                "Fieldset",
-                "ToggleGroup",
-              ]}
             >
               <HighValueComponentDemos />
             </Section>
@@ -333,7 +327,6 @@ function App() {
                   same compact control geometry used by <a href={WORKBENCH_URL}>WorkbenchOS</a>.
                 </>
               }
-              imports={["Button", "Collapsible", "ContextMenu", "Separator", "Slider", "Toolbar"]}
             >
               <DesktopDemos />
             </Section>
@@ -348,7 +341,6 @@ function App() {
                   notification panel rather than card styling.
                 </>
               }
-              imports={["Button", "Meter", "Progress", "Toast"]}
             >
               <FeedbackDemos />
             </Section>
@@ -363,7 +355,6 @@ function App() {
                   modern card styling.
                 </>
               }
-              imports={["Banner", "Breadcrumbs", "Button", "Empty", "Loader", "Pagination"]}
             >
               <KumoPatternDemos />
             </Section>
@@ -372,19 +363,6 @@ function App() {
               id="integration"
               title="Application primitives"
               intro="Compact, accessible pieces for map overlays, dashboards, and single-screen tools: responsive windows, grouped icon actions, structured status, dates, segmented values, and coordinate-driven popovers."
-              imports={[
-                "ButtonGroup",
-                "DatePicker",
-                "IconButton",
-                "Popover",
-                "SegmentedMeter",
-                "StatusBar",
-                "StatusBarItem",
-                "StatusBarSeparator",
-                "StatusLight",
-                "Window",
-                "createVirtualAnchor",
-              ]}
             >
               <IntegrationDemos />
             </Section>
@@ -393,9 +371,8 @@ function App() {
               id="tabs"
               title="Tabs"
               intro="Tabs use beveled triggers and an inset white panel for the active view. Window title tabs use the separate yellow/grey active state."
-              imports={["Tabs"]}
             >
-              <Demo title="Related views">
+              <Demo title="Related views" imports={["Tabs"]}>
                 <Tabs
                   defaultValue="general"
                   items={[
@@ -423,20 +400,28 @@ function App() {
               id="overlays"
               title="Menus & overlays"
               intro="Menus, popovers, tooltips, toasts, app-owned overlays, and dialogs use Layer.Provider to escape map and window stacking contexts in a stable order."
-              imports={["AlertDialog", "Dialog", "Layer", "Menu", "Popover", "Tooltip"]}
             >
-              <Demo title="Interactive overlays">
-                <div className="docs-row">
-                  <Menu.Root>
-                    <Menu.Trigger>Actions</Menu.Trigger>
-                    <Menu.Popup>
-                      <Menu.Item>Open</Menu.Item>
-                      <Menu.Item>Duplicate</Menu.Item>
-                      <Menu.Separator />
-                      <Menu.Item>Properties…</Menu.Item>
-                    </Menu.Popup>
-                  </Menu.Root>
+              <div className="docs-grid-2 docs-component-grid">
+                <Demo title="Menu and tooltip" imports={["Menu", "Tooltip"]}>
+                  <div className="docs-row">
+                    <Menu.Root>
+                      <Menu.Trigger>Actions</Menu.Trigger>
+                      <Menu.Popup>
+                        <Menu.Item>Open</Menu.Item>
+                        <Menu.Item>Duplicate</Menu.Item>
+                        <Menu.Separator />
+                        <Menu.Item>Properties…</Menu.Item>
+                      </Menu.Popup>
+                    </Menu.Root>
 
+                    <Tooltip.Root>
+                      <Tooltip.Trigger className="greyui-button">Hover me</Tooltip.Trigger>
+                      <Tooltip.Popup>Tooltip</Tooltip.Popup>
+                    </Tooltip.Root>
+                  </div>
+                </Demo>
+
+                <Demo title="Popover" imports={["Popover"]}>
                   <Popover.Root>
                     <Popover.Trigger>Details…</Popover.Trigger>
                     <Popover.Popup
@@ -448,52 +433,53 @@ function App() {
                       </Popover.Close>
                     </Popover.Popup>
                   </Popover.Root>
+                </Demo>
 
-                  <Dialog.Root>
-                    <Dialog.Trigger>Open dialog…</Dialog.Trigger>
-                    <Dialog.Popup title="Enable edit mode" description="Apply to save the changes.">
-                      <div className="docs-dialog-actions">
-                        <Dialog.Close className="greyui-button">Cancel</Dialog.Close>
-                        <Dialog.Close className="greyui-button" data-variant="primary">
-                          Enable edits
-                        </Dialog.Close>
-                      </div>
-                    </Dialog.Popup>
-                  </Dialog.Root>
+                <Demo title="Dialogs" imports={["AlertDialog", "Dialog", "Layer"]}>
+                  <div className="docs-row">
+                    <Dialog.Root>
+                      <Dialog.Trigger>Open dialog…</Dialog.Trigger>
+                      <Dialog.Popup
+                        title="Enable edit mode"
+                        description="Apply to save the changes."
+                      >
+                        <div className="docs-dialog-actions">
+                          <Dialog.Close className="greyui-button">Cancel</Dialog.Close>
+                          <Dialog.Close className="greyui-button" data-variant="primary">
+                            Enable edits
+                          </Dialog.Close>
+                        </div>
+                      </Dialog.Popup>
+                    </Dialog.Root>
 
-                  <AlertDialog.Root>
-                    <AlertDialog.Trigger>Discard…</AlertDialog.Trigger>
-                    <AlertDialog.Popup
-                      title="Discard changes?"
-                      description="This action cannot be undone."
-                    >
-                      <div className="docs-dialog-actions">
-                        <AlertDialog.Close className="greyui-button">
-                          Keep editing
-                        </AlertDialog.Close>
-                        <AlertDialog.Close className="greyui-button" data-variant="destructive">
-                          Discard
-                        </AlertDialog.Close>
-                      </div>
-                    </AlertDialog.Popup>
-                  </AlertDialog.Root>
-
-                  <Tooltip.Root>
-                    <Tooltip.Trigger className="greyui-button">Hover me</Tooltip.Trigger>
-                    <Tooltip.Popup>Tooltip</Tooltip.Popup>
-                  </Tooltip.Root>
-                </div>
-              </Demo>
+                    <AlertDialog.Root>
+                      <AlertDialog.Trigger>Discard…</AlertDialog.Trigger>
+                      <AlertDialog.Popup
+                        title="Discard changes?"
+                        description="This action cannot be undone."
+                      >
+                        <div className="docs-dialog-actions">
+                          <AlertDialog.Close className="greyui-button">
+                            Keep editing
+                          </AlertDialog.Close>
+                          <AlertDialog.Close className="greyui-button" data-variant="destructive">
+                            Discard
+                          </AlertDialog.Close>
+                        </div>
+                      </AlertDialog.Popup>
+                    </AlertDialog.Root>
+                  </div>
+                </Demo>
+              </div>
             </Section>
 
             <Section
               id="content"
               title="Content surfaces"
               intro="Tables and scroll areas use dense, undecorated layouts."
-              imports={["Badge", "ScrollArea", "Table"]}
             >
               <div className="docs-grid-2">
-                <Demo title="Table">
+                <Demo title="Table" imports={["Badge", "Table"]}>
                   <Table>
                     <thead>
                       <tr>
@@ -527,7 +513,7 @@ function App() {
                     </tbody>
                   </Table>
                 </Demo>
-                <Demo title="Scroll area">
+                <Demo title="Scroll area" imports={["ScrollArea"]}>
                   <ScrollArea className="docs-scroll-demo" stableGutter>
                     <div className="docs-scroll-content">
                       {Array.from({ length: 18 }, (_, index) => (
@@ -543,9 +529,11 @@ function App() {
               id="window"
               title="Window shell"
               intro="Window preserves its chrome while offering optional controlled or uncontrolled collapse state. Stacked mode remains the responsive default; floating mode keeps compact overlay geometry on small screens."
-              imports={["Menu", "MenuBar", "StatusBar", "Window", "WindowWidget"]}
             >
-              <Demo title="Active and inactive windows">
+              <Demo
+                title="Active and inactive windows"
+                imports={["Menu", "MenuBar", "StatusBar", "Window", "WindowWidget"]}
+              >
                 <div className="docs-window-pair">
                   <Window title="Preferences" collapsible>
                     <MenuBar>

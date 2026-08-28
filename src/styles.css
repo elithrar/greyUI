@@ -535,6 +535,7 @@
 }
 
 .greyui-select-item-text {
+  grid-column: 2;
   min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -553,6 +554,7 @@
 }
 
 .greyui-select-item-indicator {
+  grid-column: 1;
   font-weight: 700;
   text-align: center;
 }

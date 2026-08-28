@@ -7,6 +7,7 @@ import {
   ComponentImport,
   granularImport,
   groupedGranularImport,
+  groupedGranularImports,
 } from "../docs/src/component-imports";
 
 afterEach(cleanup);
@@ -36,6 +37,10 @@ describe("component import documentation", () => {
       'import { Button, ButtonGroup, IconButton } from "greyui/components/button";\n' +
         'import { SegmentedControl, ToggleButton } from "greyui/components/toggle-button";',
     );
+    expect(groupedGranularImports(["Input", "Textarea", "Select"])).toEqual([
+      'import { Input, Textarea } from "greyui/components/input";',
+      'import { Select } from "greyui/components/select";',
+    ]);
     expect(() => groupedGranularImport(["UnknownComponent"])).toThrow(
       "No granular import is documented for UnknownComponent.",
     );

@@ -62,7 +62,9 @@ describe("default theme contrast", () => {
     const css = readFileSync(resolve(process.cwd(), "src/styles.css"), "utf8");
 
     expect(css).toMatch(/\.greyui-select-list\s*\{[\s\S]*?min-width:\s*max-content/);
+    expect(css).toMatch(/\.greyui-select-item-text\s*\{[\s\S]*?grid-column:\s*2/);
     expect(css).toMatch(/\.greyui-select-item-text\s*\{[\s\S]*?white-space:\s*nowrap/);
+    expect(css).toMatch(/\.greyui-select-item-indicator\s*\{[\s\S]*?grid-column:\s*1/);
   });
 
   it("uses standard panel surfaces for grouped controls", () => {
