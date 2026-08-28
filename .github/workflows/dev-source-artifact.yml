@@ -1,0 +1,20 @@
+name: Development source artifact
+
+on:
+  push:
+    branches: [feature/high-value-components]
+
+permissions:
+  contents: read
+
+jobs:
+  source:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/upload-artifact@v4
+        with:
+          name: greyui-source
+          path: .
+          include-hidden-files: true
+          retention-days: 1
