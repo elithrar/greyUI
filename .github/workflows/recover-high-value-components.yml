@@ -24,6 +24,25 @@ jobs:
           cache: npm
 
       - run: npm ci
+
+      - name: Update stale docs anchors
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+
+          path = Path("scripts/apply_high_value_components.py")
+          source = path.read_text()
+          source = source.replace(
+              "main = insert_once(main, '          <Section\\n            id=\"buttons\"'",
+              "main = insert_once(main, '            <Section\\n              id=\"buttons\"'",
+          )
+          source = source.replace(
+              "main = insert_once(main, '          <Section\\n            id=\"desktop\"'",
+              "main = insert_once(main, '            <Section\\n              id=\"desktop\"'",
+          )
+          path.write_text(source)
+          PY
+
       - run: python3 scripts/apply_high_value_components.py
       - run: npm run format
       - run: npm run check
