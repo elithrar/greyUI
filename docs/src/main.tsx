@@ -184,30 +184,6 @@ function App() {
                     </li>
                   </ul>
                 </GroupBox>
-                <GroupBox title="GroupBox component" className="docs-import-guide">
-                  <div className="docs-import-guide-example">
-                    <p>
-                      <code>GroupBox</code> is greyUI&apos;s titled, inset container for related
-                      controls and content.
-                    </p>
-                    <CopyCommand
-                      value={COMPONENT_IMPORT_EXAMPLE}
-                      label="component import example"
-                    />
-                  </div>
-                  <ul>
-                    <li>
-                      Import <code>greyui/styles.css</code> once in your application entry point.
-                    </li>
-                    <li>
-                      Use the root entry shown here, or granular entries under
-                      <code> greyui/components/*</code>.
-                    </li>
-                    <li>
-                      Use <code>GroupBox</code> for compact titled groups like this one.
-                    </li>
-                  </ul>
-                </GroupBox>
               </div>
             </Section>
 
@@ -363,6 +339,27 @@ function App() {
                 </>
               }
             >
+              <GroupBox title="GroupBox component" className="docs-import-guide">
+                <div className="docs-import-guide-example">
+                  <p>
+                    <code>GroupBox</code> is greyUI&apos;s titled, inset container for related
+                    controls and content.
+                  </p>
+                  <CopyCommand value={COMPONENT_IMPORT_EXAMPLE} label="component import example" />
+                </div>
+                <ul>
+                  <li>
+                    Import <code>greyui/styles.css</code> once in your application entry point.
+                  </li>
+                  <li>
+                    Use the root entry shown here, or granular entries under
+                    <code> greyui/components/*</code>.
+                  </li>
+                  <li>
+                    Use <code>GroupBox</code> for compact titled groups like this one.
+                  </li>
+                </ul>
+              </GroupBox>
               <KumoPatternDemos />
             </Section>
 
