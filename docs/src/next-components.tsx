@@ -15,6 +15,8 @@ import {
   Input,
   InputGroup,
   Loader,
+  Menu,
+  MenuBar,
   Meter,
   NumberField,
   Pagination,
@@ -388,6 +390,36 @@ export function IntegrationDemos() {
 
   return (
     <div className="docs-grid-2 docs-component-grid">
+      <Demo title="Menu bar">
+        <MenuBar>
+          <Menu.Root>
+            <Menu.Trigger>File</Menu.Trigger>
+            <Menu.Popup>
+              <Menu.Item>Open…</Menu.Item>
+              <Menu.Item>Save</Menu.Item>
+              <Menu.Separator />
+              <Menu.Item>Close</Menu.Item>
+            </Menu.Popup>
+          </Menu.Root>
+          <Menu.Root>
+            <Menu.Trigger>Edit</Menu.Trigger>
+            <Menu.Popup>
+              <Menu.Item>Undo</Menu.Item>
+              <Menu.Item>Redo</Menu.Item>
+            </Menu.Popup>
+          </Menu.Root>
+        </MenuBar>
+      </Demo>
+
+      <Demo title="Status bar">
+        <StatusBar>
+          <StatusLight state="ready" label="Connected" />
+          <StatusBarItem grow>Ready</StatusBarItem>
+          <StatusBarSeparator />
+          <StatusBarItem>3 items</StatusBarItem>
+        </StatusBar>
+      </Demo>
+
       <Demo title="Compact date picker">
         <DatePicker
           label="Ride date"
