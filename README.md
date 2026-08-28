@@ -29,6 +29,7 @@ Both forms use the same build graph. CI checks that representative root imports 
 
 - Simple controls accept the corresponding native element props. Compound controls use `Root` plus named parts and preserve Base UI keyboard, focus, positioning, and ARIA behavior.
 - The greyUI docs describe greyUI-specific defaults, composition, and visual behavior. Use the [Base UI component reference](https://base-ui.com/react/components) for exhaustive primitive props.
+- Consumers still provide accessible names and visible labels where appropriate; compound controls follow Base UI's controlled and uncontrolled conventions.
 - `Button` defaults to `type="button"`; opt into submit behavior explicitly.
 - Wrap applications that use menus, popovers, dialogs, toasts, or tooltips in `Layer.Provider` so overlays share stable top-level hosts.
 
