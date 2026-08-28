@@ -26,6 +26,8 @@ import {
   Window,
 } from "../../src";
 import { CopyCommand } from "./CopyCommand";
+import { ComponentImportCatalog } from "./component-imports";
+import { HighValueComponentDemos } from "./high-value-components";
 import {
   DesktopDemos,
   FeedbackDemos,
@@ -40,9 +42,11 @@ const WORKBENCH_URL = "https://workbench.questionable.services/";
 
 const sections = [
   ["principles", "Principles"],
+  ["imports", "Imports"],
   ["buttons", "Buttons"],
   ["fields", "Fields"],
   ["selection", "Selection"],
+  ["high-value", "Grouped controls"],
   ["desktop", "Desktop controls"],
   ["feedback", "Feedback"],
   ["patterns", "Application patterns"],
@@ -182,6 +186,14 @@ function App() {
             </Section>
 
             <Section
+              id="imports"
+              title="Component imports"
+              intro="Copy the granular ESM import for any component. Import the shared stylesheet once from greyui/styles.css."
+            >
+              <ComponentImportCatalog />
+            </Section>
+
+            <Section
               id="buttons"
               title="Buttons"
               intro="Compact beveled buttons. The defaultAction prop adds the default-action outline."
@@ -280,6 +292,19 @@ function App() {
                   </div>
                 </div>
               </Demo>
+            </Section>
+
+            <Section
+              id="high-value"
+              title="Grouped controls and suggestions"
+              intro={
+                <>
+                  Stateful grouped controls and disclosures use Base UI behavior while retaining the
+                  compact geometry used by <a href={WORKBENCH_URL}>WorkbenchOS</a>.
+                </>
+              }
+            >
+              <HighValueComponentDemos />
             </Section>
 
             <Section

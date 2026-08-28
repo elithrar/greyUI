@@ -44,9 +44,9 @@ npm install /path/to/greyUI
 
 ## Components
 
-- Inputs: Input, Textarea, Field, InputGroup, NumberField, Select, Combobox, DatePicker
-- Controls: Button, IconButton, ButtonGroup, ToggleButton, SegmentedControl, Checkbox, RadioGroup, Switch, Slider
-- Desktop UI: Tabs, Menu, ContextMenu, Toolbar, Collapsible, Popover, Tooltip, Dialog, AlertDialog, Layer
+- Inputs: Input, Textarea, Field, InputGroup, NumberField, Select, Combobox, DatePicker, Autocomplete, Fieldset
+- Controls: Button, IconButton, ButtonGroup, ToggleButton, SegmentedControl, Checkbox, RadioGroup, Switch, Slider, CheckboxGroup, ToggleGroup
+- Desktop UI: Tabs, Menu, ContextMenu, Toolbar, Collapsible, Popover, Tooltip, Dialog, AlertDialog, Layer, Accordion
 - Feedback and content: Banner, Breadcrumbs, Empty, Loader, Pagination, Progress, Meter, SegmentedMeter, Toast, ScrollArea, Table, Badge, GroupBox, Separator
 - Window chrome: Window, WindowWidget, MenuBar, StatusBar, StatusBarItem, StatusBarSeparator, StatusLight
 

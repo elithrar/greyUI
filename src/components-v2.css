@@ -1308,3 +1308,215 @@
     animation: none;
   }
 }
+
+/* High-value grouped controls */
+.greyui-toggle-group,
+.greyui-checkbox-group,
+.greyui-fieldset,
+.greyui-accordion,
+.greyui-autocomplete-input-group,
+.greyui-autocomplete-popup {
+  color: var(--greyui-text);
+  font-family: var(--greyui-font-ui);
+  font-size: var(--greyui-font-size);
+}
+
+.greyui-toggle-group {
+  display: inline-flex;
+  max-width: 100%;
+  align-items: stretch;
+  flex-wrap: wrap;
+}
+
+.greyui-toggle-group[data-orientation="vertical"] {
+  flex-direction: column;
+  flex-wrap: nowrap;
+}
+
+.greyui-toggle-group-item {
+  position: relative;
+  min-width: 0;
+}
+
+.greyui-toggle-group[data-orientation="horizontal"]
+  > .greyui-toggle-group-item
+  + .greyui-toggle-group-item {
+  margin-left: -1px;
+}
+
+.greyui-toggle-group[data-orientation="vertical"]
+  > .greyui-toggle-group-item
+  + .greyui-toggle-group-item {
+  margin-top: -1px;
+}
+
+.greyui-toggle-group-item[data-pressed],
+.greyui-toggle-group-item[aria-pressed="true"] {
+  z-index: 1;
+  background: var(--greyui-panel-dark);
+  box-shadow: var(--greyui-bevel-inset);
+}
+
+.greyui-toggle-group-item:focus-visible {
+  z-index: 2;
+}
+
+.greyui-checkbox-group {
+  display: grid;
+  min-width: 0;
+  gap: 5px;
+}
+
+.greyui-checkbox-group[data-orientation="horizontal"] {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 14px;
+}
+
+.greyui-control-label:has(.greyui-checkbox[data-disabled]) {
+  color: var(--greyui-text-muted);
+  cursor: not-allowed;
+}
+
+.greyui-fieldset {
+  min-width: 0;
+  margin: 0;
+  padding: 0.55rem 0.6rem 0.65rem;
+  border: 1px solid var(--greyui-border-dark);
+  background: var(--greyui-panel);
+  box-shadow: inset 1px 1px 0 var(--greyui-border-light);
+}
+
+.greyui-fieldset-legend {
+  max-width: calc(100% - 8px);
+  padding: 0 4px;
+  color: var(--greyui-text);
+  font-weight: 700;
+  line-height: 1.2;
+  white-space: normal;
+}
+
+.greyui-fieldset[data-disabled] .greyui-fieldset-legend {
+  color: var(--greyui-text-muted);
+}
+
+.greyui-accordion {
+  display: grid;
+  min-width: 0;
+  gap: 3px;
+}
+
+.greyui-accordion-item {
+  min-width: 0;
+}
+
+.greyui-accordion-header {
+  margin: 0;
+  font: inherit;
+}
+
+.greyui-accordion-trigger {
+  display: flex;
+  width: 100%;
+  min-height: 1.85rem;
+  box-sizing: border-box;
+  align-items: center;
+  gap: 6px;
+  padding: 0.25rem 0.45rem;
+  border: 1px solid var(--greyui-border-dark);
+  background: var(--greyui-control);
+  box-shadow: var(--greyui-bevel-outset);
+  color: var(--greyui-text);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.greyui-accordion-trigger:hover:not([data-disabled]) {
+  filter: brightness(1.03);
+}
+
+.greyui-accordion-trigger:active:not([data-disabled]),
+.greyui-accordion-trigger[data-open] {
+  box-shadow: var(--greyui-bevel-inset);
+}
+
+.greyui-accordion-trigger:focus-visible {
+  outline: 2px solid var(--greyui-keyboard-navigation);
+  outline-offset: -3px;
+}
+
+.greyui-accordion-trigger[data-disabled] {
+  color: var(--greyui-text-muted);
+  cursor: not-allowed;
+}
+
+.greyui-accordion-arrow {
+  width: 0;
+  height: 0;
+  flex: 0 0 auto;
+  border-top: 4px solid transparent;
+  border-bottom: 4px solid transparent;
+  border-left: 6px solid currentColor;
+  transition: transform 100ms ease;
+  transform-origin: 40% 50%;
+}
+
+.greyui-accordion-trigger[data-open] .greyui-accordion-arrow {
+  transform: rotate(90deg);
+}
+
+.greyui-accordion-trigger-label {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.greyui-accordion-panel {
+  min-width: 0;
+  padding: 0.5rem 0.55rem;
+  border: 1px solid var(--greyui-border-dark);
+  border-top: 0;
+  background: var(--greyui-document);
+  box-shadow: var(--greyui-bevel-inset);
+}
+
+.greyui-autocomplete-item {
+  grid-template-columns: minmax(0, 1fr) auto;
+}
+
+.greyui-autocomplete-item-label {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.greyui-autocomplete-item-indicator {
+  visibility: hidden;
+}
+
+.greyui-autocomplete-item[data-selected] .greyui-autocomplete-item-indicator {
+  visibility: visible;
+}
+
+.greyui-autocomplete-group + .greyui-autocomplete-group {
+  margin-top: 3px;
+  padding-top: 3px;
+  border-top: 1px solid var(--greyui-border-dark);
+}
+
+.greyui-autocomplete-group-label {
+  padding: 0.2rem 0.45rem;
+  color: var(--greyui-text-muted);
+  font-size: var(--greyui-font-size-small);
+  font-weight: 700;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .greyui-accordion-arrow {
+    transition: none;
+  }
+}
