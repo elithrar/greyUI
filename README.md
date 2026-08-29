@@ -2,6 +2,10 @@
 
 greyUI is a standalone BeOS R5 / Haiku-inspired React component library derived from [WorkbenchOS](https://workbench.questionable.services/). Base UI provides keyboard, focus, positioning, and ARIA behavior for compound controls.
 
+<img width="778" height="812" alt="image" src="https://github.com/user-attachments/assets/2e2a0afa-477b-415c-8280-6cebfa5b25a8" />
+
+You can find the full set of interactive example components at https://greyui.questionable.services/
+
 ## Install
 
 ```bash
