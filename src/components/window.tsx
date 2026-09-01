@@ -10,8 +10,12 @@ import {
   type ElementType,
   type ReactNode,
 } from "react";
+import { Menubar as MenubarPrimitive } from "@base-ui/react/menubar";
 
-export type WindowResponsiveMode = "stacked" | "floating";
+export type WindowChromeMode = "auto" | "floating" | "stacked";
+
+/** @deprecated Use `WindowChromeMode` and the `chrome` prop instead. */
+export type WindowResponsiveMode = Exclude<WindowChromeMode, "auto">;
 
 export interface WindowRootProps extends ComponentPropsWithoutRef<"div"> {
   active?: boolean;
@@ -19,6 +23,11 @@ export interface WindowRootProps extends ComponentPropsWithoutRef<"div"> {
   collapsed?: boolean;
   defaultCollapsed?: boolean;
   onCollapsedChange?: (collapsed: boolean) => void;
+  chrome?: WindowChromeMode;
+  /**
+   * @deprecated Use `chrome`. `responsive="stacked"` maps to `chrome="auto"` and
+   * `responsive="floating"` maps to `chrome="floating"`.
+   */
   responsive?: WindowResponsiveMode;
   bodyId?: string | undefined;
 }
@@ -43,7 +52,8 @@ export function WindowRoot({
   collapsed: collapsedProp,
   defaultCollapsed = false,
   onCollapsedChange,
-  responsive = "stacked",
+  chrome: chromeProp,
+  responsive,
   bodyId: bodyIdProp,
   className = "",
   children,
@@ -53,6 +63,8 @@ export function WindowRoot({
   const [uncontrolledCollapsed, setUncontrolledCollapsed] = useState(defaultCollapsed);
   const collapsed = collapsedProp ?? uncontrolledCollapsed;
   const bodyId = bodyIdProp ?? generatedBodyId;
+  const chrome = chromeProp ?? (responsive === "floating" ? "floating" : "auto");
+  const legacyResponsive = chrome === "floating" ? "floating" : "stacked";
 
   const setCollapsed = useCallback(
     (nextCollapsed: boolean) => {
@@ -72,11 +84,14 @@ export function WindowRoot({
         data-greyui-component="window"
         data-active={active ? "true" : "false"}
         data-collapsed={collapsed ? "true" : "false"}
-        data-responsive={responsive}
+        data-chrome={chrome}
+        data-responsive={legacyResponsive}
         className={`greyui-window ${className}`.trim()}
         {...props}
       >
-        {children}
+        <div data-greyui-component="window-frame" className="greyui-window-frame">
+          {children}
+        </div>
       </Component>
     </WindowContext.Provider>
   );
@@ -129,14 +144,27 @@ export function WindowContent({
   );
 }
 
-export type WindowHeaderProps = ComponentPropsWithoutRef<"div">;
-export function WindowHeader({ className = "", ...props }: WindowHeaderProps) {
+export type WindowHeaderLayout = "auto" | "inline" | "stacked";
+
+export interface WindowHeaderProps extends ComponentPropsWithoutRef<"div"> {
+  layout?: WindowHeaderLayout;
+}
+
+export function WindowHeader({
+  className = "",
+  layout = "auto",
+  children,
+  ...props
+}: WindowHeaderProps) {
   return (
     <div
       data-greyui-component="window-header"
+      data-layout={layout}
       className={`greyui-window-header ${className}`.trim()}
       {...props}
-    />
+    >
+      <div className="greyui-window-header-layout">{children}</div>
+    </div>
   );
 }
 
@@ -248,10 +276,15 @@ function WindowWidgetControl({
   );
 }
 
-export type WindowMenuBarProps = ComponentPropsWithoutRef<"div">;
+export type WindowMenuBarProps = Omit<
+  ComponentPropsWithoutRef<typeof MenubarPrimitive>,
+  "className"
+> & {
+  className?: string;
+};
 function WindowMenuBar({ className = "", ...props }: WindowMenuBarProps) {
   return (
-    <div
+    <MenubarPrimitive
       data-greyui-component="menu-bar"
       className={`greyui-menubar ${className}`.trim()}
       {...props}

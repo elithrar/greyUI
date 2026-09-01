@@ -1,6 +1,6 @@
 {
   "name": "greyui",
-  "version": "0.5.0",
+  "version": "0.6.0",
   "description": "BeOS R5 / Haiku-inspired React component library extracted from WorkbenchOS.",
   "license": "UNLICENSED",
   "repository": {
@@ -40,6 +40,7 @@
     "lint:fix": "oxlint --fix --deny-warnings",
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "test": "vitest run",
+    "test:browser": "playwright test",
     "check": "npm run format:check && npm run lint && npm run typecheck && npm test",
     "perf:package": "node scripts/package-audit.mjs",
     "pack:check": "node scripts/package-audit.mjs && npm pack --dry-run",
@@ -51,6 +52,7 @@
   },
   "devDependencies": {
     "@oxlint/plugins": "^1.80.0",
+    "@playwright/test": "^1.62.1",
     "@testing-library/dom": "^10.4.1",
     "@testing-library/react": "^16.3.2",
     "@types/node": "^22.20.1",

@@ -56,15 +56,27 @@ export function FieldItem({
   return <FieldPrimitive.Item className={`greyui-field-item ${className}`.trim()} {...props} />;
 }
 
-export type FieldActionRowProps = ComponentPropsWithoutRef<"div">;
+export type FieldActionRowLayout = "auto" | "inline" | "stacked";
 
-export function FieldActionRow({ className = "", ...props }: FieldActionRowProps) {
+export interface FieldActionRowProps extends ComponentPropsWithoutRef<"div"> {
+  layout?: FieldActionRowLayout;
+}
+
+export function FieldActionRow({
+  className = "",
+  layout = "auto",
+  children,
+  ...props
+}: FieldActionRowProps) {
   return (
     <div
       data-greyui-component="field-action-row"
+      data-layout={layout}
       className={`greyui-field-action-row ${className}`.trim()}
       {...props}
-    />
+    >
+      <div className="greyui-field-action-row-layout">{children}</div>
+    </div>
   );
 }
 

@@ -85,13 +85,13 @@ export function FieldDemos() {
               <Combobox.Clear />
               <Combobox.Trigger />
             </Combobox.InputGroup>
-            <Combobox.Popup>
+            <Combobox.Popup width="content">
               <Combobox.Empty>No matches</Combobox.Empty>
               <Combobox.List>
                 {(theme: string) => (
                   <Combobox.Item key={theme} value={theme}>
                     <Combobox.ItemIndicator />
-                    <span>{theme}</span>
+                    <Combobox.ItemText>{theme}</Combobox.ItemText>
                   </Combobox.Item>
                 )}
               </Combobox.List>
@@ -375,6 +375,8 @@ function VirtualAnchorDemo() {
 
 export function IntegrationDemos() {
   const [date, setDate] = useState("2026-09-05");
+  const [showToolbar, setShowToolbar] = useState(true);
+  const [viewMode, setViewMode] = useState("icons");
   const routeSegments = useMemo(
     () => [
       { label: "Paved", value: 22, color: "var(--greyui-selection)" },
@@ -385,22 +387,45 @@ export function IntegrationDemos() {
 
   return (
     <div className="docs-grid-2 docs-component-grid">
-      <Demo title="Menu bar">
-        <Window.MenuBar>
+      <Demo title="Coordinated menu bar">
+        <Window.MenuBar aria-label="Application menu">
           <Menu.Root>
             <Menu.Trigger>File</Menu.Trigger>
             <Menu.Popup>
-              <Menu.Item>Open…</Menu.Item>
-              <Menu.Item>Save</Menu.Item>
+              <Menu.Group>
+                <Menu.GroupLabel>Document</Menu.GroupLabel>
+                <Menu.Item>Open…</Menu.Item>
+                <Menu.Item>Save</Menu.Item>
+              </Menu.Group>
               <Menu.Separator />
-              <Menu.Item>Close</Menu.Item>
+              <Menu.LinkItem href="#window">Window documentation</Menu.LinkItem>
             </Menu.Popup>
           </Menu.Root>
           <Menu.Root>
-            <Menu.Trigger>Edit</Menu.Trigger>
+            <Menu.Trigger>View</Menu.Trigger>
             <Menu.Popup>
-              <Menu.Item>Undo</Menu.Item>
-              <Menu.Item>Redo</Menu.Item>
+              <Menu.CheckboxItem checked={showToolbar} onCheckedChange={setShowToolbar}>
+                <Menu.CheckboxItemIndicator keepMounted />
+                Toolbar
+              </Menu.CheckboxItem>
+              <Menu.Separator />
+              <Menu.RadioGroup value={viewMode} onValueChange={setViewMode}>
+                <Menu.RadioItem value="icons">
+                  <Menu.RadioItemIndicator keepMounted />
+                  Icons
+                </Menu.RadioItem>
+                <Menu.RadioItem value="list">
+                  <Menu.RadioItemIndicator keepMounted />
+                  List
+                </Menu.RadioItem>
+              </Menu.RadioGroup>
+              <Menu.SubmenuRoot>
+                <Menu.SubmenuTrigger>Sort by</Menu.SubmenuTrigger>
+                <Menu.Popup positionerProps={{ side: "right", align: "start", sideOffset: 1 }}>
+                  <Menu.Item>Name</Menu.Item>
+                  <Menu.Item>Date</Menu.Item>
+                </Menu.Popup>
+              </Menu.SubmenuRoot>
             </Menu.Popup>
           </Menu.Root>
         </Window.MenuBar>
@@ -444,7 +469,7 @@ export function IntegrationDemos() {
       </Demo>
 
       <Demo title="Floating, collapsible window">
-        <Window title="Route" collapsible responsive="floating" className="docs-floating-window">
+        <Window title="Route" collapsible chrome="floating" className="docs-floating-window">
           <div className="docs-window-example-body">Map overlays keep their window geometry.</div>
           <Window.StatusBar>
             <Window.StatusBar.Light state="ready" label="Route loaded" />

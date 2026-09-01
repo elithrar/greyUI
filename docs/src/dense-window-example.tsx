@@ -16,7 +16,7 @@ const gears = [
 
 export function DenseWindowExample() {
   return (
-    <Window title="Gearset" responsive="stacked" className="docs-dense-window">
+    <Window title="Gearset" chrome="auto" className="docs-dense-window">
       <Window.Content>
         <Window.Header>
           <Window.Description>
@@ -87,7 +87,7 @@ export function DenseWindowExample() {
   );
 }
 
-export const denseWindowCode = `<Window title="Gearset" responsive="stacked">
+export const denseWindowCode = `<Window title="Gearset" chrome="auto">
   <Window.Content>
     <Window.Header>
       <Window.Description>Configure the transmission.</Window.Description>

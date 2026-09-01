@@ -716,9 +716,9 @@
 }
 
 .greyui-combobox-popup {
-  min-width: var(--anchor-width, 150px);
-  width: max-content;
-  max-width: min(28rem, calc(100vw - 2rem));
+  width: min(var(--anchor-width, 150px), var(--available-width, calc(100vw - 1rem)));
+  min-width: 0;
+  max-width: var(--available-width, calc(100vw - 1rem));
   max-height: min(320px, var(--available-height, 320px));
   box-sizing: border-box;
   overflow: auto;
@@ -726,6 +726,12 @@
   border: 1px solid var(--greyui-border-darker);
   background: var(--greyui-panel);
   box-shadow: var(--greyui-bevel-outset), var(--greyui-popup-shadow);
+}
+
+.greyui-combobox-popup[data-greyui-popup-width="content"] {
+  width: max-content;
+  min-width: min(var(--anchor-width, 150px), var(--available-width, calc(100vw - 1rem)));
+  max-width: min(28rem, var(--available-width, calc(100vw - 1rem)));
 }
 
 .greyui-combobox-list {
@@ -761,8 +767,12 @@
   text-align: center;
 }
 
-.greyui-combobox-item > :not(.greyui-combobox-item-indicator) {
+.greyui-combobox-item-text {
   grid-column: 2;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .greyui-combobox-empty {
@@ -1426,6 +1436,15 @@
 }
 
 .greyui-field-action-row {
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+  box-sizing: border-box;
+  container-type: inline-size;
+  container-name: greyui-field-action-row;
+}
+
+.greyui-field-action-row-layout {
   display: flex;
   min-width: 0;
   flex-wrap: nowrap;
@@ -1433,15 +1452,35 @@
   gap: 8px;
 }
 
-@media (max-width: 350px) {
-  .greyui-field-action-row {
-    flex-wrap: wrap;
-  }
+.greyui-field-action-row[data-layout="stacked"] > .greyui-field-action-row-layout {
+  flex-direction: column;
+  align-items: stretch;
 }
 
-.greyui-field-action-row > :where(.greyui-field, .greyui-select-field) {
+.greyui-field-action-row[data-layout="stacked"]
+  > .greyui-field-action-row-layout
+  > :where(.greyui-field, .greyui-select-field) {
+  width: 100%;
+  flex-basis: auto;
+}
+
+.greyui-field-action-row-layout > :where(.greyui-field, .greyui-select-field) {
   min-width: min(100%, 10rem);
   flex: 1 1 12rem;
+}
+
+@container greyui-field-action-row (max-width: 350px) {
+  .greyui-field-action-row[data-layout="auto"] > .greyui-field-action-row-layout {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .greyui-field-action-row[data-layout="auto"]
+    > .greyui-field-action-row-layout
+    > :where(.greyui-field, .greyui-select-field) {
+    width: 100%;
+    flex-basis: auto;
+  }
 }
 
 .greyui-accordion {
@@ -1530,14 +1569,12 @@
   grid-template-columns: minmax(0, 1fr) auto;
 }
 
-.greyui-autocomplete-item-label {
-  min-width: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+.greyui-autocomplete-item-text {
+  grid-column: 1;
 }
 
 .greyui-autocomplete-item-indicator {
+  grid-column: 2;
   visibility: hidden;
 }
 

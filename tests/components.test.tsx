@@ -1,4 +1,4 @@
-import { cleanup, fireEvent, render, screen } from "@testing-library/react";
+import { cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { afterEach, describe, expect, it } from "vitest";
 import { useState } from "react";
 import {
@@ -21,6 +21,7 @@ import {
   Layer,
   Loader,
   Meter,
+  Menu,
   NumberField,
   Pagination,
   Progress,
@@ -52,6 +53,189 @@ describe("window compound API", () => {
     expect(Window.StatusBar).toHaveProperty("Item");
     expect(Window.StatusBar).toHaveProperty("Separator");
     expect(Window.StatusBar).toHaveProperty("Light");
+  });
+
+  it("renders Window.MenuBar with coordinated menubar semantics", () => {
+    render(
+      <Window.MenuBar aria-label="Application menu">
+        <Menu.Root>
+          <Menu.Trigger>File</Menu.Trigger>
+          <Menu.Popup>
+            <Menu.Item>Open</Menu.Item>
+          </Menu.Popup>
+        </Menu.Root>
+        <Menu.Root>
+          <Menu.Trigger>Edit</Menu.Trigger>
+          <Menu.Popup>
+            <Menu.Item>Undo</Menu.Item>
+          </Menu.Popup>
+        </Menu.Root>
+      </Window.MenuBar>,
+    );
+
+    expect(screen.getByRole("menubar", { name: "Application menu" })).not.toBeNull();
+    expect(screen.getAllByRole("menuitem")).toHaveLength(2);
+  });
+
+  it("moves focus between menu triggers and skips disabled menus", async () => {
+    render(
+      <Window.MenuBar aria-label="Application menu">
+        <Menu.Root>
+          <Menu.Trigger>File</Menu.Trigger>
+          <Menu.Popup>
+            <Menu.Item>Open</Menu.Item>
+          </Menu.Popup>
+        </Menu.Root>
+        <Menu.Root disabled>
+          <Menu.Trigger>Edit</Menu.Trigger>
+          <Menu.Popup>
+            <Menu.Item>Undo</Menu.Item>
+          </Menu.Popup>
+        </Menu.Root>
+        <Menu.Root>
+          <Menu.Trigger>View</Menu.Trigger>
+          <Menu.Popup>
+            <Menu.Item>Zoom</Menu.Item>
+          </Menu.Popup>
+        </Menu.Root>
+      </Window.MenuBar>,
+    );
+
+    const file = screen.getByRole("menuitem", { name: "File" });
+    const edit = screen.getByRole("menuitem", { name: "Edit" });
+    const view = screen.getByRole("menuitem", { name: "View" });
+    expect(edit.getAttribute("data-disabled")).not.toBeNull();
+    file.focus();
+    fireEvent.keyDown(file, { key: "ArrowRight" });
+    await waitFor(() => expect(document.activeElement).toBe(view));
+    fireEvent.keyDown(view, { key: "ArrowLeft" });
+    await waitFor(() => expect(document.activeElement).toBe(file));
+  });
+
+  it("hands an open menu to its sibling and restores trigger focus on Escape", async () => {
+    render(
+      <Window.MenuBar aria-label="Application menu">
+        <Menu.Root>
+          <Menu.Trigger>File</Menu.Trigger>
+          <Menu.Popup>
+            <Menu.Item>Open</Menu.Item>
+          </Menu.Popup>
+        </Menu.Root>
+        <Menu.Root>
+          <Menu.Trigger>Edit</Menu.Trigger>
+          <Menu.Popup>
+            <Menu.Item>Undo</Menu.Item>
+          </Menu.Popup>
+        </Menu.Root>
+      </Window.MenuBar>,
+    );
+
+    const file = screen.getByRole("menuitem", { name: "File" });
+    fireEvent.click(file);
+    const open = screen.getByRole("menuitem", { name: "Open" });
+    open.focus();
+    fireEvent.keyDown(open, { key: "ArrowRight" });
+
+    const edit = screen.getByRole("menuitem", { name: "Edit" });
+    await waitFor(() => expect(edit.getAttribute("data-popup-open")).not.toBeNull());
+    await waitFor(() => expect(screen.queryByRole("menuitem", { name: "Open" })).toBeNull());
+    const undo = await screen.findByRole("menuitem", { name: "Undo" });
+
+    fireEvent.keyDown(undo, { key: "Escape" });
+    await waitFor(() => expect(screen.queryByRole("menuitem", { name: "Undo" })).toBeNull());
+    await waitFor(() => expect(document.activeElement).toBe(edit));
+  });
+
+  it("hands an open menu to a sibling on pointer hover", async () => {
+    render(
+      <Window.MenuBar aria-label="Application menu">
+        <Menu.Root>
+          <Menu.Trigger>File</Menu.Trigger>
+          <Menu.Popup>
+            <Menu.Item>Open</Menu.Item>
+          </Menu.Popup>
+        </Menu.Root>
+        <Menu.Root>
+          <Menu.Trigger>Edit</Menu.Trigger>
+          <Menu.Popup>
+            <Menu.Item>Undo</Menu.Item>
+          </Menu.Popup>
+        </Menu.Root>
+      </Window.MenuBar>,
+    );
+
+    fireEvent.click(screen.getByRole("menuitem", { name: "File" }));
+    const edit = screen.getByRole("menuitem", { name: "Edit" });
+    fireEvent.mouseMove(edit);
+
+    await waitFor(() => expect(edit.getAttribute("data-popup-open")).not.toBeNull());
+    expect(await screen.findByRole("menuitem", { name: "Undo" })).not.toBeNull();
+  });
+
+  it("opens and returns from submenus with keyboard navigation", async () => {
+    render(
+      <Menu.Root defaultOpen>
+        <Menu.Trigger>View</Menu.Trigger>
+        <Menu.Popup>
+          <Menu.SubmenuRoot>
+            <Menu.SubmenuTrigger>Sort by</Menu.SubmenuTrigger>
+            <Menu.Popup>
+              <Menu.Item>Name</Menu.Item>
+            </Menu.Popup>
+          </Menu.SubmenuRoot>
+        </Menu.Popup>
+      </Menu.Root>,
+    );
+
+    const submenu = screen.getByRole("menuitem", { name: "Sort by" });
+    submenu.focus();
+    fireEvent.keyDown(submenu, { key: "ArrowRight" });
+    const name = await screen.findByRole("menuitem", { name: "Name" });
+
+    name.focus();
+    fireEvent.keyDown(name, { key: "ArrowLeft" });
+    await waitFor(() => expect(screen.queryByRole("menuitem", { name: "Name" })).toBeNull());
+    await waitFor(() => expect(document.activeElement).toBe(submenu));
+  });
+
+  it("composes labeled groups, links, checkbox items, and radio items", () => {
+    render(
+      <Menu.Root defaultOpen>
+        <Menu.Trigger>View</Menu.Trigger>
+        <Menu.Popup positionerProps={{ className: "custom-positioner" }}>
+          <Menu.Group>
+            <Menu.GroupLabel>Panels</Menu.GroupLabel>
+            <Menu.CheckboxItem defaultChecked>
+              <Menu.CheckboxItemIndicator keepMounted />
+              Toolbar
+            </Menu.CheckboxItem>
+          </Menu.Group>
+          <Menu.RadioGroup defaultValue="icons">
+            <Menu.RadioItem value="icons">
+              <Menu.RadioItemIndicator keepMounted />
+              Icons
+            </Menu.RadioItem>
+            <Menu.RadioItem value="list">
+              <Menu.RadioItemIndicator keepMounted />
+              List
+            </Menu.RadioItem>
+          </Menu.RadioGroup>
+          <Menu.LinkItem href="#window">Window help</Menu.LinkItem>
+        </Menu.Popup>
+      </Menu.Root>,
+    );
+
+    expect(screen.getByRole("group", { name: "Panels" })).not.toBeNull();
+    expect(
+      screen.getByRole("menuitemcheckbox", { name: "Toolbar" }).getAttribute("aria-checked"),
+    ).toBe("true");
+    expect(screen.getByRole("menuitemradio", { name: "Icons" }).getAttribute("aria-checked")).toBe(
+      "true",
+    );
+    expect(screen.getByRole("menuitem", { name: "Window help" }).getAttribute("href")).toBe(
+      "#window",
+    );
+    expect(document.querySelector(".greyui-menu-positioner.custom-positioner")).not.toBeNull();
   });
 });
 
@@ -177,6 +361,22 @@ describe("accessibility contracts", () => {
     expect(icon?.querySelectorAll(".greyui-select-arrow")).toHaveLength(1);
   });
 
+  it("defaults Select popups to anchor width and forwards positioning options", () => {
+    render(
+      <Select
+        aria-label="Theme"
+        defaultOpen
+        options={[{ value: "long", label: "A deliberately long operating system option" }]}
+        positionerProps={{ id: "select-positioner", side: "top" }}
+      />,
+    );
+
+    const popup = document.querySelector(".greyui-select-popup");
+    expect(popup?.getAttribute("data-greyui-popup-width")).toBe("anchor");
+    expect(document.querySelector("#select-positioner")?.getAttribute("data-side")).toBe("top");
+    expect(screen.getByRole("option", { name: /deliberately long/ })).not.toBeNull();
+  });
+
   it("associates Field labels with Field controls", () => {
     render(
       <Field.Root>
@@ -215,6 +415,8 @@ describe("accessibility contracts", () => {
 
     const row = screen.getByText("Preset").closest('[data-greyui-component="field-action-row"]');
     expect(row?.classList.contains("greyui-field-action-row")).toBe(true);
+    expect(row?.getAttribute("data-layout")).toBe("auto");
+    expect(row?.querySelector(".greyui-field-action-row-layout")?.children).toHaveLength(2);
     expect(screen.getByRole("button", { name: "Apply" })).not.toBeNull();
   });
 
@@ -365,7 +567,7 @@ describe("accessibility contracts", () => {
           <Combobox.List>
             {(theme: string) => (
               <Combobox.Item key={theme} value={theme}>
-                {theme}
+                <Combobox.ItemText>{theme}</Combobox.ItemText>
               </Combobox.Item>
             )}
           </Combobox.List>
@@ -375,6 +577,9 @@ describe("accessibility contracts", () => {
 
     const input = screen.getByRole<HTMLInputElement>("combobox", { name: "Theme" });
     fireEvent.click(screen.getByRole("button", { name: "Show options" }));
+    expect(
+      document.querySelector(".greyui-combobox-popup")?.getAttribute("data-greyui-popup-width"),
+    ).toBe("anchor");
     fireEvent.change(input, { target: { value: "Hai" } });
 
     expect(screen.queryByRole("option", { name: "BeOS R5" })).toBeNull();
@@ -383,6 +588,31 @@ describe("accessibility contracts", () => {
 
     fireEvent.click(screen.getByRole("button", { name: "Clear selection" }));
     expect(input.value).toBe("");
+  });
+
+  it("supports content-width Combobox popups and forwards positioning options", () => {
+    render(
+      <Combobox.Root defaultOpen items={["A deliberately long theme name"]}>
+        <Combobox.InputGroup>
+          <Combobox.Input aria-label="Theme" />
+          <Combobox.Trigger />
+        </Combobox.InputGroup>
+        <Combobox.Popup width="content" positionerProps={{ id: "combo-positioner", side: "top" }}>
+          <Combobox.List>
+            {(theme: string) => (
+              <Combobox.Item key={theme} value={theme}>
+                <Combobox.ItemText>{theme}</Combobox.ItemText>
+              </Combobox.Item>
+            )}
+          </Combobox.List>
+        </Combobox.Popup>
+      </Combobox.Root>,
+    );
+
+    const popup = document.querySelector(".greyui-combobox-popup");
+    expect(popup?.getAttribute("data-greyui-popup-width")).toBe("content");
+    expect(document.querySelector("#combo-positioner")?.getAttribute("data-side")).toBe("top");
+    expect(screen.getByRole("option", { name: /deliberately long/ })).not.toBeNull();
   });
 
   it("toggles Collapsible panels through the Base UI trigger", () => {
@@ -459,6 +689,7 @@ describe("accessibility contracts", () => {
     const body = screen.getByLabelText("Route details");
     const toggle = screen.getByRole("button", { name: "Minimize window" });
     expect(body.closest("section")?.getAttribute("data-responsive")).toBe("floating");
+    expect(body.closest("section")?.getAttribute("data-chrome")).toBe("floating");
     expect(toggle.getAttribute("aria-controls")).toBe("route-body");
     fireEvent.click(toggle);
     expect(body.hasAttribute("hidden")).toBe(true);
@@ -479,19 +710,51 @@ describe("accessibility contracts", () => {
     );
 
     const body = screen.getByLabelText("Tracker body");
+    const root = body.closest('[data-greyui-component="window"]');
+    const frame = body.closest('[data-greyui-component="window-frame"]');
+    expect(frame?.parentElement).toBe(root);
+    expect(frame?.querySelector(":scope > .greyui-window-tab")).not.toBeNull();
+    expect(frame?.querySelector(":scope > .greyui-window-body")).toBe(body);
     expect(body.getAttribute("id")).toBe("compound-body");
     fireEvent.click(screen.getByRole("button", { name: "Minimize window" }));
     expect(body.hasAttribute("hidden")).toBe(true);
+  });
+
+  it("uses the same frame structure for shorthand and inactive windows", () => {
+    const { container, rerender } = render(<Window title="Preferences">Content</Window>);
+
+    const activeRoot = container.querySelector('[data-greyui-component="window"]');
+    const activeFrame = activeRoot?.querySelector(
+      ':scope > [data-greyui-component="window-frame"]',
+    );
+    expect(activeFrame?.children).toHaveLength(2);
+    expect(activeFrame?.querySelector(":scope > .greyui-window-tab")).not.toBeNull();
+    expect(activeFrame?.querySelector(":scope > .greyui-window-body")).not.toBeNull();
+
+    rerender(
+      <Window title="Preferences" active={false}>
+        Content
+      </Window>,
+    );
+
+    const inactiveRoot = container.querySelector('[data-greyui-component="window"]');
+    const inactiveFrame = inactiveRoot?.querySelector(
+      ':scope > [data-greyui-component="window-frame"]',
+    );
+    expect(inactiveRoot?.getAttribute("data-active")).toBe("false");
+    expect(inactiveFrame?.children).toHaveLength(2);
   });
 
   it("provides stable content-rail, header, description, and action slots", () => {
     render(
       <Window title="Gearset">
         <Window.Content density="compact">
-          <Window.Header>
+          <Window.Header layout="stacked">
             <Window.Description>Configure the transmission.</Window.Description>
             <Window.Actions>
-              <Button>Copy link</Button>
+              <Field.ActionRow layout="inline">
+                <Button>Copy link</Button>
+              </Field.ActionRow>
             </Window.Actions>
           </Window.Header>
         </Window.Content>
@@ -503,8 +766,39 @@ describe("accessibility contracts", () => {
       .closest('[data-greyui-component="window-content"]');
     expect(content?.getAttribute("data-density")).toBe("compact");
     expect(content?.querySelector(".greyui-window-header")).not.toBeNull();
+    expect(content?.querySelector(".greyui-window-header")?.getAttribute("data-layout")).toBe(
+      "stacked",
+    );
+    expect(content?.querySelector(".greyui-window-header-layout")).not.toBeNull();
     expect(content?.querySelector(".greyui-window-description")).not.toBeNull();
     expect(content?.querySelector(".greyui-window-actions")).not.toBeNull();
+    expect(content?.querySelector(".greyui-field-action-row")?.getAttribute("data-layout")).toBe(
+      "inline",
+    );
+    expect(content?.querySelector(".greyui-field-action-row-layout")).not.toBeNull();
+  });
+
+  it("maps legacy responsive window modes to the container-aware chrome contract", () => {
+    const { rerender } = render(<Window title="Legacy">Content</Window>);
+    const root = screen.getByText("Legacy").closest('[data-greyui-component="window"]');
+
+    expect(root?.getAttribute("data-chrome")).toBe("auto");
+    expect(root?.getAttribute("data-responsive")).toBe("stacked");
+
+    rerender(
+      <Window title="Legacy" responsive="stacked">
+        Content
+      </Window>,
+    );
+    expect(root?.getAttribute("data-chrome")).toBe("auto");
+
+    rerender(
+      <Window title="Legacy" chrome="stacked" responsive="floating">
+        Content
+      </Window>,
+    );
+    expect(root?.getAttribute("data-chrome")).toBe("stacked");
+    expect(root?.getAttribute("data-responsive")).toBe("stacked");
   });
 
   it("does not allow body props to expose a collapsed Window body", () => {

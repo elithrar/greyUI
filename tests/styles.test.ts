@@ -28,12 +28,30 @@ describe("default theme contrast", () => {
     expect(contrast(selection, text)).toBeGreaterThanOrEqual(4.5);
   });
 
-  it("limits mobile window flattening to the stacked responsive mode", () => {
+  it("names Window as an inline-size query container", () => {
     const css = readFileSync(resolve(process.cwd(), "src/styles.css"), "utf8");
-    const mobileRules = css.slice(css.indexOf("@media (max-width: 768px)"));
 
-    expect(mobileRules).toContain('.greyui-window[data-responsive="stacked"]');
-    expect(mobileRules).not.toContain('.greyui-window[data-responsive="floating"]');
+    expect(css).toMatch(
+      /\.greyui-window\[data-chrome="auto"\]\s*\{[\s\S]*?container-type:\s*inline-size;[\s\S]*?container-name:\s*greyui-window;/,
+    );
+    expect(css).toMatch(
+      /:where\(\.greyui-window\[data-chrome="auto"\], \.greyui-window\[data-chrome="stacked"\]\)\s*\{[\s\S]*?width:\s*100%/,
+    );
+    expect(css).toMatch(
+      /@container greyui-window \(max-width: 768px\)[\s\S]*?\.greyui-window\[data-chrome="auto"\] \.greyui-window-frame/,
+    );
+    expect(css).toMatch(
+      /\.greyui-window\[data-chrome="stacked"\] \.greyui-window-frame\s*\{[\s\S]*?padding:\s*0/,
+    );
+    expect(css).toMatch(
+      /\.greyui-window\[data-collapsed="true"\] \.greyui-window-frame\s*\{[\s\S]*?width:\s*max-content/,
+    );
+    expect(css).toMatch(
+      /\.greyui-window\[data-chrome="stacked"\] \.greyui-window-frame\s*\{[\s\S]*?width:\s*100%/,
+    );
+    expect(css).not.toMatch(
+      /@media \(max-width: 768px\)[\s\S]*?\.greyui-window\[data-(?:chrome|responsive)=/,
+    );
   });
 
   it("keeps WorkbenchOS typography and window scale tokens aligned", () => {
@@ -45,6 +63,54 @@ describe("default theme contrast", () => {
     expect(css).toContain("--greyui-menubar-height: 20px");
     expect(css).toMatch(/\.greyui-button\s*\{[\s\S]*?min-height:\s*1\.85rem/);
     expect(css).toMatch(/\.greyui-button\s*\{[\s\S]*?font-weight:\s*400/);
+  });
+
+  it("gives the inner window frame sole ownership of outer chrome", () => {
+    const css = readFileSync(resolve(process.cwd(), "src/styles.css"), "utf8");
+    const rootRule = css.slice(
+      css.indexOf(".greyui-window {"),
+      css.indexOf(".greyui-window-frame {"),
+    );
+    const frameRule = css.slice(
+      css.indexOf(".greyui-window-frame {"),
+      css.indexOf(".greyui-window-frame::before"),
+    );
+    const bodyRule = css.slice(
+      css.indexOf(".greyui-window-body {"),
+      css.indexOf(".greyui-window-content {"),
+    );
+
+    expect(rootRule).not.toContain("box-shadow:");
+    expect(frameRule).toContain("box-shadow:");
+    expect(css).toMatch(/\.greyui-window-frame::before\s*\{[\s\S]*?border:/);
+    expect(bodyRule).not.toContain("border:");
+    expect(bodyRule).not.toContain("box-shadow:");
+    expect(css).toMatch(/\.greyui-menubar\s*\{[\s\S]*?margin:\s*0;/);
+    expect(css).toMatch(/\.greyui-statusbar\s*\{[\s\S]*?margin:\s*0;/);
+    expect(css).toMatch(
+      /\.greyui-window\[data-chrome="stacked"\] \.greyui-menubar\s*\{[\s\S]*?border-top:\s*0;[\s\S]*?border-left:\s*0/,
+    );
+    expect(css).toMatch(
+      /\.greyui-window\[data-chrome="stacked"\] \.greyui-statusbar\s*\{[\s\S]*?border-bottom:\s*0;[\s\S]*?border-left:\s*0/,
+    );
+    expect(css).toMatch(
+      /\.greyui-window\[data-chrome="stacked"\]\[data-collapsed="true"\] \.greyui-window-tab\s*\{[\s\S]*?border-bottom:\s*0/,
+    );
+    expect(css).toMatch(
+      /@container greyui-window \(max-width: 768px\)[\s\S]*?\.greyui-window\[data-chrome="auto"\]\[data-collapsed="true"\] \.greyui-window-tab\s*\{[\s\S]*?border-bottom:\s*0/,
+    );
+  });
+
+  it("keeps active and inactive window geometry identical", () => {
+    const css = readFileSync(resolve(process.cwd(), "src/styles.css"), "utf8");
+    const inactiveDeclarations = Array.from(
+      css.matchAll(/\.greyui-window\[data-active="false"\][^{]*\{([^}]*)\}/g),
+      (match) => match[1],
+    ).join("\n");
+
+    expect(inactiveDeclarations).not.toMatch(
+      /(?:^|\s)(?:display|position|inset|width|height|min-width|min-height|max-width|max-height|margin|padding|border-width):/,
+    );
   });
 
   it("uses neutral inset keyboard focus without overriding selected button state", () => {
@@ -65,16 +131,34 @@ describe("default theme contrast", () => {
     expect(css.slice(selectedStart, focusStart)).toContain("var(--greyui-selection)");
   });
 
-  it("provides content rails and a stacked application header without styling body internals", () => {
+  it("provides container-aware content rails and application headers", () => {
     const css = readFileSync(resolve(process.cwd(), "src/styles.css"), "utf8");
 
     expect(css).toMatch(/\.greyui-window-content\s*\{[\s\S]*?padding:\s*12px/);
     expect(css).toMatch(
-      /\.greyui-window-header\s*\{[\s\S]*?grid-template-columns:\s*minmax\(0, 1fr\) auto/,
+      /\.greyui-window-header\s*\{[\s\S]*?container-name:\s*greyui-window-header/,
     );
     expect(css).toMatch(
-      /@media \(max-width: 520px\)[\s\S]*?\.greyui-window-header\s*\{[\s\S]*?grid-template-columns:\s*minmax\(0, 1fr\)/,
+      /\.greyui-window-header-layout\s*\{[\s\S]*?grid-template-columns:\s*minmax\(0, 1fr\) auto/,
     );
+    expect(css).toMatch(
+      /@container greyui-window-header \(max-width: 520px\)[\s\S]*?\[data-layout="auto"\]/,
+    );
+  });
+
+  it("stacks field action rows against their own container", () => {
+    const css = readFileSync(resolve(process.cwd(), "src/components-v2.css"), "utf8");
+
+    expect(css).toMatch(
+      /\.greyui-field-action-row\s*\{[\s\S]*?container-name:\s*greyui-field-action-row/,
+    );
+    expect(css).toMatch(
+      /@container greyui-field-action-row \(max-width: 350px\)[\s\S]*?\[data-layout="auto"\]/,
+    );
+    expect(css).toMatch(
+      /\[data-layout="stacked"\][\s\S]*?\.greyui-field-action-row-layout[\s\S]*?flex-direction:\s*column/,
+    );
+    expect(css).not.toContain("@media (max-width: 350px)");
   });
 
   it("keeps window control hover chrome off touch devices", () => {
@@ -103,13 +187,46 @@ describe("default theme contrast", () => {
     expect(tooltip).toBeGreaterThan(dialog);
   });
 
-  it("keeps Select menu labels single-line within a content-sized popup", () => {
+  it("uses anchor-width form popups with explicit content-width overrides", () => {
     const css = readFileSync(resolve(process.cwd(), "src/styles.css"), "utf8");
+    const componentCss = readFileSync(resolve(process.cwd(), "src/components-v2.css"), "utf8");
 
-    expect(css).toMatch(/\.greyui-select-list\s*\{[\s\S]*?min-width:\s*max-content/);
+    expect(css).toMatch(
+      /\.greyui-select-popup\s*\{[\s\S]*?width:\s*min\(var\(--anchor-width[\s\S]*?var\(--available-width/,
+    );
+    expect(css).toMatch(
+      /\.greyui-select-popup\[data-greyui-popup-width="content"\]\s*\{[\s\S]*?width:\s*max-content/,
+    );
+    expect(css).toMatch(/\.greyui-select-list\s*\{[\s\S]*?min-width:\s*0/);
+    expect(css).toMatch(
+      /\.greyui-select-popup\[data-greyui-popup-width="content"\] \.greyui-select-list\s*\{[\s\S]*?min-width:\s*max-content/,
+    );
     expect(css).toMatch(/\.greyui-select-item-text\s*\{[\s\S]*?grid-column:\s*2/);
     expect(css).toMatch(/\.greyui-select-item-text\s*\{[\s\S]*?white-space:\s*nowrap/);
     expect(css).toMatch(/\.greyui-select-item-indicator\s*\{[\s\S]*?grid-column:\s*1/);
+    expect(componentCss).toMatch(
+      /\.greyui-combobox-popup\s*\{[\s\S]*?width:\s*min\(var\(--anchor-width[\s\S]*?var\(--available-width/,
+    );
+    expect(componentCss).toMatch(/\.greyui-autocomplete-item-text\s*\{[\s\S]*?grid-column:\s*1/);
+    expect(componentCss).toMatch(
+      /\.greyui-autocomplete-item-indicator\s*\{[\s\S]*?grid-column:\s*2/,
+    );
+    expect(componentCss).not.toContain(
+      ".greyui-combobox-item > :not(.greyui-combobox-item-indicator)",
+    );
+  });
+
+  it("clamps menus to Base UI's collision area and communicates disabled triggers", () => {
+    const css = readFileSync(resolve(process.cwd(), "src/styles.css"), "utf8");
+
+    expect(css).toMatch(
+      /\.greyui-menu-popup\s*\{[\s\S]*?max-width:[^;]*var\(--available-width[\s\S]*?max-height:[^;]*var\(--available-height/,
+    );
+    expect(css).toMatch(/\.greyui-menu-trigger\[data-disabled\]\s*\{[\s\S]*?cursor:\s*not-allowed/);
+    expect(css).toMatch(
+      /\.greyui-menubar \.greyui-menu-trigger\[data-disabled\]\s*\{[\s\S]*?color:\s*var\(--greyui-text-muted\)/,
+    );
+    expect(css).toContain(".greyui-menu-trigger:hover:not([data-disabled])");
   });
 
   it("uses standard panel surfaces for grouped controls", () => {
@@ -125,7 +242,7 @@ describe("default theme contrast", () => {
     expect(css).toMatch(
       /\.greyui-fieldset\[data-variant="plain"\]\s*\{[\s\S]*?padding:\s*0;[\s\S]*?border:\s*0;[\s\S]*?background:\s*transparent;[\s\S]*?box-shadow:\s*none/,
     );
-    expect(css).toMatch(/\.greyui-field-action-row\s*\{[\s\S]*?align-items:\s*flex-end/);
+    expect(css).toMatch(/\.greyui-field-action-row-layout\s*\{[\s\S]*?align-items:\s*flex-end/);
   });
 
   it("paints table row fills through every cell edge", () => {

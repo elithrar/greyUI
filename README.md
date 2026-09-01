@@ -33,13 +33,21 @@ Both forms use the same build graph. CI checks that representative root imports 
 
 - Simple controls accept native props; compound controls use `Root` plus named parts and Base UI behavior. Use the [Base UI reference](https://base-ui.com/react/components) for exhaustive primitive props.
 - Consumers provide labels and accessible names. Wrap overlay-heavy apps in `Layer.Provider`.
+- `Window` adapts to its own inline size with `chrome="auto"`. Use `chrome="floating"` or
+  `chrome="stacked"` when geometry must remain fixed. The deprecated `responsive` adapter remains
+  available throughout 0.6.x and is scheduled for removal no earlier than 0.7.0.
 
 ## Common distinctions
 
 - `Select` is fixed-list; `Combobox` searches listed values; `Autocomplete` keeps free-form text valid.
+- Form popups match their anchor by default. Use `Select popupWidth="content"` or
+  `Combobox.Popup`/`Autocomplete.Popup width="content"` for longer lists; all three accept
+  `positionerProps`.
 - `GroupBox` is visual grouping; `Fieldset` adds form semantics. Use `Fieldset.Root variant="plain"` with an accessible name when surrounding chrome supplies the visual boundary.
 - `Button` emphasis (`variant="primary"`), default action (`defaultAction`), selection (`aria-pressed`), and keyboard focus are independent states.
-- `Field.ActionRow` bottom-aligns labeled controls such as `Select` with adjacent buttons.
+- `Field.ActionRow` bottom-aligns labeled controls such as `Select` with adjacent buttons. Its
+  `layout="auto"` default follows its own container; `"inline"` and `"stacked"` are explicit
+  overrides.
 
 ## Use locally
 
@@ -66,7 +74,19 @@ npm install /path/to/greyUI
 - Feedback and content: Banner, Breadcrumbs, Empty, Loader, Pagination, Progress, Meter, SegmentedMeter, Toast, ScrollArea, Table, Badge, GroupBox, Separator
 - Window chrome: Window (`Window.Widget`, `Window.MenuBar`, `Window.StatusBar.*`)
 
-`Window` supports controlled/uncontrolled collapse and `responsive="stacked"` or `"floating"`. Use `Window.Content` for standard body rails and compose `Window.Header`, `Window.Description`, and `Window.Actions` for responsive in-body headers. `Popover.Popup.positionerProps` accepts Base UI positioning options such as virtual anchors.
+`Window` supports controlled/uncontrolled collapse and container-aware `chrome="auto"` behavior;
+use `"floating"` or `"stacked"` to override its chrome geometry. Use `Window.Content` for standard
+body rails and compose `Window.Header`, `Window.Description`, and `Window.Actions` for in-body
+headers. `Window.Header` also accepts `layout="auto" | "inline" | "stacked"`. The legacy
+`responsive` prop remains as a deprecated adapter. `Popover.Popup.positionerProps` accepts Base UI
+positioning options such as virtual anchors.
+
+`Window.MenuBar` coordinates sibling `Menu.Root` components with menubar semantics, including arrow-key traversal and open-menu handoff. `Menu` includes item, link, checkbox, radio, group, and submenu primitives; `Menu.Popup.positionerProps` exposes Base UI positioning options for edge cases and nested menus.
+
+For 0.5 migrations, replace `responsive="stacked"` with `chrome="auto"` and
+`responsive="floating"` with `chrome="floating"`. If both props are present, `chrome` wins.
+`Window.Header` and `Field.ActionRow` become container-aware by default without markup changes;
+set their `layout` prop only when an explicit inline or stacked arrangement is required.
 
 `Layer.Provider` routes overlays into stable top-level hosts; `Layer.Portal` exposes the same contract for custom content.
 

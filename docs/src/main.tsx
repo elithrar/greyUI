@@ -34,6 +34,7 @@ import {
   KumoPatternDemos,
 } from "./next-components";
 import { GREYUI_VERSION } from "./version";
+import { WindowRegressionFixtures } from "./window-regression-fixtures";
 import "./docs.css";
 
 const WORKBENCH_URL = "https://workbench.questionable.services/";
@@ -360,6 +361,12 @@ function App() {
                   <code>Select</code> is fixed-list; <code>Combobox</code> searches and selects
                   listed values; <code>Autocomplete</code> keeps free-form text valid.
                 </p>
+                <p>
+                  Form popups match their trigger width and clamp to the available screen space by
+                  default. Use <code>popupWidth="content"</code> on <code>Select</code> or{" "}
+                  <code>width="content"</code> on a compound popup when long options should widen
+                  the list; <code>positionerProps</code> forwards Base UI placement options.
+                </p>
               </Guidance>
               <div className="docs-grid-2">
                 <Demo title="Input">
@@ -378,9 +385,11 @@ function App() {
                   <Select
                     label="Theme"
                     defaultValue="beos"
+                    popupWidth="content"
                     options={[
                       { value: "beos", label: "BeOS R5" },
                       { value: "haiku", label: "Haiku" },
+                      { value: "workbench", label: "Workbench with extended desktop tools" },
                       { value: "inactive", label: "Inactive", disabled: true },
                     ]}
                   />
@@ -547,7 +556,7 @@ function App() {
             <Section
               id="overlays"
               title="Menus & overlays"
-              intro="Menus, popovers, tooltips, toasts, app-owned overlays, and dialogs use Layer.Provider to escape map and window stacking contexts in a stable order."
+              intro="Window.MenuBar coordinates its Menu roots as one keyboard-navigable menubar. Menus, popovers, tooltips, toasts, app-owned overlays, and dialogs use Layer.Provider to escape map and window stacking contexts in a stable order."
             >
               <Guidance
                 title="Overlay contract"
@@ -558,6 +567,13 @@ function App() {
                   Mount one <code>Layer.Provider</code> near the app root. Use
                   <code> AlertDialog</code> for confirmation decisions; context menus should not be
                   the only path to important actions.
+                </p>
+                <p>
+                  In <code>Window.MenuBar</code>, Left and Right Arrow move between enabled menu
+                  triggers. When a menu is open, that movement hands the open popup to the next
+                  trigger; Escape closes it and restores focus. Submenus use the standard forward
+                  and back arrow keys, and disabled triggers are skipped. Menu popups remain
+                  content-sized but clamp to the available collision area.
                 </p>
               </Guidance>
               <div className="docs-grid-2 docs-component-grid">
@@ -687,7 +703,7 @@ function App() {
             <Section
               id="window"
               title="Window shell"
-              intro="Window preserves its chrome while offering optional controlled or uncontrolled collapse state. Controls stay neutral after pointer or touch activation while retaining keyboard-visible focus. Stacked mode remains the responsive default; floating mode keeps compact overlay geometry on small screens."
+              intro="Window preserves its chrome while offering optional controlled or uncontrolled collapse state. Controls stay neutral after pointer or touch activation while retaining keyboard-visible focus. Auto chrome follows the window container; floating and stacked modes are explicit overrides."
             >
               <Demo title="Active and inactive windows">
                 <div className="docs-window-pair">
@@ -712,7 +728,7 @@ function App() {
                     <div className="docs-window-example-body">Active window</div>
                     <Window.StatusBar>Ready</Window.StatusBar>
                   </Window>
-                  <Window.Root active={false} defaultCollapsed>
+                  <Window.Root active={false}>
                     <Window.TitleBar>
                       <Window.Title>Tracker</Window.Title>
                       <Window.Controls>
@@ -720,7 +736,22 @@ function App() {
                       </Window.Controls>
                     </Window.TitleBar>
                     <Window.Body>
-                      <div className="docs-window-example-body">Compound window API</div>
+                      <Window.MenuBar aria-label="Inactive window menu bar">
+                        <Menu.Root>
+                          <Menu.Trigger>File</Menu.Trigger>
+                          <Menu.Popup>
+                            <Menu.Item>Open Tracker</Menu.Item>
+                            <Menu.Item>Close</Menu.Item>
+                          </Menu.Popup>
+                        </Menu.Root>
+                        <Menu.Root>
+                          <Menu.Trigger>View</Menu.Trigger>
+                          <Menu.Popup>
+                            <Menu.Item>Refresh</Menu.Item>
+                          </Menu.Popup>
+                        </Menu.Root>
+                      </Window.MenuBar>
+                      <div className="docs-window-example-body">Inactive compound window</div>
                       <Window.StatusBar>2 items</Window.StatusBar>
                     </Window.Body>
                   </Window.Root>
@@ -732,13 +763,34 @@ function App() {
                   <code> Window.Header</code>, <code>Window.Description</code>, and
                   <code> Window.Actions</code> for a shared content rail; keep menu and status bars
                   outside so their chrome remains full width. <code>Field.ActionRow</code> aligns a
-                  labeled Select with adjacent buttons at the control edge. The header stacks below
-                  520 px, while <code>responsive="stacked"</code> flattens the title chrome at the
-                  standard responsive breakpoint.
+                  labeled Select with adjacent buttons at the control edge. Their default
+                  <code> layout="auto"</code> behavior follows each component container rather than
+                  the page viewport. Use <code>layout="inline"</code> or
+                  <code> layout="stacked"</code> for an explicit override, and choose
+                  <code> chrome="floating"</code> or <code>chrome="stacked"</code> when the window
+                  should not adapt automatically.
+                </p>
+                <p>
+                  The root owns sizing while its frame owns the outer border, panel, and shadow.
+                  Menu, content, and status rows share the same inset edge without compensating
+                  negative margins, so switching between active and inactive states never changes
+                  the window geometry.
                 </p>
               </Guidance>
               <Demo title="Complete dense application window">
                 <DenseWindowExample />
+              </Demo>
+              <Guidance title="Container-width regression matrix">
+                <p>
+                  These fixed-width windows keep container behavior visible inside a wide docs
+                  viewport. They include expanded and collapsed small windows, explicit Header and
+                  ActionRow layouts, stacked chrome, and automatic chrome above the breakpoint. Open
+                  the right-aligned Window menu in the 360 px case to check popup collision handling
+                  at the inline edge.
+                </p>
+              </Guidance>
+              <Demo title="Window container regression fixtures">
+                <WindowRegressionFixtures />
               </Demo>
             </Section>
 

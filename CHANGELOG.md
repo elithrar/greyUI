@@ -2,6 +2,21 @@
 
 ## Unreleased
 
+## 0.6.0 — 2026-09-01
+
+- Add container-aware Window chrome with `chrome="auto | floating | stacked"` and explicit
+  `layout="auto | inline | stacked"` overrides for in-body headers and field action rows.
+- Give the Window frame one geometry owner so title, menu, content, and status rows share aligned
+  edges across active, inactive, collapsed, floating, and stacked states.
+- Give `Window.MenuBar` Base UI menubar semantics, including coordinated keyboard focus and
+  open-menu handoff, and add Menu link, checkbox, radio, group, and submenu parts.
+- Match Select, Combobox, and Autocomplete popups to their anchor by default, expose positioning
+  overrides, and add explicit item text/indicator geometry.
+- Add container-width regression coverage and make documentation grids adapt to their containing
+  section instead of viewport-only breakpoints.
+- Validate release commits before creating their version tags, then publish once from the validated
+  tag workflow.
+
 ## 0.5.0 — 2026-09-01
 
 - Scope window chrome under `Window` (`Window.Widget`, `Window.MenuBar`, and `Window.StatusBar.*`) and remove the standalone pre-1.0 runtime exports.

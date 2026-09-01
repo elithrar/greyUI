@@ -32,7 +32,8 @@ describe("high-value component behavior", () => {
           <Autocomplete.List>
             {(item: string) => (
               <Autocomplete.Item key={item} value={item}>
-                {item}
+                <Autocomplete.ItemText>{item}</Autocomplete.ItemText>
+                <Autocomplete.ItemIndicator />
               </Autocomplete.Item>
             )}
           </Autocomplete.List>
@@ -43,12 +44,48 @@ describe("high-value component behavior", () => {
     const input = screen.getByRole<HTMLInputElement>("combobox", { name: "Operating system" });
     fireEvent.focus(input);
     fireEvent.input(input, { target: { value: "Hai" }, inputType: "insertText" });
+    expect(
+      document.querySelector(".greyui-autocomplete-popup")?.getAttribute("data-greyui-popup-width"),
+    ).toBe("anchor");
     expect(screen.getByRole("option", { name: "Haiku" })).not.toBeNull();
     expect(screen.queryByRole("option", { name: "BeOS R5" })).toBeNull();
 
     fireEvent.change(input, { target: { value: "Custom OS" } });
     fireEvent.blur(input);
     expect(input.value).toBe("Custom OS");
+  });
+
+  it("uses explicit left-aligned text and indicator parts in Autocomplete items", () => {
+    render(
+      <Autocomplete.Root defaultOpen items={["A deliberately long operating system name"]}>
+        <Autocomplete.InputGroup>
+          <Autocomplete.Input aria-label="Operating system" />
+        </Autocomplete.InputGroup>
+        <Autocomplete.Popup
+          width="content"
+          positionerProps={{ id: "auto-positioner", side: "top" }}
+        >
+          <Autocomplete.List>
+            {(item: string) => (
+              <Autocomplete.Item key={item} value={item}>
+                <Autocomplete.ItemText>{item}</Autocomplete.ItemText>
+                <Autocomplete.ItemIndicator />
+              </Autocomplete.Item>
+            )}
+          </Autocomplete.List>
+        </Autocomplete.Popup>
+      </Autocomplete.Root>,
+    );
+
+    const option = screen.getByRole("option", { name: /deliberately long/ });
+    expect(option.querySelector(".greyui-autocomplete-item-text")?.textContent).toContain(
+      "deliberately long",
+    );
+    expect(option.querySelector(".greyui-autocomplete-item-indicator")).not.toBeNull();
+    expect(
+      document.querySelector(".greyui-autocomplete-popup")?.getAttribute("data-greyui-popup-width"),
+    ).toBe("content");
+    expect(document.querySelector("#auto-positioner")?.getAttribute("data-side")).toBe("top");
   });
 
   it("opens Accordion panels through their trigger", () => {
