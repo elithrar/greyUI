@@ -1,4 +1,4 @@
-import { useEffect, useRef, type ReactNode } from "react";
+import { useEffect, useRef, type CSSProperties, type ReactNode } from "react";
 import { Button, Field, Menu, Select, Window } from "../../src";
 
 export const WINDOW_REGRESSION_WIDTHS = [280, 320, 360, 520, 640, 760, 820] as const;
@@ -16,13 +16,17 @@ interface RegressionCaseProps {
 }
 
 function RegressionCase({ children, label, state, width }: RegressionCaseProps) {
+  const style: CSSProperties & { "--docs-regression-width": string } = {
+    "--docs-regression-width": `${width}px`,
+  };
+
   return (
     <figure
       className="docs-window-regression-case"
       data-regression-case="window"
       data-regression-state={state}
       data-regression-width={width}
-      style={{ width }}
+      style={style}
     >
       <figcaption>
         <strong>{width}px container</strong>

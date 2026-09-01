@@ -536,12 +536,15 @@ pre {
 
 .docs-window-regression-grid {
   display: grid;
+  width: 100%;
+  max-width: 100%;
   min-width: 0;
   gap: 18px;
   justify-items: start;
 }
 
 .docs-window-regression-case {
+  width: min(var(--docs-regression-width), 100%);
   max-width: 100%;
   min-width: 0;
   margin: 0;

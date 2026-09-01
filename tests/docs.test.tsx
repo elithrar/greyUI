@@ -178,7 +178,7 @@ describe("window container regression fixtures", () => {
       "active",
       "active",
     ]);
-    expect(fixtures[0]?.style.width).toBe("280px");
+    expect(fixtures[0]?.style.getPropertyValue("--docs-regression-width")).toBe("280px");
     expect(fixtures[1]?.querySelector("[data-collapsed='true']")).not.toBeNull();
     expect(fixtures[2]?.querySelector("[data-greyui-component='menu-bar']")).not.toBeNull();
     expect(fixtures[2]?.querySelector("[data-greyui-component='status-bar']")).not.toBeNull();
