@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- Scope window chrome under `Window` (`Window.Widget`, `Window.MenuBar`, and `Window.StatusBar.*`) and remove the standalone pre-1.0 runtime exports.
 - Add standard Window content rails and responsive description/action header slots.
 - Add borderless semantic Fieldsets and bottom-aligned field action rows.
 - Keep button selection independent from primary/default emphasis and replace outer focus chrome with

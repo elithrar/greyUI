@@ -33,14 +33,27 @@ import {
   Toast,
   Toolbar,
   Window,
-  WindowWidget,
-  StatusBar,
-  StatusBarItem,
-  StatusBarSeparator,
-  StatusLight,
 } from "../src";
+import * as GreyUI from "../src";
 
 afterEach(cleanup);
+
+describe("window compound API", () => {
+  it("scopes window chrome under Window without standalone aliases", () => {
+    expect(GreyUI).not.toHaveProperty("MenuBar");
+    expect(GreyUI).not.toHaveProperty("StatusBar");
+    expect(GreyUI).not.toHaveProperty("StatusBarItem");
+    expect(GreyUI).not.toHaveProperty("StatusBarSeparator");
+    expect(GreyUI).not.toHaveProperty("StatusLight");
+    expect(GreyUI).not.toHaveProperty("WindowWidget");
+
+    expect(Window).toHaveProperty("Widget");
+    expect(Window).toHaveProperty("MenuBar");
+    expect(Window.StatusBar).toHaveProperty("Item");
+    expect(Window.StatusBar).toHaveProperty("Separator");
+    expect(Window.StatusBar).toHaveProperty("Light");
+  });
+});
 
 describe("native control safety", () => {
   it("keeps Button non-submitting by default", () => {
@@ -72,8 +85,8 @@ describe("native control safety", () => {
     expect(button.getAttribute("aria-pressed")).toBe("true");
   });
 
-  it("keeps WindowWidget non-submitting and labeled", () => {
-    render(<WindowWidget label="Close" />);
+  it("keeps Window.Widget non-submitting and labeled", () => {
+    render(<Window.Widget label="Close" />);
 
     const widget = screen.getByRole("button", { name: "Close" });
     expect(widget.getAttribute("type")).toBe("button");
@@ -606,12 +619,12 @@ describe("accessibility contracts", () => {
 
   it("provides structured status bar primitives", () => {
     render(
-      <StatusBar>
-        <StatusLight state="ready" label="Connected" />
-        <StatusBarItem grow>Ready</StatusBarItem>
-        <StatusBarSeparator />
-        <StatusBarItem>34.0 mi</StatusBarItem>
-      </StatusBar>,
+      <Window.StatusBar>
+        <Window.StatusBar.Light state="ready" label="Connected" />
+        <Window.StatusBar.Item grow>Ready</Window.StatusBar.Item>
+        <Window.StatusBar.Separator />
+        <Window.StatusBar.Item>34.0 mi</Window.StatusBar.Item>
+      </Window.StatusBar>,
     );
 
     expect(screen.getByLabelText("Connected").getAttribute("data-state")).toBe("ready");

@@ -1,16 +1,4 @@
-import {
-  Button,
-  Checkbox,
-  Field,
-  Fieldset,
-  Input,
-  Select,
-  StatusBar,
-  StatusBarItem,
-  StatusLight,
-  Table,
-  Window,
-} from "../../src";
+import { Button, Checkbox, Field, Fieldset, Input, Select, Table, Window } from "../../src";
 
 const presets = [
   { value: "915-61", label: "Porsche 915/61" },
@@ -89,10 +77,12 @@ export function DenseWindowExample() {
           </tbody>
         </Table>
       </Window.Content>
-      <StatusBar>
-        <StatusBarItem grow>URL-compatible teeth and direct-ratio input</StatusBarItem>
-        <StatusLight state="ready" label="Gearset ready" />
-      </StatusBar>
+      <Window.StatusBar>
+        <Window.StatusBar.Item grow>
+          URL-compatible teeth and direct-ratio input
+        </Window.StatusBar.Item>
+        <Window.StatusBar.Light state="ready" label="Gearset ready" />
+      </Window.StatusBar>
     </Window>
   );
 }
@@ -114,5 +104,5 @@ export const denseWindowCode = `<Window title="Gearset" responsive="stacked">
     </Fieldset.Root>
     <Table>{/* results */}</Table>
   </Window.Content>
-  <StatusBar>Ready</StatusBar>
+  <Window.StatusBar>Ready</Window.StatusBar>
 </Window>`;
