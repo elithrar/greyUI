@@ -1440,6 +1440,7 @@
   min-width: 0;
   max-width: 100%;
   box-sizing: border-box;
+  contain-intrinsic-inline-size: 22rem;
   container-type: inline-size;
   container-name: greyui-field-action-row;
 }
