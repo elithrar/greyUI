@@ -64,7 +64,7 @@ npm install /path/to/greyUI
 - Controls: Button, IconButton, ButtonGroup, ToggleButton, SegmentedControl, Checkbox, RadioGroup, Switch, Slider, CheckboxGroup, ToggleGroup
 - Desktop UI: Tabs, Menu, ContextMenu, Toolbar, Collapsible, Popover, Tooltip, Dialog, AlertDialog, Layer, Accordion
 - Feedback and content: Banner, Breadcrumbs, Empty, Loader, Pagination, Progress, Meter, SegmentedMeter, Toast, ScrollArea, Table, Badge, GroupBox, Separator
-- Window chrome: Window, WindowWidget, MenuBar, StatusBar, StatusBarItem, StatusBarSeparator, StatusLight
+- Window chrome: Window (`Window.Widget`, `Window.MenuBar`, `Window.StatusBar.*`)
 
 `Window` supports controlled/uncontrolled collapse and `responsive="stacked"` or `"floating"`. Use `Window.Content` for standard body rails and compose `Window.Header`, `Window.Description`, and `Window.Actions` for responsive in-body headers. `Popover.Popup.positionerProps` accepts Base UI positioning options such as virtual anchors.
 

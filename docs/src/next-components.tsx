@@ -16,7 +16,6 @@ import {
   InputGroup,
   Loader,
   Menu,
-  MenuBar,
   Meter,
   NumberField,
   Pagination,
@@ -27,10 +26,6 @@ import {
   Slider,
   Toast,
   Toolbar,
-  StatusBar,
-  StatusBarItem,
-  StatusBarSeparator,
-  StatusLight,
   Window,
 } from "../../src";
 import { useMemo, useRef, useState } from "react";
@@ -391,7 +386,7 @@ export function IntegrationDemos() {
   return (
     <div className="docs-grid-2 docs-component-grid">
       <Demo title="Menu bar">
-        <MenuBar>
+        <Window.MenuBar>
           <Menu.Root>
             <Menu.Trigger>File</Menu.Trigger>
             <Menu.Popup>
@@ -408,16 +403,16 @@ export function IntegrationDemos() {
               <Menu.Item>Redo</Menu.Item>
             </Menu.Popup>
           </Menu.Root>
-        </MenuBar>
+        </Window.MenuBar>
       </Demo>
 
       <Demo title="Status bar">
-        <StatusBar>
-          <StatusLight state="ready" label="Connected" />
-          <StatusBarItem grow>Ready</StatusBarItem>
-          <StatusBarSeparator />
-          <StatusBarItem>3 items</StatusBarItem>
-        </StatusBar>
+        <Window.StatusBar>
+          <Window.StatusBar.Light state="ready" label="Connected" />
+          <Window.StatusBar.Item grow>Ready</Window.StatusBar.Item>
+          <Window.StatusBar.Separator />
+          <Window.StatusBar.Item>3 items</Window.StatusBar.Item>
+        </Window.StatusBar>
       </Demo>
 
       <Demo title="Compact date picker">
@@ -451,12 +446,12 @@ export function IntegrationDemos() {
       <Demo title="Floating, collapsible window">
         <Window title="Route" collapsible responsive="floating" className="docs-floating-window">
           <div className="docs-window-example-body">Map overlays keep their window geometry.</div>
-          <StatusBar>
-            <StatusLight state="ready" label="Route loaded" />
-            <StatusBarItem grow>Ready</StatusBarItem>
-            <StatusBarSeparator />
-            <StatusBarItem>34.0 mi</StatusBarItem>
-          </StatusBar>
+          <Window.StatusBar>
+            <Window.StatusBar.Light state="ready" label="Route loaded" />
+            <Window.StatusBar.Item grow>Ready</Window.StatusBar.Item>
+            <Window.StatusBar.Separator />
+            <Window.StatusBar.Item>34.0 mi</Window.StatusBar.Item>
+          </Window.StatusBar>
         </Window>
       </Demo>
     </div>

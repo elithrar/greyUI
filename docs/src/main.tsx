@@ -10,12 +10,10 @@ import {
   Input,
   Layer,
   Menu,
-  MenuBar,
   Popover,
   RadioGroup,
   ScrollArea,
   Select,
-  StatusBar,
   Switch,
   Table,
   Tabs,
@@ -174,7 +172,7 @@ function App() {
 
           <main className="docs-main">
             <Window title="greyUI — Component Reference" collapsible className="docs-hero-window">
-              <MenuBar>
+              <Window.MenuBar>
                 <Menu.Root>
                   <Menu.Trigger>File</Menu.Trigger>
                   <Menu.Popup>
@@ -189,7 +187,7 @@ function App() {
                     <Menu.Item>Design tokens</Menu.Item>
                   </Menu.Popup>
                 </Menu.Root>
-              </MenuBar>
+              </Window.MenuBar>
               <div className="docs-hero">
                 <div>
                   <div className="docs-eyebrow">BeOS / Haiku UI for React</div>
@@ -213,7 +211,7 @@ function App() {
                   </p>
                 </div>
               </div>
-              <StatusBar>{GREYUI_VERSION} · ESM · CSS tokens</StatusBar>
+              <Window.StatusBar>{GREYUI_VERSION} · ESM · CSS tokens</Window.StatusBar>
             </Window>
 
             <Section
@@ -694,7 +692,7 @@ function App() {
               <Demo title="Active and inactive windows">
                 <div className="docs-window-pair">
                   <Window title="Preferences" collapsible>
-                    <MenuBar>
+                    <Window.MenuBar>
                       <Menu.Root>
                         <Menu.Trigger>File</Menu.Trigger>
                         <Menu.Popup>
@@ -710,9 +708,9 @@ function App() {
                           <Menu.Item>Redo</Menu.Item>
                         </Menu.Popup>
                       </Menu.Root>
-                    </MenuBar>
+                    </Window.MenuBar>
                     <div className="docs-window-example-body">Active window</div>
-                    <StatusBar>Ready</StatusBar>
+                    <Window.StatusBar>Ready</Window.StatusBar>
                   </Window>
                   <Window.Root active={false} defaultCollapsed>
                     <Window.TitleBar>

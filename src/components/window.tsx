@@ -169,7 +169,7 @@ export function WindowCollapse({
 }: WindowCollapseProps) {
   const { bodyId, collapsed, setCollapsed } = useWindowContext("Window.Collapse");
   return (
-    <WindowWidget
+    <WindowWidgetControl
       {...props}
       kind={collapsed ? "restore" : "minimize"}
       label={collapsed ? restoreLabel : collapseLabel}
@@ -229,7 +229,7 @@ export interface WindowWidgetProps extends Omit<
   label: string;
 }
 
-export function WindowWidget({
+function WindowWidgetControl({
   kind = "close",
   label,
   className = "",
@@ -248,8 +248,8 @@ export function WindowWidget({
   );
 }
 
-export type MenuBarProps = ComponentPropsWithoutRef<"div">;
-export function MenuBar({ className = "", ...props }: MenuBarProps) {
+export type WindowMenuBarProps = ComponentPropsWithoutRef<"div">;
+function WindowMenuBar({ className = "", ...props }: WindowMenuBarProps) {
   return (
     <div
       data-greyui-component="menu-bar"
@@ -259,8 +259,8 @@ export function MenuBar({ className = "", ...props }: MenuBarProps) {
   );
 }
 
-export type StatusBarProps = ComponentPropsWithoutRef<"div">;
-export function StatusBar({ className = "", ...props }: StatusBarProps) {
+export type WindowStatusBarProps = ComponentPropsWithoutRef<"div">;
+function WindowStatusBarRoot({ className = "", ...props }: WindowStatusBarProps) {
   return (
     <div
       data-greyui-component="status-bar"
@@ -270,11 +270,11 @@ export function StatusBar({ className = "", ...props }: StatusBarProps) {
   );
 }
 
-export interface StatusBarItemProps extends ComponentPropsWithoutRef<"span"> {
+export interface WindowStatusBarItemProps extends ComponentPropsWithoutRef<"span"> {
   grow?: boolean;
 }
 
-export function StatusBarItem({ className = "", grow = false, ...props }: StatusBarItemProps) {
+function WindowStatusBarItem({ className = "", grow = false, ...props }: WindowStatusBarItemProps) {
   return (
     <span
       data-greyui-component="status-bar-item"
@@ -285,9 +285,9 @@ export function StatusBarItem({ className = "", grow = false, ...props }: Status
   );
 }
 
-export type StatusBarSeparatorProps = Omit<ComponentPropsWithoutRef<"span">, "role">;
+export type WindowStatusBarSeparatorProps = Omit<ComponentPropsWithoutRef<"span">, "role">;
 
-export function StatusBarSeparator({ className = "", ...props }: StatusBarSeparatorProps) {
+function WindowStatusBarSeparator({ className = "", ...props }: WindowStatusBarSeparatorProps) {
   return (
     <span
       role="separator"
@@ -299,12 +299,17 @@ export function StatusBarSeparator({ className = "", ...props }: StatusBarSepara
   );
 }
 
-export interface StatusLightProps extends Omit<ComponentPropsWithoutRef<"span">, "children"> {
+export interface WindowStatusLightProps extends Omit<ComponentPropsWithoutRef<"span">, "children"> {
   label: string;
   state?: "idle" | "ready" | "loading" | "error";
 }
 
-export function StatusLight({ className = "", label, state = "idle", ...props }: StatusLightProps) {
+function WindowStatusLight({
+  className = "",
+  label,
+  state = "idle",
+  ...props
+}: WindowStatusLightProps) {
   return (
     <span
       role="img"
@@ -317,16 +322,24 @@ export function StatusLight({ className = "", label, state = "idle", ...props }:
   );
 }
 
+const WindowStatusBar = Object.assign(WindowStatusBarRoot, {
+  Item: WindowStatusBarItem,
+  Separator: WindowStatusBarSeparator,
+  Light: WindowStatusLight,
+});
+
 export const Window = Object.assign(WindowComponent, {
   Root: WindowRoot,
   TitleBar: WindowTitleBar,
   Title: WindowTitle,
   Controls: WindowControls,
+  Widget: WindowWidgetControl,
   Collapse: WindowCollapse,
   Body: WindowBody,
   Content: WindowContent,
   Header: WindowHeader,
   Description: WindowDescription,
   Actions: WindowActions,
-  StatusBar,
+  MenuBar: WindowMenuBar,
+  StatusBar: WindowStatusBar,
 });
