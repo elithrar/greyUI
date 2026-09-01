@@ -242,13 +242,19 @@ function App() {
                 </GroupBox>
               </div>
               <Guidance title="API conventions">
-                <p>
-                  Import <code>greyui/styles.css</code> once. Simple controls accept native props;
-                  compound controls use <code>Root</code> plus named parts and Base UI behavior.
-                  Consumers still provide labels and accessible names. See the
-                  <a href={BASE_UI_COMPONENTS_URL}> Base UI reference</a> for exhaustive primitive
-                  props.
-                </p>
+                <ul>
+                  <li>
+                    Import <code>greyui/styles.css</code> once at the application root.
+                  </li>
+                  <li>
+                    Pass native props to simple controls; compose compound controls from
+                    <code> Root</code> and their named parts.
+                  </li>
+                  <li>
+                    Provide labels and accessible names. Use the
+                    <a href={BASE_UI_COMPONENTS_URL}> Base UI reference</a> for primitive props.
+                  </li>
+                </ul>
                 <CopyCommand value={COMPONENT_IMPORT_EXAMPLE} label="component import example" />
               </Guidance>
             </Section>
@@ -286,13 +292,17 @@ function App() {
                 </div>
               </Demo>
               <Guidance title="Button state model">
-                <p>
-                  Use <code>variant="primary"</code> for emphasis, <code>defaultAction</code> for
-                  the action Enter should invoke, and <code>aria-pressed</code> (or
-                  <code> ToggleButton</code>) for persistent selection. Pointer focus adds no sticky
-                  cue; keyboard <code>:focus-visible</code> uses a neutral inset cue without
-                  replacing the selected fill.
-                </p>
+                <ul>
+                  <li>
+                    Use <code>variant="primary"</code> for emphasis and <code>defaultAction</code>{" "}
+                    to visually mark the form action associated with Enter.
+                  </li>
+                  <li>
+                    Use <code>ToggleButton</code> or <code>aria-pressed</code> for persistent
+                    selection—primary and selected are separate states.
+                  </li>
+                  <li>Keyboard focus is visible; pointer focus does not leave a sticky cue.</li>
+                </ul>
               </Guidance>
               <Demo title="Interactive state matrix">
                 <Table className="docs-button-state-table">
@@ -357,16 +367,17 @@ function App() {
               intro="Inputs, textareas, selects, number fields, and comboboxes use white inset editing surfaces."
             >
               <Guidance title="Choose the field">
-                <p>
-                  <code>Select</code> is fixed-list; <code>Combobox</code> searches and selects
-                  listed values; <code>Autocomplete</code> keeps free-form text valid.
-                </p>
-                <p>
-                  Form popups match their trigger width and clamp to the available screen space by
-                  default. Use <code>popupWidth="content"</code> on <code>Select</code> or{" "}
-                  <code>width="content"</code> on a compound popup when long options should widen
-                  the list; <code>positionerProps</code> forwards Base UI placement options.
-                </p>
+                <ul>
+                  <li>
+                    Use <code>Select</code> for a fixed list, <code>Combobox</code> to filter listed
+                    values, and <code>Autocomplete</code> for free-form input with suggestions.
+                  </li>
+                  <li>Popups match their control width and stay inside the viewport by default.</li>
+                  <li>
+                    Use <code>popupWidth="content"</code> or <code>width="content"</code> for long
+                    options; pass <code>positionerProps</code> for custom placement.
+                  </li>
+                </ul>
               </Guidance>
               <div className="docs-grid-2">
                 <Demo title="Input">
@@ -440,18 +451,18 @@ function App() {
               <Guidance title="Composition choices">
                 <ul>
                   <li>
-                    <code>ToggleGroup</code> owns values; <code>SegmentedControl</code> only groups
-                    caller-controlled <code>ToggleButton</code>s.
+                    Use <code>ToggleGroup</code> when the group should own selection;
+                    <code> SegmentedControl</code> only lays out controlled
+                    <code> ToggleButton</code>s.
                   </li>
                   <li>
-                    <code>Fieldset</code> adds form semantics and shared disabled state.
-                    <code> Accordion</code> groups disclosures; <code>Collapsible</code> handles
+                    Use <code>Fieldset</code> for form semantics and shared disabled state;
+                    <code> Accordion</code> for several disclosures; <code>Collapsible</code> for
                     one.
                   </li>
                   <li>
-                    Use <code>Fieldset.Root variant="plain" aria-label="…"</code> when the
-                    surrounding window already provides visual chrome and a visible legend would
-                    repeat its heading.
+                    Use <code>Fieldset.Root variant="plain" aria-label="…"</code> when a window
+                    already supplies the visible heading and border.
                   </li>
                 </ul>
               </Guidance>
@@ -487,11 +498,20 @@ function App() {
                 code={"<Toast.Provider>\n  <App />\n  <Toast.Toaster />\n</Toast.Provider>"}
                 codeLabel="Toast setup"
               >
-                <p>
-                  <code>Progress</code> tracks work; <code>Meter</code> measures a value.
-                  <code> Banner</code> is inline; <code>Toast</code> is transient and requires a
-                  provider/toaster pair.
-                </p>
+                <ul>
+                  <li>
+                    Use <code>Progress</code> for work toward completion and <code>Meter</code> for
+                    a measured value.
+                  </li>
+                  <li>
+                    Use <code>Banner</code> for persistent inline feedback and <code>Toast</code>{" "}
+                    for transient feedback.
+                  </li>
+                  <li>
+                    Mount one <code>Toast.Provider</code> and <code>Toast.Toaster</code> around your
+                    application.
+                  </li>
+                </ul>
               </Guidance>
               <FeedbackDemos />
             </Section>
@@ -563,18 +583,19 @@ function App() {
                 code={"<Layer.Provider>\n  <App />\n</Layer.Provider>"}
                 codeLabel="Application setup"
               >
-                <p>
-                  Mount one <code>Layer.Provider</code> near the app root. Use
-                  <code> AlertDialog</code> for confirmation decisions; context menus should not be
-                  the only path to important actions.
-                </p>
-                <p>
-                  In <code>Window.MenuBar</code>, Left and Right Arrow move between enabled menu
-                  triggers. When a menu is open, that movement hands the open popup to the next
-                  trigger; Escape closes it and restores focus. Submenus use the standard forward
-                  and back arrow keys, and disabled triggers are skipped. Menu popups remain
-                  content-sized but clamp to the available collision area.
-                </p>
+                <ul>
+                  <li>
+                    Mount one <code>Layer.Provider</code> near the application root.
+                  </li>
+                  <li>
+                    Use <code>AlertDialog</code> for confirmation; keep important actions available
+                    outside context menus.
+                  </li>
+                  <li>
+                    Put related menus in <code>Window.MenuBar</code>. Arrow keys switch menus,
+                    Escape restores focus, and popups clamp to the viewport.
+                  </li>
+                </ul>
               </Guidance>
               <div className="docs-grid-2 docs-component-grid">
                 <Demo title="Menu and tooltip">
@@ -757,39 +778,41 @@ function App() {
                   </Window.Root>
                 </div>
               </Demo>
-              <Guidance title="Dense application composition" code={denseWindowCode}>
-                <p>
-                  Put padded application content in <code>Window.Content</code>. Compose
-                  <code> Window.Header</code>, <code>Window.Description</code>, and
-                  <code> Window.Actions</code> for a shared content rail; keep menu and status bars
-                  outside so their chrome remains full width. <code>Field.ActionRow</code> aligns a
-                  labeled Select with adjacent buttons at the control edge. Their default
-                  <code> layout="auto"</code> behavior follows each component container rather than
-                  the page viewport. Use <code>layout="inline"</code> or
-                  <code> layout="stacked"</code> for an explicit override, and choose
-                  <code> chrome="floating"</code> or <code>chrome="stacked"</code> when the window
-                  should not adapt automatically.
-                </p>
-                <p>
-                  The root owns sizing while its frame owns the outer border, panel, and shadow.
-                  Menu, content, and status rows share the same inset edge without compensating
-                  negative margins, so switching between active and inactive states never changes
-                  the window geometry.
-                </p>
+              <Guidance title="Build an application window" code={denseWindowCode}>
+                <ul>
+                  <li>
+                    Put padded UI in <code>Window.Content</code>; keep <code>Window.MenuBar</code>{" "}
+                    and
+                    <code> Window.StatusBar</code> outside it for full-width chrome.
+                  </li>
+                  <li>
+                    Compose <code>Window.Header</code>, <code>Window.Description</code>, and
+                    <code> Window.Actions</code>; use <code>Field.ActionRow</code> for labeled
+                    controls with adjacent actions.
+                  </li>
+                  <li>
+                    Keep <code>chrome="auto"</code> and <code>layout="auto"</code> for
+                    container-aware behavior; choose an explicit mode only when geometry must stay
+                    fixed.
+                  </li>
+                </ul>
               </Guidance>
-              <Demo title="Complete dense application window">
+              <Demo title="Complete window example">
                 <DenseWindowExample />
               </Demo>
-              <Guidance title="Container-width regression matrix">
-                <p>
-                  These fixed-width windows keep container behavior visible inside a wide docs
-                  viewport. They include expanded and collapsed small windows, explicit Header and
-                  ActionRow layouts, stacked chrome, and automatic chrome above the breakpoint. Open
-                  the right-aligned Window menu in the 360 px case to check popup collision handling
-                  at the inline edge.
-                </p>
+              <Guidance title="Control responsive behavior">
+                <ul>
+                  <li>
+                    <code>auto</code> follows each component container—not the page viewport.
+                  </li>
+                  <li>
+                    Use explicit header, action-row, or chrome modes only when the layout should not
+                    adapt.
+                  </li>
+                  <li>Menu popups clamp to the available viewport at narrow widths.</li>
+                </ul>
               </Guidance>
-              <Demo title="Window container regression fixtures">
+              <Demo title="Responsive window examples">
                 <WindowRegressionFixtures />
               </Demo>
             </Section>
@@ -811,7 +834,10 @@ function App() {
                 }
                 codeLabel="CSS example"
               >
-                <p>Override tokens at a theme boundary; avoid styling component internals.</p>
+                <ul>
+                  <li>Override shared tokens on a theme boundary.</li>
+                  <li>Avoid targeting component internals.</li>
+                </ul>
               </Guidance>
               <div className="docs-token-grid">
                 {[
