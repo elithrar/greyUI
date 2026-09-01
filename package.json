@@ -1,6 +1,6 @@
 {
   "name": "greyui",
-  "version": "0.6.0",
+  "version": "0.6.1",
   "description": "BeOS R5 / Haiku-inspired React component library extracted from WorkbenchOS.",
   "license": "UNLICENSED",
   "repository": {
