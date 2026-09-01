@@ -7,6 +7,7 @@
 }
 html {
   scroll-behavior: smooth;
+  scrollbar-gutter: stable;
 }
 body {
   margin: 0;
@@ -270,6 +271,7 @@ pre {
 }
 
 .docs-section {
+  container: docs-section / inline-size;
   scroll-margin-top: 18px;
   margin: 0 0 38px;
 }
@@ -292,10 +294,14 @@ pre {
   text-underline-offset: 2px;
 }
 .docs-principles,
-.docs-grid-2,
 .docs-state-grid {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(18rem, 100%), 1fr));
+  gap: 14px;
+}
+.docs-grid-2 {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(23rem, 100%), 1fr));
   gap: 14px;
 }
 .docs-principles ul {
@@ -356,6 +362,7 @@ pre {
 }
 
 .docs-demo {
+  container: docs-demo / inline-size;
   min-width: 0;
   border: 1px solid var(--greyui-border-dark);
   background: var(--greyui-panel);
@@ -463,7 +470,7 @@ pre {
 .docs-dense-field-grid {
   display: grid;
   min-width: 0;
-  grid-template-columns: repeat(6, minmax(0, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(6.5rem, 100%), 1fr));
   gap: 8px;
 }
 .docs-dense-window .greyui-table th:not(:first-child),
@@ -473,7 +480,7 @@ pre {
 .docs-selection-grid {
   display: grid;
   min-width: 0;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(12rem, 100%), 1fr));
   gap: 26px;
 }
 .docs-dialog-actions {
@@ -515,7 +522,7 @@ pre {
 .docs-window-pair {
   display: grid;
   min-width: 0;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: repeat(auto-fit, minmax(min(20rem, 100%), 1fr));
   gap: 28px;
   align-items: start;
 }
@@ -526,6 +533,40 @@ pre {
 .docs-window-example-body {
   min-height: 90px;
   padding: 14px;
+}
+
+.docs-window-regression-grid {
+  display: grid;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  padding-inline-end: 4px;
+  gap: 18px;
+  justify-items: start;
+}
+
+.docs-window-regression-case {
+  width: min(var(--docs-regression-width), 100%);
+  max-width: 100%;
+  min-width: 0;
+  margin: 0;
+}
+
+.docs-window-regression-case > figcaption {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 8px;
+  margin-bottom: 6px;
+  color: var(--greyui-text-muted);
+  font-size: var(--greyui-font-size-small);
+}
+
+.docs-window-regression-case > figcaption strong {
+  color: var(--greyui-text);
+}
+
+.docs-window-regression-edge-trigger {
+  margin-inline-start: auto;
 }
 
 .docs-empty-folder {
@@ -553,7 +594,7 @@ pre {
 .docs-token-grid {
   display: grid;
   min-width: 0;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(20rem, 100%), 1fr));
   border: 1px solid var(--greyui-border-dark);
   background: #fff;
   box-shadow: var(--greyui-bevel-inset);
@@ -614,27 +655,7 @@ pre {
   }
 }
 
-@media (max-width: 768px) {
-  .docs-window-pair {
-    grid-template-columns: 1fr;
-  }
-  .docs-dense-field-grid {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-  }
-}
-
 @media (max-width: 620px) {
-  .docs-grid-2,
-  .docs-principles,
-  .docs-selection-grid,
-  .docs-state-grid,
-  .docs-window-pair,
-  .docs-token-grid {
-    grid-template-columns: 1fr;
-  }
-  .docs-token:nth-child(odd) {
-    border-right: 0;
-  }
   .docs-deskbar nav {
     grid-template-columns: repeat(2, 1fr);
   }
@@ -647,20 +668,12 @@ pre {
   .docs-demo-canvas {
     padding: 12px;
   }
-  .docs-grid-2 > *,
-  .docs-principles > *,
-  .docs-selection-grid > *,
-  .docs-state-grid > *,
-  .docs-window-pair > *,
-  .docs-token-grid > * {
-    min-width: 0;
-  }
   .docs-dialog-actions > .greyui-button {
     flex: 1 1 auto;
   }
-  .docs-dense-field-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
+}
+
+@container docs-demo (max-width: 36rem) {
   .docs-dense-fieldset-heading {
     align-items: stretch;
     flex-direction: column;
@@ -670,7 +683,7 @@ pre {
 .docs-high-value-grid {
   display: grid;
   min-width: 0;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(22rem, 100%), 1fr));
   gap: 8px;
 }
 
@@ -712,8 +725,8 @@ pre {
   color: var(--greyui-text-muted);
 }
 
-@media (max-width: 767px) {
-  .docs-high-value-grid {
-    grid-template-columns: minmax(0, 1fr);
+@container docs-section (max-width: 40rem) {
+  .docs-token:nth-child(odd) {
+    border-right: 0;
   }
 }

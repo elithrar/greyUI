@@ -35,12 +35,13 @@ export function HighValueComponentDemos() {
               <Autocomplete.Clear />
               <Autocomplete.Trigger />
             </Autocomplete.InputGroup>
-            <Autocomplete.Popup>
+            <Autocomplete.Popup width="content">
               <Autocomplete.Empty>No matching suggestion</Autocomplete.Empty>
               <Autocomplete.List>
                 {(item: string) => (
                   <Autocomplete.Item key={item} value={item}>
-                    {item}
+                    <Autocomplete.ItemText>{item}</Autocomplete.ItemText>
+                    <Autocomplete.ItemIndicator />
                   </Autocomplete.Item>
                 )}
               </Autocomplete.List>

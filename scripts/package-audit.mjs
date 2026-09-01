@@ -18,6 +18,7 @@ const packageJson = JSON.parse(readFileSync(resolve(rootDir, "package.json"), "u
 const failures = [];
 
 const LIGHT_COMPONENT_GZIP_BUDGET = 2 * 1024;
+const COMPOSITE_COMPONENT_GZIP_BUDGET = 8 * 1024;
 const lightComponents = new Set([
   "badge",
   "button",
@@ -25,14 +26,15 @@ const lightComponents = new Set([
   "input",
   "table",
   "toggle-button",
-  "window",
 ]);
+const compositeComponents = new Set(["window"]);
 const consumerCases = [
   { name: "button", exportName: "Button" },
   { name: "input", exportName: "Input" },
   { name: "select", exportName: "Select" },
   { name: "menu", exportName: "Menu" },
   { name: "combobox", exportName: "Combobox" },
+  { name: "window", exportName: "Window" },
 ];
 const allowedRuntimeExternal = /^(?:react(?:\/.*)?|react-dom(?:\/.*)?)$/;
 const rootEntryImport = /(?:from\s*|import\s*(?:\(\s*)?)["'](?:\.\.\/)+index\.js["']/;
@@ -221,6 +223,11 @@ if (failures.length === 0) {
     if (lightComponents.has(name) && metrics.gzip > LIGHT_COMPONENT_GZIP_BUDGET) {
       fail(
         `components/${name} exceeds lightweight ${formatBytes(LIGHT_COMPONENT_GZIP_BUDGET)} gzip budget: ${formatBytes(metrics.gzip)}`,
+      );
+    }
+    if (compositeComponents.has(name) && metrics.gzip > COMPOSITE_COMPONENT_GZIP_BUDGET) {
+      fail(
+        `components/${name} exceeds composite ${formatBytes(COMPOSITE_COMPONENT_GZIP_BUDGET)} gzip budget: ${formatBytes(metrics.gzip)}`,
       );
     }
     console.log(

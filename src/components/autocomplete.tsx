@@ -18,6 +18,17 @@ export function AutocompleteRoot<ItemValue>({
 }
 
 type WithClassName<T> = Omit<T, "className"> & { className?: string };
+type PopupWidth = "anchor" | "content";
+type AutocompletePositionerProps = Omit<
+  ComponentProps<typeof AutocompletePrimitive.Positioner>,
+  "children" | "className"
+>;
+type AutocompletePopupProps = WithClassName<ComponentProps<typeof AutocompletePrimitive.Popup>> & {
+  /** Controls whether the popup matches its anchor or expands to fit its items. */
+  width?: PopupWidth;
+  /** Forwards Base UI positioning options while preserving greyUI's layer host. */
+  positionerProps?: AutocompletePositionerProps;
+};
 
 export function AutocompleteInputGroup({
   className = "",
@@ -80,8 +91,10 @@ export function AutocompleteClear({
 
 export function AutocompletePopup({
   className = "",
+  positionerProps,
+  width = "anchor",
   ...props
-}: WithClassName<ComponentProps<typeof AutocompletePrimitive.Popup>>) {
+}: AutocompletePopupProps) {
   const container = useLayerContainer("menu");
   return (
     <AutocompletePrimitive.Portal container={container}>
@@ -89,8 +102,11 @@ export function AutocompletePopup({
         className="greyui-combobox-positioner greyui-autocomplete-positioner"
         align="start"
         sideOffset={2}
+        collisionPadding={8}
+        {...positionerProps}
       >
         <AutocompletePrimitive.Popup
+          data-greyui-popup-width={width}
           className={`greyui-combobox-popup greyui-autocomplete-popup ${className}`.trim()}
           {...props}
         />
@@ -113,22 +129,41 @@ export function AutocompleteList({
 
 export function AutocompleteItem({
   className = "",
-  children,
   ...props
 }: WithClassName<ComponentProps<typeof AutocompletePrimitive.Item>>) {
   return (
     <AutocompletePrimitive.Item
       className={`greyui-combobox-item greyui-autocomplete-item ${className}`.trim()}
       {...props}
+    />
+  );
+}
+
+export function AutocompleteItemText({
+  className = "",
+  ...props
+}: WithClassName<ComponentProps<"span">>) {
+  return (
+    <span
+      className={`greyui-combobox-item-text greyui-autocomplete-item-text ${className}`.trim()}
+      {...props}
+    />
+  );
+}
+
+export function AutocompleteItemIndicator({
+  className = "",
+  children = "✓",
+  ...props
+}: WithClassName<ComponentProps<"span">>) {
+  return (
+    <span
+      aria-hidden="true"
+      className={`greyui-combobox-item-indicator greyui-autocomplete-item-indicator ${className}`.trim()}
+      {...props}
     >
-      <span className="greyui-autocomplete-item-label">{children}</span>
-      <span
-        className="greyui-combobox-item-indicator greyui-autocomplete-item-indicator"
-        aria-hidden="true"
-      >
-        ✓
-      </span>
-    </AutocompletePrimitive.Item>
+      {children}
+    </span>
   );
 }
 
@@ -196,6 +231,8 @@ export const Autocomplete = {
   Popup: AutocompletePopup,
   List: AutocompleteList,
   Item: AutocompleteItem,
+  ItemText: AutocompleteItemText,
+  ItemIndicator: AutocompleteItemIndicator,
   Empty: AutocompleteEmpty,
   Group: AutocompleteGroup,
   GroupLabel: AutocompleteGroupLabel,

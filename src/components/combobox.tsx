@@ -5,6 +5,17 @@ import { useLayerContainer } from "./layer";
 export const ComboboxRoot = ComboboxPrimitive.Root;
 
 type WithClassName<T> = Omit<T, "className"> & { className?: string };
+type PopupWidth = "anchor" | "content";
+type ComboboxPositionerProps = Omit<
+  ComponentProps<typeof ComboboxPrimitive.Positioner>,
+  "children" | "className"
+>;
+type ComboboxPopupProps = WithClassName<ComponentProps<typeof ComboboxPrimitive.Popup>> & {
+  /** Controls whether the popup matches its anchor or expands to fit its items. */
+  width?: PopupWidth;
+  /** Forwards Base UI positioning options while preserving greyUI's layer host. */
+  positionerProps?: ComboboxPositionerProps;
+};
 
 export function ComboboxInputGroup({
   className = "",
@@ -64,8 +75,10 @@ export function ComboboxClear({
 
 export function ComboboxPopup({
   className = "",
+  positionerProps,
+  width = "anchor",
   ...props
-}: WithClassName<ComponentProps<typeof ComboboxPrimitive.Popup>>) {
+}: ComboboxPopupProps) {
   const container = useLayerContainer("menu");
   return (
     <ComboboxPrimitive.Portal container={container}>
@@ -73,8 +86,11 @@ export function ComboboxPopup({
         className="greyui-combobox-positioner"
         align="start"
         sideOffset={2}
+        collisionPadding={8}
+        {...positionerProps}
       >
         <ComboboxPrimitive.Popup
+          data-greyui-popup-width={width}
           className={`greyui-combobox-popup ${className}`.trim()}
           {...props}
         />
@@ -118,6 +134,13 @@ export function ComboboxItemIndicator({
   );
 }
 
+export function ComboboxItemText({
+  className = "",
+  ...props
+}: WithClassName<ComponentProps<"span">>) {
+  return <span className={`greyui-combobox-item-text ${className}`.trim()} {...props} />;
+}
+
 export function ComboboxEmpty({
   className = "",
   ...props
@@ -153,6 +176,7 @@ export const Combobox = {
   List: ComboboxList,
   Item: ComboboxItem,
   ItemIndicator: ComboboxItemIndicator,
+  ItemText: ComboboxItemText,
   Empty: ComboboxEmpty,
   Separator: ComboboxSeparator,
   Group: ComboboxGroup,

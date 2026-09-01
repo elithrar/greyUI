@@ -23,7 +23,7 @@ jobs:
           fetch-depth: 0
           persist-credentials: true
 
-      - name: Prepare version tag
+      - name: Resolve release version
         id: release
         shell: bash
         run: |
@@ -35,16 +35,16 @@ jobs:
               echo "::error::Tag ${GITHUB_REF_NAME} does not match package version ${package_version}."
               exit 1
             fi
+            echo "publish=true" >> "$GITHUB_OUTPUT"
           elif git ls-remote --exit-code --tags origin "refs/tags/${expected_tag}" >/dev/null 2>&1; then
             echo "::notice::${expected_tag} already exists; no release is needed."
-            echo "publish=false" >> "$GITHUB_OUTPUT"
+            echo "validate=false" >> "$GITHUB_OUTPUT"
             exit 0
           else
-            git tag "${expected_tag}" "${GITHUB_SHA}"
-            git push origin "refs/tags/${expected_tag}"
+            echo "publish=false" >> "$GITHUB_OUTPUT"
           fi
 
-          echo "publish=true" >> "$GITHUB_OUTPUT"
+          echo "validate=true" >> "$GITHUB_OUTPUT"
           echo "tag=${expected_tag}" >> "$GITHUB_OUTPUT"
 
       - name: Verify tag is on main
@@ -61,29 +61,44 @@ jobs:
           fi
 
       - uses: actions/setup-node@v7
-        if: steps.release.outputs.publish == 'true'
+        if: steps.release.outputs.validate == 'true'
         with:
           node-version: 24
           registry-url: https://registry.npmjs.org
           package-manager-cache: false
 
       - name: Ensure Trusted Publishing-capable npm
-        if: steps.release.outputs.publish == 'true'
+        if: steps.release.outputs.validate == 'true'
         run: npm install --global "npm@^11.15.0"
 
-      - if: steps.release.outputs.publish == 'true'
+      - if: steps.release.outputs.validate == 'true'
         run: npm ci
-      - if: steps.release.outputs.publish == 'true'
+      - if: steps.release.outputs.validate == 'true'
         run: npm run check
-      - if: steps.release.outputs.publish == 'true'
+      - if: steps.release.outputs.validate == 'true'
+        run: npx playwright install --with-deps chromium
+      - if: steps.release.outputs.validate == 'true'
+        run: npm run test:browser
+      - if: steps.release.outputs.validate == 'true'
         run: npm run build
-      - if: steps.release.outputs.publish == 'true'
+      - if: steps.release.outputs.validate == 'true'
         run: npm run pack:check
+      - if: steps.release.outputs.validate == 'true'
+        run: npm run verify:docs
 
       - name: Verify package is publishable
-        if: steps.release.outputs.publish == 'true'
+        if: steps.release.outputs.validate == 'true'
         run: |
           node -e 'const p = require("./package.json"); if (p.private) { console.error("package.json still has private:true; remove it before the npm release."); process.exit(1); }'
+
+      - name: Create validated release tag
+        if: steps.release.outputs.validate == 'true' && steps.release.outputs.publish != 'true'
+        shell: bash
+        env:
+          RELEASE_TAG: ${{ steps.release.outputs.tag }}
+        run: |
+          git tag "${RELEASE_TAG}" "${GITHUB_SHA}"
+          git push origin "refs/tags/${RELEASE_TAG}"
 
       - name: Publish to npm
         if: steps.release.outputs.publish == 'true'

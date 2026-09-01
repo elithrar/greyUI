@@ -13,11 +13,20 @@ type TriggerProps = Omit<
   ComponentProps<typeof SelectPrimitive.Trigger>,
   "aria-label" | "aria-labelledby" | "children" | "className"
 >;
+type PopupWidth = "anchor" | "content";
+type PositionerProps = Omit<
+  ComponentProps<typeof SelectPrimitive.Positioner>,
+  "children" | "className"
+>;
 
 interface SelectCommonProps {
   className?: string;
   options: readonly SelectOption[];
   placeholder?: ReactNode;
+  /** Controls whether the popup matches its trigger or expands to fit its options. */
+  popupWidth?: PopupWidth;
+  /** Forwards Base UI positioning options while preserving greyUI's layer host. */
+  positionerProps?: PositionerProps;
   triggerProps?: TriggerProps;
 }
 
@@ -47,6 +56,8 @@ export function Select({
   label,
   options,
   placeholder = "Choose…",
+  popupWidth = "anchor",
+  positionerProps,
   triggerProps,
   ...rootProps
 }: SelectProps) {
@@ -80,8 +91,13 @@ export function Select({
           className="greyui-select-positioner"
           alignItemWithTrigger={false}
           sideOffset={2}
+          collisionPadding={8}
+          {...positionerProps}
         >
-          <SelectPrimitive.Popup className="greyui-select-popup">
+          <SelectPrimitive.Popup
+            className="greyui-select-popup"
+            data-greyui-popup-width={popupWidth}
+          >
             <SelectPrimitive.List className="greyui-select-list">
               {options.map((option) => (
                 <SelectPrimitive.Item
