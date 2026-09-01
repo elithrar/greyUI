@@ -1,0 +1,41 @@
+name: Window compound API review
+
+on:
+  push:
+    branches:
+      - api/window-chrome-compound
+    paths:
+      - .github/workflows/window-compound-api-review.yml
+
+permissions:
+  contents: write
+
+jobs:
+  review:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: api/window-chrome-compound
+          fetch-depth: 0
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: python3 .github/review/compound-window-api.py
+      - run: npm run format
+      - run: npm run check
+      - run: npm run build
+      - run: npm run pack:check
+      - run: npm run verify:docs
+      - name: Commit reviewed API and remove scaffolding
+        run: |
+          rm -rf .github/review
+          rm -f .github/workflows/window-compound-api-review.yml
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git diff --cached --check
+          git commit -m "Scope window chrome under Window"
+          git push origin HEAD:api/window-chrome-compound
