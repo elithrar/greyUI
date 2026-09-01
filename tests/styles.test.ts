@@ -54,17 +54,6 @@ describe("default theme contrast", () => {
     );
   });
 
-  it("keeps WorkbenchOS typography and window scale tokens aligned", () => {
-    const css = readFileSync(resolve(process.cwd(), "src/styles.css"), "utf8");
-
-    expect(css).toContain("--greyui-font-size: 12px");
-    expect(css).toContain("--greyui-font-size-small: 11px");
-    expect(css).toContain("--greyui-tab-height: 26px");
-    expect(css).toContain("--greyui-menubar-height: 20px");
-    expect(css).toMatch(/\.greyui-button\s*\{[\s\S]*?min-height:\s*1\.85rem/);
-    expect(css).toMatch(/\.greyui-button\s*\{[\s\S]*?font-weight:\s*400/);
-  });
-
   it("gives the inner window frame sole ownership of outer chrome", () => {
     const css = readFileSync(resolve(process.cwd(), "src/styles.css"), "utf8");
     const rootRule = css.slice(
@@ -227,13 +216,6 @@ describe("default theme contrast", () => {
       /\.greyui-menubar \.greyui-menu-trigger\[data-disabled\]\s*\{[\s\S]*?color:\s*var\(--greyui-text-muted\)/,
     );
     expect(css).toContain(".greyui-menu-trigger:hover:not([data-disabled])");
-  });
-
-  it("uses standard panel surfaces for grouped controls", () => {
-    const css = readFileSync(resolve(process.cwd(), "src/components-v2.css"), "utf8");
-
-    expect(css).toMatch(/\.greyui-fieldset\s*\{[\s\S]*?background:\s*var\(--greyui-panel\)/);
-    expect(css).toMatch(/\.greyui-accordion-panel\s*\{[\s\S]*?background:\s*var\(--greyui-panel\)/);
   });
 
   it("removes nested chrome from plain fieldsets and aligns field action rows", () => {

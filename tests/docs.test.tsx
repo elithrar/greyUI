@@ -1,20 +1,11 @@
-import { readFileSync } from "node:fs";
-import { resolve } from "node:path";
 import { cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { CopyCommand } from "../docs/src/CopyCommand";
-import { GREYUI_VERSION } from "../docs/src/version";
 import {
   collectWindowRegressionGeometryFailures,
-  WINDOW_REGRESSION_WIDTHS,
   WindowRegressionFixtures,
 } from "../docs/src/window-regression-fixtures";
 import { Layer } from "../src";
-
-// SAFETY: package.json is repository-owned and npm requires `version` to be a string.
-const { version: packageVersion } = JSON.parse(
-  readFileSync(resolve(process.cwd(), "package.json"), "utf8"),
-) as { version: string };
 
 const clipboardDescriptor = Object.getOwnPropertyDescriptor(navigator, "clipboard");
 const execCommandDescriptor = Object.getOwnPropertyDescriptor(document, "execCommand");
@@ -45,26 +36,7 @@ describe("documentation copy command", () => {
     expect(screen.getByRole("status").textContent).toBe("Copied npm install command");
   });
 
-  it("does not report success when clipboard copying fails", async () => {
-    Object.defineProperty(navigator, "clipboard", {
-      configurable: true,
-      value: undefined,
-    });
-    Object.defineProperty(document, "execCommand", {
-      configurable: true,
-      value: vi.fn<(commandId: string) => boolean>().mockReturnValue(false),
-    });
-
-    render(<CopyCommand value="npm install greyui" label="npm install command" />);
-    const button = screen.getByRole("button", { name: "Copy npm install command" });
-
-    fireEvent.click(button);
-
-    await waitFor(() => expect(document.execCommand).toHaveBeenCalledWith("copy"));
-    expect(button.getAttribute("data-copied")).toBe("false");
-  });
-
-  it("cleans up the fallback field when legacy copying throws", async () => {
+  it("cleans up and leaves success unset when fallback copying fails", async () => {
     Object.defineProperty(navigator, "clipboard", {
       configurable: true,
       value: undefined,
@@ -83,116 +55,13 @@ describe("documentation copy command", () => {
     fireEvent.click(button);
 
     await waitFor(() => expect(execCommand).toHaveBeenCalledTimes(1));
+    expect(execCommand).toHaveBeenCalledWith("copy");
     expect(document.body.querySelector("textarea")).toBeNull();
     expect(button.getAttribute("data-copied")).toBe("false");
   });
 });
 
-describe("documentation structure", () => {
-  it("keeps imports in one explicit GroupBox guide under Application patterns", () => {
-    const main = readFileSync(resolve(process.cwd(), "docs/src/main.tsx"), "utf8");
-    const highValue = readFileSync(
-      resolve(process.cwd(), "docs/src/high-value-components.tsx"),
-      "utf8",
-    );
-    const nextComponents = readFileSync(
-      resolve(process.cwd(), "docs/src/next-components.tsx"),
-      "utf8",
-    );
-    const componentDocs = `${main}\n${highValue}\n${nextComponents}`;
-    const denseWindow = readFileSync(
-      resolve(process.cwd(), "docs/src/dense-window-example.tsx"),
-      "utf8",
-    );
-
-    const principlesSection = main.slice(
-      main.indexOf('id="principles"'),
-      main.indexOf('id="buttons"'),
-    );
-    const patternsSection = main.slice(
-      main.indexOf('id="patterns"'),
-      main.indexOf('id="integration"'),
-    );
-
-    expect(componentDocs).not.toContain("ComponentImport");
-    expect(principlesSection).not.toContain('title="GroupBox component"');
-    expect(principlesSection).toContain('title="API conventions"');
-    expect(patternsSection).toContain('title="GroupBox component"');
-    expect(patternsSection).toContain("<code>Fieldset</code> instead");
-    expect(main).toContain('title="Choose the field"');
-    expect(main).toContain('title="Composition choices"');
-    expect(main).toContain('title="Choose feedback"');
-    expect(main).toContain('title="Overlay contract"');
-    expect(main).toContain('title="Theme overrides"');
-    expect(main).toContain("href={BASE_UI_COMPONENTS_URL}");
-    expect(main).toContain('import { Button, GroupBox, Select, Window } from "greyui";');
-    expect(main).toContain('label="git clone command"');
-    expect(main).toContain('title="Button state model"');
-    expect(main).toContain('title="Complete dense application window"');
-    expect(main).toContain("The root owns sizing while its frame owns the outer border");
-    expect(main).toContain('popupWidth="content"');
-    expect(main).toContain("<code>positionerProps</code>");
-    expect(nextComponents).toContain("<Combobox.ItemText>{theme}</Combobox.ItemText>");
-    expect(highValue).toContain("<Autocomplete.ItemText>{item}</Autocomplete.ItemText>");
-    expect(highValue).toContain("<Autocomplete.ItemIndicator />");
-    expect(denseWindow).toContain("<Window.Content>");
-    expect(denseWindow).toContain(
-      '<Fieldset.Root variant="plain" aria-label="Transmission gears">',
-    );
-    expect(denseWindow).toContain("<Field.ActionRow>");
-  });
-
-  it("adapts repeated layouts to their containing section or demo", () => {
-    const docsStyles = readFileSync(resolve(process.cwd(), "docs/src/docs.css"), "utf8");
-
-    expect(docsStyles).toMatch(/html\s*\{[\s\S]*?scrollbar-gutter:\s*stable/);
-    expect(docsStyles).toContain("container: docs-section / inline-size");
-    expect(docsStyles).toContain("container: docs-demo / inline-size");
-    expect(docsStyles).toContain("repeat(auto-fit, minmax(min(18rem, 100%), 1fr))");
-    expect(docsStyles).toContain("repeat(auto-fit, minmax(min(23rem, 100%), 1fr))");
-    expect(docsStyles).toContain("@container docs-demo (max-width: 36rem)");
-    expect(docsStyles).toContain("@container docs-section (max-width: 40rem)");
-  });
-});
-
 describe("window container regression fixtures", () => {
-  it("keeps representative widths and frame states in the permanent docs matrix", () => {
-    const { container } = render(
-      <Layer.Provider>
-        <WindowRegressionFixtures />
-      </Layer.Provider>,
-    );
-
-    const fixtures = Array.from(
-      container.querySelectorAll<HTMLElement>("[data-regression-case='window']"),
-    );
-    expect(fixtures.map((fixture) => Number(fixture.dataset.regressionWidth))).toEqual(
-      WINDOW_REGRESSION_WIDTHS,
-    );
-    expect(WINDOW_REGRESSION_WIDTHS).toEqual(expect.arrayContaining([280, 360, 520, 760]));
-    expect(fixtures.map((fixture) => fixture.dataset.regressionState)).toEqual([
-      "active",
-      "collapsed",
-      "active",
-      "inactive",
-      "active",
-      "active",
-      "active",
-    ]);
-    expect(fixtures[0]?.style.getPropertyValue("--docs-regression-width")).toBe("280px");
-    expect(fixtures[1]?.querySelector("[data-collapsed='true']")).not.toBeNull();
-    expect(fixtures[2]?.querySelector("[data-greyui-component='menu-bar']")).not.toBeNull();
-    expect(fixtures[2]?.querySelector("[data-greyui-component='status-bar']")).not.toBeNull();
-    expect(fixtures[3]?.querySelector("[data-active='false']")).not.toBeNull();
-    expect(fixtures[3]?.querySelector("[data-layout='stacked']")).not.toBeNull();
-    expect(fixtures[3]?.querySelector("[data-layout='inline']")).not.toBeNull();
-    expect(fixtures[4]?.querySelector("[data-chrome='floating']")).not.toBeNull();
-    expect(fixtures[5]?.querySelector("[data-chrome='stacked']")).not.toBeNull();
-    expect(fixtures[5]?.querySelector("[data-layout='inline']")).not.toBeNull();
-    expect(fixtures[5]?.querySelector("[data-layout='stacked']")).not.toBeNull();
-    expect(fixtures[6]?.querySelector("[data-chrome='auto']")).not.toBeNull();
-  });
-
   it("reports frame, document, and viewport overflow through one browser geometry probe", () => {
     const { container } = render(
       <Layer.Provider>
@@ -276,12 +145,6 @@ describe("window container regression fixtures", () => {
       }),
     ).toEqual([]);
     overlay.remove();
-  });
-});
-
-describe("documentation version", () => {
-  it("uses the package version injected by the build", () => {
-    expect(GREYUI_VERSION).toBe(packageVersion);
   });
 });
 

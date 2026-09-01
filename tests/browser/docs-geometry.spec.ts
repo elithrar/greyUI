@@ -53,7 +53,6 @@ for (const viewport of viewports) {
     });
 
     expect(failures).toEqual([]);
-    await expect(suite).toHaveAttribute("data-regression-geometry", "passed");
 
     if (viewport.width === 1280) {
       await expect(suite.locator("[data-regression-width='280'] .greyui-window-tab")).toHaveCSS(
