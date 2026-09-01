@@ -123,34 +123,29 @@ for jsx_path in jsx_paths:
         source = source.replace(old, new)
     write(jsx_path, source)
 
-# README should describe one coherent Window surface, not legacy root exports.
 replace_once(
     "README.md",
     "- Window chrome: Window, WindowWidget, MenuBar, StatusBar, StatusBarItem, StatusBarSeparator, StatusLight",
     "- Window chrome: Window (`Window.Widget`, `Window.MenuBar`, `Window.StatusBar.*`)",
 )
 
-# Record the intentional pre-1.0 break in the release notes.
 replace_once(
     "CHANGELOG.md",
     "## Unreleased\n\n",
     "## Unreleased\n\n- Scope window chrome under `Window` (`Window.Widget`, `Window.MenuBar`, and `Window.StatusBar.*`) and remove the standalone pre-1.0 runtime exports.\n",
 )
 
-# Assert both the new compound surface and removal of legacy aliases.
 test_path = "tests/components.test.tsx"
 test_source = read(test_path)
 if 'import * as GreyUI from "../src";' not in test_source:
-    first_import_end = test_source.find("\n", test_source.find("from \"../src\""))
-    # The main component import is multiline; insert after its terminating semicolon.
     import_end = test_source.find(";\n", test_source.find('from "../src"')) + 2
     if import_end < 2:
         raise RuntimeError("Could not find component import block")
     test_source = test_source[:import_end] + 'import * as GreyUI from "../src";\n' + test_source[import_end:]
 
-anchor = 'describe("greyUI components", () => {'
+anchor = 'describe("native control safety", () => {'
 if anchor not in test_source:
-    raise RuntimeError("Component test describe block missing")
+    raise RuntimeError("Native control describe block missing")
 compound_test = '''describe("window compound API", () => {
   it("scopes window chrome under Window without standalone aliases", () => {
     expect(GreyUI).not.toHaveProperty("MenuBar");
@@ -172,7 +167,6 @@ compound_test = '''describe("window compound API", () => {
 test_source = test_source.replace(anchor, compound_test + anchor, 1)
 write(test_path, test_source)
 
-# Guard against any remaining runtime usages or imports in repository-owned TSX.
 for jsx_path in jsx_paths:
     source = read(jsx_path)
     for name in old_runtime_exports:
