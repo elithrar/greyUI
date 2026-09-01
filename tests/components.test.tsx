@@ -15,6 +15,7 @@ import {
   Dialog,
   Empty,
   Field,
+  Fieldset,
   InputGroup,
   IconButton,
   Layer,
@@ -56,6 +57,19 @@ describe("native control safety", () => {
     render(<Button defaultAction>Apply</Button>);
 
     expect(screen.getByRole("button", { name: "Apply" }).getAttribute("data-default")).toBe("true");
+  });
+
+  it("keeps primary, default, and selected button states independently addressable", () => {
+    render(
+      <Button variant="primary" defaultAction aria-pressed="true">
+        Apply view
+      </Button>,
+    );
+
+    const button = screen.getByRole("button", { name: "Apply view" });
+    expect(button.getAttribute("data-variant")).toBe("primary");
+    expect(button.getAttribute("data-default")).toBe("true");
+    expect(button.getAttribute("aria-pressed")).toBe("true");
   });
 
   it("keeps WindowWidget non-submitting and labeled", () => {
@@ -161,6 +175,34 @@ describe("accessibility contracts", () => {
 
     expect(screen.getByRole("textbox", { name: "Filename" })).not.toBeNull();
     expect(screen.getByText("Output filename")).not.toBeNull();
+  });
+
+  it("supports borderless fieldset semantics without a visible legend", () => {
+    render(
+      <Fieldset.Root variant="plain" aria-label="Transmission gears">
+        <input name="first-gear" />
+      </Fieldset.Root>,
+    );
+
+    const fieldset = screen.getByRole("group", { name: "Transmission gears" });
+    expect(fieldset.getAttribute("data-variant")).toBe("plain");
+    expect(fieldset.querySelector("legend")).toBeNull();
+  });
+
+  it("provides a stable action row for labeled controls and adjacent buttons", () => {
+    render(
+      <Field.ActionRow>
+        <Field.Root>
+          <Field.Label>Preset</Field.Label>
+          <Field.Control />
+        </Field.Root>
+        <Button>Apply</Button>
+      </Field.ActionRow>,
+    );
+
+    const row = screen.getByText("Preset").closest('[data-greyui-component="field-action-row"]');
+    expect(row?.classList.contains("greyui-field-action-row")).toBe(true);
+    expect(screen.getByRole("button", { name: "Apply" })).not.toBeNull();
   });
 
   it("keeps NumberField editable and steps values", () => {
@@ -427,6 +469,29 @@ describe("accessibility contracts", () => {
     expect(body.getAttribute("id")).toBe("compound-body");
     fireEvent.click(screen.getByRole("button", { name: "Minimize window" }));
     expect(body.hasAttribute("hidden")).toBe(true);
+  });
+
+  it("provides stable content-rail, header, description, and action slots", () => {
+    render(
+      <Window title="Gearset">
+        <Window.Content density="compact">
+          <Window.Header>
+            <Window.Description>Configure the transmission.</Window.Description>
+            <Window.Actions>
+              <Button>Copy link</Button>
+            </Window.Actions>
+          </Window.Header>
+        </Window.Content>
+      </Window>,
+    );
+
+    const content = screen
+      .getByText("Configure the transmission.")
+      .closest('[data-greyui-component="window-content"]');
+    expect(content?.getAttribute("data-density")).toBe("compact");
+    expect(content?.querySelector(".greyui-window-header")).not.toBeNull();
+    expect(content?.querySelector(".greyui-window-description")).not.toBeNull();
+    expect(content?.querySelector(".greyui-window-actions")).not.toBeNull();
   });
 
   it("does not allow body props to expose a collapsed Window body", () => {

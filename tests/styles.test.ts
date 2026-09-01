@@ -47,6 +47,36 @@ describe("default theme contrast", () => {
     expect(css).toMatch(/\.greyui-button\s*\{[\s\S]*?font-weight:\s*400/);
   });
 
+  it("uses neutral inset keyboard focus without overriding selected button state", () => {
+    const css = readFileSync(resolve(process.cwd(), "src/styles.css"), "utf8");
+    const focusStart = css.indexOf(
+      ".greyui-button:focus-visible {",
+      css.indexOf("/* Pointer focus"),
+    );
+    const focusEnd = css.indexOf("}", focusStart);
+    const focusRule = css.slice(focusStart, focusEnd);
+    const primaryStart = css.indexOf('.greyui-button[data-variant="primary"]');
+    const selectedStart = css.indexOf('.greyui-button[aria-pressed="true"] {', primaryStart);
+
+    expect(focusRule).toContain("outline: 0");
+    expect(focusRule).toContain("inset 0 0 0 1px var(--greyui-keyboard-navigation)");
+    expect(focusRule).not.toContain("var(--greyui-selection)");
+    expect(selectedStart).toBeGreaterThan(primaryStart);
+    expect(css.slice(selectedStart, focusStart)).toContain("var(--greyui-selection)");
+  });
+
+  it("provides content rails and a stacked application header without styling body internals", () => {
+    const css = readFileSync(resolve(process.cwd(), "src/styles.css"), "utf8");
+
+    expect(css).toMatch(/\.greyui-window-content\s*\{[\s\S]*?padding:\s*12px/);
+    expect(css).toMatch(
+      /\.greyui-window-header\s*\{[\s\S]*?grid-template-columns:\s*minmax\(0, 1fr\) auto/,
+    );
+    expect(css).toMatch(
+      /@media \(max-width: 520px\)[\s\S]*?\.greyui-window-header\s*\{[\s\S]*?grid-template-columns:\s*minmax\(0, 1fr\)/,
+    );
+  });
+
   it("keeps window control hover chrome off touch devices", () => {
     const css = readFileSync(resolve(process.cwd(), "src/styles.css"), "utf8");
     const hoverMediaStart = css.indexOf("@media (hover: hover)");
@@ -87,6 +117,15 @@ describe("default theme contrast", () => {
 
     expect(css).toMatch(/\.greyui-fieldset\s*\{[\s\S]*?background:\s*var\(--greyui-panel\)/);
     expect(css).toMatch(/\.greyui-accordion-panel\s*\{[\s\S]*?background:\s*var\(--greyui-panel\)/);
+  });
+
+  it("removes nested chrome from plain fieldsets and aligns field action rows", () => {
+    const css = readFileSync(resolve(process.cwd(), "src/components-v2.css"), "utf8");
+
+    expect(css).toMatch(
+      /\.greyui-fieldset\[data-variant="plain"\]\s*\{[\s\S]*?padding:\s*0;[\s\S]*?border:\s*0;[\s\S]*?background:\s*transparent;[\s\S]*?box-shadow:\s*none/,
+    );
+    expect(css).toMatch(/\.greyui-field-action-row\s*\{[\s\S]*?align-items:\s*flex-end/);
   });
 
   it("paints table row fills through every cell edge", () => {

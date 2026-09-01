@@ -37,7 +37,9 @@ Both forms use the same build graph. CI checks that representative root imports 
 ## Common distinctions
 
 - `Select` is fixed-list; `Combobox` searches listed values; `Autocomplete` keeps free-form text valid.
-- `GroupBox` is visual grouping; `Fieldset` adds form semantics. `Progress` tracks work; `Meter` measures a value.
+- `GroupBox` is visual grouping; `Fieldset` adds form semantics. Use `Fieldset.Root variant="plain"` with an accessible name when surrounding chrome supplies the visual boundary.
+- `Button` emphasis (`variant="primary"`), default action (`defaultAction`), selection (`aria-pressed`), and keyboard focus are independent states.
+- `Field.ActionRow` bottom-aligns labeled controls such as `Select` with adjacent buttons.
 
 ## Use locally
 
@@ -64,7 +66,7 @@ npm install /path/to/greyUI
 - Feedback and content: Banner, Breadcrumbs, Empty, Loader, Pagination, Progress, Meter, SegmentedMeter, Toast, ScrollArea, Table, Badge, GroupBox, Separator
 - Window chrome: Window, WindowWidget, MenuBar, StatusBar, StatusBarItem, StatusBarSeparator, StatusLight
 
-`Window` supports controlled/uncontrolled collapse and `responsive="stacked"` or `"floating"`. `Popover.Popup.positionerProps` accepts Base UI positioning options such as virtual anchors.
+`Window` supports controlled/uncontrolled collapse and `responsive="stacked"` or `"floating"`. Use `Window.Content` for standard body rails and compose `Window.Header`, `Window.Description`, and `Window.Actions` for responsive in-body headers. `Popover.Popup.positionerProps` accepts Base UI positioning options such as virtual anchors.
 
 `Layer.Provider` routes overlays into stable top-level hosts; `Layer.Portal` exposes the same contract for custom content.
 

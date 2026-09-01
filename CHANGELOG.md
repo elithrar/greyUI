@@ -2,6 +2,12 @@
 
 ## Unreleased
 
+- Add standard Window content rails and responsive description/action header slots.
+- Add borderless semantic Fieldsets and bottom-aligned field action rows.
+- Keep button selection independent from primary/default emphasis and replace outer focus chrome with
+  a neutral inset keyboard cue.
+- Document button states and a complete dense application-window composition.
+
 ## 0.4.1 — 2026-08-27
 
 - Add shared Layer hosts for menus, popovers, app-owned overlays, dialogs, toasts, and tooltips.

@@ -96,6 +96,12 @@ export function HighValueComponentDemos() {
               <Checkbox value="policy" label="Enforce policy" />
             </CheckboxGroup>
           </Fieldset.Root>
+          <Fieldset.Root variant="plain" aria-label="Export options">
+            <CheckboxGroup aria-label="Export options" defaultValue={["metadata"]}>
+              <Checkbox value="metadata" label="Include metadata" />
+              <Checkbox value="preview" label="Generate preview" />
+            </CheckboxGroup>
+          </Fieldset.Root>
         </div>
       </ComponentDemo>
     </div>
