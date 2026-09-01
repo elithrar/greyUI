@@ -138,6 +138,26 @@ pre {
   line-height: 1;
   letter-spacing: -1px;
 }
+.docs-hero-github-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin: -1px 0 8px;
+  color: var(--greyui-text-muted);
+  font-size: 11px;
+  text-decoration: none;
+}
+.docs-hero-github-link svg {
+  width: 13px;
+  height: 13px;
+  fill: currentColor;
+}
+.docs-hero-github-link:hover,
+.docs-hero-github-link:focus-visible {
+  color: var(--greyui-text);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
 .docs-hero p {
   max-width: 640px;
   margin: 0;
