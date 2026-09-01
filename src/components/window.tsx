@@ -110,6 +110,52 @@ export function WindowBody({ className = "", hidden, id, ...props }: WindowBodyP
   );
 }
 
+export interface WindowContentProps extends ComponentPropsWithoutRef<"div"> {
+  density?: "compact" | "comfortable";
+}
+
+export function WindowContent({
+  className = "",
+  density = "comfortable",
+  ...props
+}: WindowContentProps) {
+  return (
+    <div
+      data-greyui-component="window-content"
+      data-density={density}
+      className={`greyui-window-content ${className}`.trim()}
+      {...props}
+    />
+  );
+}
+
+export type WindowHeaderProps = ComponentPropsWithoutRef<"div">;
+export function WindowHeader({ className = "", ...props }: WindowHeaderProps) {
+  return (
+    <div
+      data-greyui-component="window-header"
+      className={`greyui-window-header ${className}`.trim()}
+      {...props}
+    />
+  );
+}
+
+export type WindowDescriptionProps = ComponentPropsWithoutRef<"p">;
+export function WindowDescription({ className = "", ...props }: WindowDescriptionProps) {
+  return <p className={`greyui-window-description ${className}`.trim()} {...props} />;
+}
+
+export type WindowActionsProps = ComponentPropsWithoutRef<"div">;
+export function WindowActions({ className = "", ...props }: WindowActionsProps) {
+  return (
+    <div
+      data-greyui-component="window-actions"
+      className={`greyui-window-actions ${className}`.trim()}
+      {...props}
+    />
+  );
+}
+
 export interface WindowCollapseProps extends Omit<WindowWidgetProps, "kind" | "label"> {
   collapseLabel?: string | undefined;
   restoreLabel?: string | undefined;
@@ -278,5 +324,9 @@ export const Window = Object.assign(WindowComponent, {
   Controls: WindowControls,
   Collapse: WindowCollapse,
   Body: WindowBody,
+  Content: WindowContent,
+  Header: WindowHeader,
+  Description: WindowDescription,
+  Actions: WindowActions,
   StatusBar,
 });

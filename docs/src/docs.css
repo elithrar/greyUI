@@ -396,6 +396,35 @@ pre {
 .docs-field .greyui-input {
   width: 100%;
 }
+.docs-button-state-table td:last-child {
+  width: 9rem;
+}
+.docs-dense-window {
+  width: 100%;
+}
+.docs-dense-fieldset-heading {
+  display: flex;
+  min-width: 0;
+  align-items: start;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+.docs-dense-fieldset-heading p {
+  margin: 2px 0 0;
+  color: var(--greyui-text-muted);
+  font-size: var(--greyui-font-size-small);
+}
+.docs-dense-field-grid {
+  display: grid;
+  min-width: 0;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 8px;
+}
+.docs-dense-window .greyui-table th:not(:first-child),
+.docs-dense-window .greyui-table td:not(:first-child) {
+  text-align: right;
+}
 .docs-selection-grid {
   display: grid;
   min-width: 0;
@@ -544,6 +573,9 @@ pre {
   .docs-window-pair {
     grid-template-columns: 1fr;
   }
+  .docs-dense-field-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
 }
 
 @media (max-width: 620px) {
@@ -580,6 +612,13 @@ pre {
   }
   .docs-dialog-actions > .greyui-button {
     flex: 1 1 auto;
+  }
+  .docs-dense-field-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .docs-dense-fieldset-heading {
+    align-items: stretch;
+    flex-direction: column;
   }
 }
 

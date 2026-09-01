@@ -157,28 +157,6 @@
   box-shadow: var(--greyui-bevel-inset);
 }
 
-.greyui-button[aria-pressed="true"] {
-  background: var(--greyui-selection);
-  box-shadow: var(--greyui-bevel-inset);
-  color: var(--greyui-selection-text);
-}
-
-.greyui-button:focus-visible {
-  border-color: var(--greyui-keyboard-navigation);
-  outline: 1px solid var(--greyui-keyboard-navigation);
-  outline-offset: -3px;
-  box-shadow:
-    inset 0 0 0 1px var(--greyui-keyboard-navigation),
-    var(--greyui-bevel-outset);
-}
-
-.greyui-button:focus-visible:active:not(:disabled),
-.greyui-button[aria-pressed="true"]:focus-visible {
-  box-shadow:
-    inset 0 0 0 1px var(--greyui-keyboard-navigation),
-    var(--greyui-bevel-inset);
-}
-
 .greyui-button:disabled {
   opacity: 0.5;
   cursor: not-allowed;
@@ -266,6 +244,28 @@
 .greyui-button[data-default="true"] {
   outline: 2px solid var(--greyui-keyboard-navigation);
   outline-offset: 2px;
+}
+
+/* Keep selection independent from variant order, including primary toggle buttons. */
+.greyui-button[aria-pressed="true"] {
+  background: var(--greyui-selection);
+  box-shadow: var(--greyui-bevel-inset);
+  color: var(--greyui-selection-text);
+}
+
+/* Pointer focus stays neutral; keyboard focus adds a high-contrast inset cue. */
+.greyui-button:focus-visible {
+  outline: 0;
+  box-shadow:
+    inset 0 0 0 1px var(--greyui-keyboard-navigation),
+    var(--greyui-bevel-outset);
+}
+
+.greyui-button:focus-visible:active:not(:disabled),
+.greyui-button[aria-pressed="true"]:focus-visible {
+  box-shadow:
+    inset 0 0 0 1px var(--greyui-keyboard-navigation),
+    var(--greyui-bevel-inset);
 }
 
 .greyui-input {
@@ -1255,6 +1255,43 @@
   box-shadow: var(--greyui-bevel-inset);
 }
 
+.greyui-window-content {
+  display: grid;
+  min-width: 0;
+  gap: 12px;
+  padding: 12px;
+}
+
+.greyui-window-content[data-density="compact"] {
+  gap: 8px;
+  padding: 8px;
+}
+
+.greyui-window-header {
+  display: grid;
+  min-width: 0;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: start;
+  gap: 14px;
+}
+
+.greyui-window-description {
+  max-width: 68ch;
+  margin: 0;
+  color: var(--greyui-text-muted);
+  line-height: 1.3;
+}
+
+.greyui-window-actions {
+  display: flex;
+  min-width: 0;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: flex-end;
+  justify-self: end;
+  gap: 8px;
+}
+
 .greyui-window[data-active="false"] .greyui-window-body {
   background: var(--greyui-panel-light);
   color: var(--greyui-text-muted);
@@ -1520,5 +1557,18 @@
     background: var(--greyui-border-dark);
     background-clip: padding-box;
     box-shadow: none;
+  }
+}
+
+@media (max-width: 520px) {
+  .greyui-window-header {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 8px;
+  }
+
+  .greyui-window-actions {
+    width: 100%;
+    justify-content: flex-start;
+    justify-self: stretch;
   }
 }

@@ -1,4 +1,4 @@
-import type { ComponentProps } from "react";
+import type { ComponentProps, ComponentPropsWithoutRef } from "react";
 import { Field as FieldPrimitive } from "@base-ui/react/field";
 
 type WithClassName<T> = Omit<T, "className"> & { className?: string };
@@ -56,6 +56,18 @@ export function FieldItem({
   return <FieldPrimitive.Item className={`greyui-field-item ${className}`.trim()} {...props} />;
 }
 
+export type FieldActionRowProps = ComponentPropsWithoutRef<"div">;
+
+export function FieldActionRow({ className = "", ...props }: FieldActionRowProps) {
+  return (
+    <div
+      data-greyui-component="field-action-row"
+      className={`greyui-field-action-row ${className}`.trim()}
+      {...props}
+    />
+  );
+}
+
 export const FieldValidity = FieldPrimitive.Validity;
 
 export const Field = {
@@ -65,5 +77,6 @@ export const Field = {
   Description: FieldDescription,
   Error: FieldError,
   Item: FieldItem,
+  ActionRow: FieldActionRow,
   Validity: FieldValidity,
 };

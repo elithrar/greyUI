@@ -26,6 +26,7 @@ import {
   Window,
 } from "../../src";
 import { CopyCommand } from "./CopyCommand";
+import { DenseWindowExample, denseWindowCode } from "./dense-window-example";
 import { HighValueComponentDemos } from "./high-value-components";
 import {
   DesktopDemos,
@@ -233,7 +234,7 @@ function App() {
             <Section
               id="buttons"
               title="Buttons"
-              intro='Compact beveled buttons. Button defaults to type="button"; defaultAction only adds the default-action outline.'
+              intro='Compact beveled buttons. Button defaults to type="button". Primary, default action, selected, and focus are independent states.'
             >
               <Demo title="Variants">
                 <div className="docs-row">
@@ -261,6 +262,70 @@ function App() {
                     </ToggleButton>
                   </SegmentedControl>
                 </div>
+              </Demo>
+              <Guidance title="Button state model">
+                <p>
+                  Use <code>variant="primary"</code> for emphasis, <code>defaultAction</code> for
+                  the action Enter should invoke, and <code>aria-pressed</code> (or
+                  <code> ToggleButton</code>) for persistent selection. Pointer focus adds no sticky
+                  cue; keyboard <code>:focus-visible</code> uses a neutral inset cue without
+                  replacing the selected fill.
+                </p>
+              </Guidance>
+              <Demo title="Interactive state matrix">
+                <Table className="docs-button-state-table">
+                  <thead>
+                    <tr>
+                      <th>State</th>
+                      <th>Behavior</th>
+                      <th>Example</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>Normal / hover / active</td>
+                      <td>Hover brightens; active reverses the bevel while held.</td>
+                      <td>
+                        <Button>Inspect</Button>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>Selected</td>
+                      <td>Selection-blue fill and inset bevel persist independently of focus.</td>
+                      <td>
+                        <Button aria-pressed="true">Selected</Button>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>Primary</td>
+                      <td>Emphasized action; does not imply selection or default behavior.</td>
+                      <td>
+                        <Button variant="primary">Apply</Button>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>Default action</td>
+                      <td>Neutral outer designation for the action invoked by Enter.</td>
+                      <td>
+                        <Button defaultAction>Save</Button>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>Mouse focus</td>
+                      <td>Clicking does not leave a focus-only border.</td>
+                      <td>
+                        <Button>Click me</Button>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>Keyboard focus</td>
+                      <td>Tab here for the black inset cue; selected fill remains visible.</td>
+                      <td>
+                        <Button aria-pressed="true">Tab to me</Button>
+                      </td>
+                    </tr>
+                  </tbody>
+                </Table>
               </Demo>
             </Section>
 
@@ -352,6 +417,11 @@ function App() {
                     <code>Fieldset</code> adds form semantics and shared disabled state.
                     <code> Accordion</code> groups disclosures; <code>Collapsible</code> handles
                     one.
+                  </li>
+                  <li>
+                    Use <code>Fieldset.Root variant="plain" aria-label="…"</code> when the
+                    surrounding window already provides visual chrome and a visible legend would
+                    repeat its heading.
                   </li>
                 </ul>
               </Guidance>
@@ -634,6 +704,20 @@ function App() {
                     </Window.Body>
                   </Window.Root>
                 </div>
+              </Demo>
+              <Guidance title="Dense application composition" code={denseWindowCode}>
+                <p>
+                  Put padded application content in <code>Window.Content</code>. Compose
+                  <code> Window.Header</code>, <code>Window.Description</code>, and
+                  <code> Window.Actions</code> for a shared content rail; keep menu and status bars
+                  outside so their chrome remains full width. <code>Field.ActionRow</code> aligns a
+                  labeled Select with adjacent buttons at the control edge. The header stacks below
+                  520 px, while <code>responsive="stacked"</code> flattens the title chrome at the
+                  standard responsive breakpoint.
+                </p>
+              </Guidance>
+              <Demo title="Complete dense application window">
+                <DenseWindowExample />
               </Demo>
             </Section>
 

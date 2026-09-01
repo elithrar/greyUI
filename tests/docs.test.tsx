@@ -94,6 +94,10 @@ describe("documentation structure", () => {
       "utf8",
     );
     const componentDocs = `${main}\n${highValue}\n${nextComponents}`;
+    const denseWindow = readFileSync(
+      resolve(process.cwd(), "docs/src/dense-window-example.tsx"),
+      "utf8",
+    );
 
     const principlesSection = main.slice(
       main.indexOf('id="principles"'),
@@ -117,6 +121,13 @@ describe("documentation structure", () => {
     expect(main).toContain("href={BASE_UI_COMPONENTS_URL}");
     expect(main).toContain('import { Button, GroupBox, Select, Window } from "greyui";');
     expect(main).toContain('label="git clone command"');
+    expect(main).toContain('title="Button state model"');
+    expect(main).toContain('title="Complete dense application window"');
+    expect(denseWindow).toContain("<Window.Content>");
+    expect(denseWindow).toContain(
+      '<Fieldset.Root variant="plain" aria-label="Transmission gears">',
+    );
+    expect(denseWindow).toContain("<Field.ActionRow>");
   });
 });
 

@@ -1405,6 +1405,13 @@
   box-shadow: var(--greyui-bevel-inset);
 }
 
+.greyui-fieldset[data-variant="plain"] {
+  padding: 0;
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
 .greyui-fieldset-legend {
   max-width: calc(100% - 8px);
   padding: 0 4px;
@@ -1416,6 +1423,25 @@
 
 .greyui-fieldset[data-disabled] .greyui-fieldset-legend {
   color: var(--greyui-text-muted);
+}
+
+.greyui-field-action-row {
+  display: flex;
+  min-width: 0;
+  flex-wrap: nowrap;
+  align-items: flex-end;
+  gap: 8px;
+}
+
+@media (max-width: 350px) {
+  .greyui-field-action-row {
+    flex-wrap: wrap;
+  }
+}
+
+.greyui-field-action-row > :where(.greyui-field, .greyui-select-field) {
+  min-width: min(100%, 10rem);
+  flex: 1 1 12rem;
 }
 
 .greyui-accordion {
