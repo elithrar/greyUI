@@ -127,7 +127,7 @@ describe("documentation structure", () => {
     expect(denseWindow).toContain(
       '<Fieldset.Root variant="plain" aria-label="Transmission gears">',
     );
-    expect(denseWindow).toContain("<Field.ActionRow>");
+    expect(denseWindow).not.toContain("<Field.ActionRow>");
   });
 });
 
