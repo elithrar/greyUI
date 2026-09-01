@@ -148,7 +148,7 @@ test("anchored overlays do not shift the docs page", async ({ page }) => {
 
   await expectNoPageShift(
     page,
-    page.getByText("Right-click this area", { exact: true }),
+    page.getByText("Right-click this Tracker row", { exact: true }),
     async (trigger) => trigger.click({ button: "right" }),
     page.locator(".greyui-context-menu-popup:visible"),
   );
