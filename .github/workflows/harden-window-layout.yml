@@ -1,0 +1,197 @@
+name: Harden window layout
+
+on:
+  push:
+    branches:
+      - fix/window-layout-rails
+    paths:
+      - .github/workflows/harden-window-layout.yml
+
+permissions:
+  contents: write
+
+jobs:
+  review:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: fix/window-layout-rails
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+      - run: python3 .github/review/harden-window-layout.py
+      - run: npm run format
+      - run: npm run check
+      - run: npm run build
+      - run: npm run pack:check
+      - run: npm run verify:docs
+
+      - name: Install browser review dependency
+        run: |
+          npm install --no-save --package-lock=false playwright@1.55.0
+          npx playwright install --with-deps chromium
+
+      - name: Start docs
+        run: |
+          npm run dev:docs -- --host 127.0.0.1 --port 4173 > /tmp/greyui-vite.log 2>&1 &
+          for attempt in $(seq 1 60); do
+            if curl --fail --silent http://127.0.0.1:4173 >/dev/null; then
+              exit 0
+            fi
+            sleep 1
+          done
+          cat /tmp/greyui-vite.log
+          exit 1
+
+      - name: Review window geometry and responsive containment
+        run: |
+          mkdir -p artifacts/window-layout
+          cat > /tmp/window-review.mjs <<'EOF'
+          import assert from "node:assert/strict";
+          import { writeFile } from "node:fs/promises";
+          import { chromium } from "playwright";
+
+          const browser = await chromium.launch();
+          const widths = [1280, 768, 390, 320];
+          const report = [];
+
+          for (const width of widths) {
+            const context = await browser.newContext({
+              viewport: { width, height: 1100 },
+              deviceScaleFactor: 1,
+              reducedMotion: "reduce",
+            });
+            const page = await context.newPage();
+            await page.goto("http://127.0.0.1:4173", { waitUntil: "networkidle" });
+
+            const pageSize = await page.evaluate(() => ({
+              clientWidth: document.documentElement.clientWidth,
+              scrollWidth: document.documentElement.scrollWidth,
+            }));
+            assert.ok(pageSize.scrollWidth <= pageSize.clientWidth + 1, `page overflow at ${width}px`);
+
+            const dense = page.locator(".docs-dense-window");
+            await dense.scrollIntoViewIfNeeded();
+            const metrics = await dense.evaluate((windowNode) => {
+              const rect = (element) => {
+                const box = element.getBoundingClientRect();
+                return {
+                  left: box.left,
+                  top: box.top,
+                  right: box.right,
+                  bottom: box.bottom,
+                  width: box.width,
+                  height: box.height,
+                };
+              };
+              const body = windowNode.querySelector(".greyui-window-body");
+              const tab = windowNode.querySelector(".greyui-window-tab");
+              const content = windowNode.querySelector(".greyui-window-content");
+              const actions = windowNode.querySelector(".greyui-window-actions");
+              const menu = windowNode.querySelector(".greyui-menubar");
+              const status = windowNode.querySelector(".greyui-statusbar");
+              const button = Array.from(windowNode.querySelectorAll("button")).find(
+                (node) => node.textContent?.trim() === "Copy link",
+              );
+              if (!body || !tab || !content || !actions || !menu || !status || !button) {
+                throw new Error("Dense window is missing a canonical layout rail");
+              }
+              const styles = (element) => {
+                const style = getComputedStyle(element);
+                return {
+                  borderTop: style.borderTopWidth,
+                  borderRight: style.borderRightWidth,
+                  borderBottom: style.borderBottomWidth,
+                  borderLeft: style.borderLeftWidth,
+                  overflow: style.overflow,
+                };
+              };
+              return {
+                window: rect(windowNode),
+                body: rect(body),
+                tab: rect(tab),
+                content: rect(content),
+                actions: rect(actions),
+                button: rect(button),
+                menu: rect(menu),
+                status: rect(status),
+                bodyStyle: styles(body),
+                menuStyle: styles(menu),
+                statusStyle: styles(status),
+              };
+            });
+
+            assert.ok(metrics.button.right <= metrics.content.right + 1, `Copy link escapes content at ${width}px`);
+            assert.ok(metrics.actions.right <= metrics.content.right + 1, `Window.Actions escapes content at ${width}px`);
+            assert.ok(metrics.content.left >= metrics.body.left - 1);
+            assert.ok(metrics.content.right <= metrics.body.right + 1);
+            assert.equal(metrics.menuStyle.borderLeft, "0px");
+            assert.equal(metrics.menuStyle.borderRight, "0px");
+            assert.equal(metrics.statusStyle.borderLeft, "0px");
+            assert.equal(metrics.statusStyle.borderRight, "0px");
+
+            if (width > 768) {
+              assert.ok(Math.abs(metrics.tab.left - metrics.window.left) <= 1, "tab no longer aligns to outer frame");
+              assert.ok(Math.abs(metrics.body.left - (metrics.window.left + 3)) <= 1, "body left rail is not 3px inset");
+              assert.ok(Math.abs(metrics.window.right - metrics.body.right - 3) <= 1, "body right rail is not 3px inset");
+              assert.ok(Math.abs(metrics.body.top - metrics.tab.bottom) <= 1, "tab/body frames overlap or gap");
+              assert.equal(metrics.bodyStyle.borderLeft, "1px");
+            }
+
+            const inactive = page.locator('.greyui-window[data-active="false"]').first();
+            if ((await inactive.count()) > 0) {
+              await inactive.scrollIntoViewIfNeeded();
+              const inactiveGeometry = await inactive.evaluate((node) => {
+                const tab = node.querySelector(".greyui-window-tab");
+                const body = node.querySelector(".greyui-window-body");
+                if (!tab || !body) throw new Error("Inactive window missing tab/body");
+                const tabBox = tab.getBoundingClientRect();
+                const bodyBox = body.getBoundingClientRect();
+                return {
+                  tabBottom: tabBox.bottom,
+                  bodyTop: bodyBox.top,
+                  tabLeft: tabBox.left,
+                  windowLeft: node.getBoundingClientRect().left,
+                };
+              });
+              if (width > 768) {
+                assert.ok(Math.abs(inactiveGeometry.bodyTop - inactiveGeometry.tabBottom) <= 1);
+                assert.ok(Math.abs(inactiveGeometry.tabLeft - inactiveGeometry.windowLeft) <= 1);
+              }
+            }
+
+            await dense.screenshot({ path: `artifacts/window-layout/dense-${width}.png` });
+            const windowSection = page.locator("#window");
+            await windowSection.screenshot({ path: `artifacts/window-layout/windows-${width}.png` });
+            report.push({ width, pageSize, metrics });
+            await context.close();
+          }
+
+          await browser.close();
+          await writeFile("artifacts/window-layout/report.json", `${JSON.stringify(report, null, 2)}\n`);
+          EOF
+          node /tmp/window-review.mjs
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: greyui-window-layout-review
+          path: artifacts/window-layout
+          retention-days: 14
+
+      - name: Commit reviewed changes and remove scaffolding
+        run: |
+          rm -rf artifacts/window-layout
+          rm -rf .github/review
+          rm -f .github/workflows/harden-window-layout.yml
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git diff --cached --check
+          git commit -m "Harden complete window layouts"
+          git push origin HEAD:fix/window-layout-rails
