@@ -40,9 +40,15 @@ for (const viewport of viewports) {
         if (frame === null) continue;
         const frameRect = frame.getBoundingClientRect();
         for (const child of frame.querySelectorAll<HTMLElement>(
-          "[data-regression-contained], .greyui-window-tab, .greyui-window-body, .greyui-menubar, .greyui-statusbar",
+          "[data-regression-contained], .greyui-window-tab, .greyui-window-body, .greyui-menubar, .greyui-field-action-row-layout > *, .greyui-statusbar",
         )) {
-          if (child.hidden || child.closest("[hidden]") !== null) continue;
+          if (
+            child.hidden ||
+            child.closest("[hidden]") !== null ||
+            child.getAttribute("aria-hidden") === "true"
+          ) {
+            continue;
+          }
           const childRect = child.getBoundingClientRect();
           if (childRect.left < frameRect.left - 1 || childRect.right > frameRect.right + 1) {
             messages.push(`${fixture.dataset.regressionWidth}px fixture escapes its frame`);
@@ -53,6 +59,33 @@ for (const viewport of viewports) {
     });
 
     expect(failures).toEqual([]);
+
+    const windowSurfaceFailures = await page.evaluate(() => {
+      const messages: string[] = [];
+      for (const windowRoot of document.querySelectorAll<HTMLElement>(".greyui-window")) {
+        const windowRect = windowRoot.getBoundingClientRect();
+        for (const child of windowRoot.querySelectorAll<HTMLElement>(
+          ".greyui-window-frame, .greyui-window-tab, .greyui-window-body, .greyui-window-content, .greyui-window-header, .greyui-window-actions, .greyui-field-action-row-layout > *, .greyui-menubar, .greyui-statusbar",
+        )) {
+          if (
+            child.hidden ||
+            child.closest("[hidden]") !== null ||
+            child.getAttribute("aria-hidden") === "true"
+          ) {
+            continue;
+          }
+          const childRect = child.getBoundingClientRect();
+          if (childRect.left < windowRect.left - 1 || childRect.right > windowRect.right + 1) {
+            messages.push(
+              `${child.getAttribute("data-greyui-component") ?? child.className} escapes ${windowRoot.textContent?.slice(0, 32) ?? "window"}`,
+            );
+          }
+        }
+      }
+      return messages;
+    });
+
+    expect(windowSurfaceFailures).toEqual([]);
 
     if (viewport.width === 1280) {
       await expect(suite.locator("[data-regression-width='280'] .greyui-window-tab")).toHaveCSS(

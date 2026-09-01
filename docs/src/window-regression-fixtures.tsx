@@ -284,6 +284,7 @@ const WINDOW_CONTAINMENT_SELECTOR = [
   ".greyui-window-header",
   ".greyui-window-actions",
   ".greyui-field-action-row",
+  ".greyui-field-action-row-layout > *",
   ".greyui-statusbar",
 ].join(",");
 

@@ -128,8 +128,9 @@ describe("default theme contrast", () => {
       /\.greyui-window-header\s*\{[\s\S]*?container-name:\s*greyui-window-header/,
     );
     expect(css).toMatch(
-      /\.greyui-window-header-layout\s*\{[\s\S]*?grid-template-columns:\s*minmax\(0, 1fr\) auto/,
+      /\.greyui-window-header-layout\s*\{[\s\S]*?grid-template-columns:\s*minmax\(0, 1fr\) minmax\(0, max-content\)/,
     );
+    expect(css).toMatch(/\.greyui-window-actions\s*\{[\s\S]*?max-width:\s*100%/);
     expect(css).toMatch(
       /@container greyui-window-header \(max-width: 520px\)[\s\S]*?\[data-layout="auto"\]/,
     );
@@ -140,6 +141,9 @@ describe("default theme contrast", () => {
 
     expect(css).toMatch(
       /\.greyui-field-action-row\s*\{[\s\S]*?container-name:\s*greyui-field-action-row/,
+    );
+    expect(css).toMatch(
+      /\.greyui-field-action-row\s*\{[\s\S]*?contain-intrinsic-inline-size:\s*22rem/,
     );
     expect(css).toMatch(
       /@container greyui-field-action-row \(max-width: 350px\)[\s\S]*?\[data-layout="auto"\]/,
