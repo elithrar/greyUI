@@ -1,0 +1,76 @@
+name: Harden window layout v4
+
+on:
+  push:
+    branches:
+      - fix/window-layout-rails
+    paths:
+      - .github/workflows/harden-window-layout-v4.yml
+
+permissions:
+  contents: write
+
+jobs:
+  review:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: fix/window-layout-rails
+          fetch-depth: 0
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Apply window layout hardening
+        run: |
+          python3 .github/review/harden-window-layout.py
+          python3 .github/review/finalize-window-contract.py
+          cp .github/review/window-layout-review.mjs /tmp/window-layout-review.mjs
+          rm .github/review/window-layout-review.mjs
+      - run: npm run format
+      - run: npm run check
+      - run: npm run build
+      - run: npm run pack:check
+      - run: npm run verify:docs
+      - name: Install browser review dependency
+        run: |
+          npm install --no-save --package-lock=false playwright@1.55.0
+          npx playwright install --with-deps chromium
+          mkdir -p .tmp-review
+          cp /tmp/window-layout-review.mjs .tmp-review/window-layout-review.mjs
+      - name: Start docs
+        run: |
+          npm run dev:docs -- --host 127.0.0.1 --port 4173 > /tmp/greyui-vite.log 2>&1 &
+          for attempt in $(seq 1 60); do
+            if curl --fail --silent http://127.0.0.1:4173 >/dev/null; then
+              exit 0
+            fi
+            sleep 1
+          done
+          cat /tmp/greyui-vite.log
+          exit 1
+      - name: Review window geometry
+        run: |
+          mkdir -p artifacts/window-layout
+          node .tmp-review/window-layout-review.mjs
+      - uses: actions/upload-artifact@v4
+        with:
+          name: greyui-window-layout-review
+          path: artifacts/window-layout
+          retention-days: 14
+      - name: Commit reviewed changes and remove scaffolding
+        run: |
+          rm -rf artifacts/window-layout .tmp-review
+          rm -rf .github/review
+          rm -f .github/workflows/harden-window-layout.yml
+          rm -f .github/workflows/harden-window-layout-v2.yml
+          rm -f .github/workflows/harden-window-layout-v3.yml
+          rm -f .github/workflows/harden-window-layout-v4.yml
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git diff --cached --check
+          git commit -m "Harden complete window layouts"
+          git push origin HEAD:fix/window-layout-rails
