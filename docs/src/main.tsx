@@ -40,6 +40,7 @@ import "./docs.css";
 
 const WORKBENCH_URL = "https://workbench.questionable.services/";
 const BASE_UI_COMPONENTS_URL = "https://base-ui.com/react/components";
+const GITHUB_URL = "https://github.com/elithrar/greyUI";
 const CLONE_COMMAND = "git clone https://github.com/elithrar/greyUI.git";
 const COMPONENT_IMPORT_EXAMPLE = 'import { Button, GroupBox, Select, Window } from "greyui";';
 
@@ -136,7 +137,19 @@ function App() {
           <aside className="docs-deskbar" aria-label="Documentation navigation">
             <div className="docs-deskbar-top">
               <strong>greyUI</strong>
-              <Badge tone="accent">{GREYUI_VERSION}</Badge>
+              <div className="docs-deskbar-actions">
+                <Badge tone="accent">{GREYUI_VERSION}</Badge>
+                <a
+                  className="docs-github-link"
+                  href={GITHUB_URL}
+                  aria-label="greyUI on GitHub"
+                  title="greyUI on GitHub"
+                >
+                  <svg viewBox="0 0 16 16" aria-hidden="true">
+                    <path d="m8 1.25 2.08 4.22 4.66.68-3.37 3.28.8 4.64L8 11.88l-4.17 2.19.8-4.64L1.26 6.15l4.66-.68L8 1.25Z" />
+                  </svg>
+                </a>
+              </div>
             </div>
             <div className="docs-deskbar-handle" aria-hidden="true" />
             <nav>

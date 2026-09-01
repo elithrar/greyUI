@@ -66,6 +66,31 @@ pre {
   padding: 4px 6px;
   border-bottom: 1px solid #444;
 }
+.docs-deskbar-actions {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+.docs-deskbar .docs-github-link {
+  display: inline-grid;
+  place-items: center;
+  width: 18px;
+  min-height: 18px;
+  padding: 0;
+  border: 0;
+  color: #fff;
+}
+.docs-deskbar .docs-github-link svg {
+  width: 13px;
+  height: 13px;
+  fill: currentColor;
+}
+.docs-deskbar .docs-github-link:hover,
+.docs-deskbar .docs-github-link:focus-visible {
+  background: transparent;
+  color: var(--greyui-tab-active);
+  outline: 1px solid currentColor;
+}
 .docs-deskbar-handle {
   height: 8px;
   border-top: 1px solid #8a8a8a;
