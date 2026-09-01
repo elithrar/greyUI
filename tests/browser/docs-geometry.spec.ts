@@ -142,6 +142,85 @@ test("menus clamp at desktop left and short-viewport bottom edges", async ({ pag
   await expectViewportContainment(page, page.locator(".greyui-menu-popup:visible"));
 });
 
+test("anchored overlays do not shift the docs page", async ({ page }) => {
+  await page.setViewportSize({ width: 1280, height: 900 });
+  await page.goto("/");
+
+  await expectNoPageShift(
+    page,
+    page.getByText("Right-click this area", { exact: true }),
+    async (trigger) => trigger.click({ button: "right" }),
+    page.locator(".greyui-context-menu-popup:visible"),
+  );
+  await expectNoPageShift(
+    page,
+    page.locator(".greyui-menu-trigger", { hasText: "Actions" }),
+    async (trigger) => trigger.click(),
+    page.locator(".greyui-menu-popup:visible"),
+  );
+  await expectNoPageShift(
+    page,
+    page.locator("[data-regression-suite='window-containers']").getByRole("combobox").first(),
+    async (trigger) => trigger.click(),
+    page.locator(".greyui-select-popup:visible"),
+  );
+  await expectNoPageShift(
+    page,
+    page.getByPlaceholder("Find a theme…"),
+    async (trigger) => trigger.click(),
+    page.locator(".greyui-combobox-popup:visible"),
+  );
+  await expectNoPageShift(
+    page,
+    page.getByPlaceholder("Type any value…"),
+    async (trigger) => trigger.click(),
+    page.locator(".greyui-autocomplete-popup:visible"),
+  );
+});
+
+interface PageGeometry {
+  clientWidth: number;
+  deskbarLeft: number;
+  mainLeft: number;
+  mainWidth: number;
+  scrollX: number;
+  scrollY: number;
+}
+
+async function expectNoPageShift(
+  page: Page,
+  trigger: Locator,
+  open: (trigger: Locator) => Promise<void>,
+  popup: Locator,
+) {
+  await trigger.scrollIntoViewIfNeeded();
+  const before = await readPageGeometry(page);
+  await open(trigger);
+  await expect(popup).toBeVisible();
+  await page.evaluate(() => new Promise((resolve) => requestAnimationFrame(() => resolve(null))));
+  expect(await readPageGeometry(page)).toEqual(before);
+  await page.keyboard.press("Escape");
+  await expect(popup).not.toBeVisible();
+}
+
+async function readPageGeometry(page: Page): Promise<PageGeometry> {
+  return page.evaluate(() => {
+    const main = document.querySelector<HTMLElement>(".docs-main")?.getBoundingClientRect();
+    const deskbar = document.querySelector<HTMLElement>(".docs-deskbar")?.getBoundingClientRect();
+    if (main === undefined || deskbar === undefined) {
+      throw new Error("Expected docs shell geometry");
+    }
+    return {
+      clientWidth: document.documentElement.clientWidth,
+      deskbarLeft: deskbar.left,
+      mainLeft: main.left,
+      mainWidth: main.width,
+      scrollX: window.scrollX,
+      scrollY: window.scrollY,
+    };
+  });
+}
+
 async function expectViewportContainment(page: Page, popup: Locator) {
   await expect(popup).toBeVisible();
   const box = await popup.boundingBox();

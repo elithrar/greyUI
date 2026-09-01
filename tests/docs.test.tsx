@@ -145,6 +145,7 @@ describe("documentation structure", () => {
   it("adapts repeated layouts to their containing section or demo", () => {
     const docsStyles = readFileSync(resolve(process.cwd(), "docs/src/docs.css"), "utf8");
 
+    expect(docsStyles).toMatch(/html\s*\{[\s\S]*?scrollbar-gutter:\s*stable/);
     expect(docsStyles).toContain("container: docs-section / inline-size");
     expect(docsStyles).toContain("container: docs-demo / inline-size");
     expect(docsStyles).toContain("repeat(auto-fit, minmax(min(18rem, 100%), 1fr))");
