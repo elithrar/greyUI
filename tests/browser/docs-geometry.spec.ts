@@ -14,12 +14,23 @@ for (const viewport of viewports) {
 
     const suite = page.locator("[data-regression-suite='window-containers']");
     await suite.scrollIntoViewIfNeeded();
-    await expect(suite).toHaveAttribute("data-regression-geometry", "passed");
+    await expect(suite).toBeVisible();
 
     const failures = await page.evaluate(() => {
       const messages: string[] = [];
       if (document.documentElement.scrollWidth > document.documentElement.clientWidth) {
-        messages.push("document overflows horizontally");
+        const rightmost = Array.from(document.querySelectorAll<HTMLElement>("body *"))
+          .map((element) => ({
+            element,
+            right: element.getBoundingClientRect().right,
+          }))
+          .filter(({ right }) => right > document.documentElement.clientWidth)
+          .sort((first, second) => second.right - first.right)
+          .slice(0, 3)
+          .map(({ element, right }) => `${element.tagName}.${element.className} at ${right}px`);
+        messages.push(
+          `document overflows horizontally (${document.documentElement.scrollWidth}px > ${document.documentElement.clientWidth}px): ${rightmost.join(", ")}`,
+        );
       }
 
       for (const fixture of document.querySelectorAll<HTMLElement>(
@@ -42,6 +53,7 @@ for (const viewport of viewports) {
     });
 
     expect(failures).toEqual([]);
+    await expect(suite).toHaveAttribute("data-regression-geometry", "passed");
 
     if (viewport.width === 1280) {
       await expect(suite.locator("[data-regression-width='280'] .greyui-window-tab")).toHaveCSS(

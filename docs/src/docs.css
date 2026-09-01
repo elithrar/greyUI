@@ -539,6 +539,7 @@ pre {
   width: 100%;
   max-width: 100%;
   min-width: 0;
+  padding-inline-end: 4px;
   gap: 18px;
   justify-items: start;
 }
