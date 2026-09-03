@@ -161,8 +161,17 @@ export function WindowRegressionFixtures() {
         </Window>
       </RegressionCase>
 
-      <RegressionCase width={520} state="inactive" label="Inactive frame and dense action rail">
-        <Window title="Inactive settings" active={false} data-regression-frame="window">
+      <RegressionCase
+        width={520}
+        state="inactive"
+        label="Inactive floating frame and dense action rail"
+      >
+        <Window
+          title="Inactive settings"
+          active={false}
+          chrome="floating"
+          data-regression-frame="window"
+        >
           <RegressionContent headerLayout="stacked" actionLayout="inline" />
           <Window.StatusBar data-regression-contained>Changes saved</Window.StatusBar>
         </Window>

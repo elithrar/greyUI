@@ -64,13 +64,19 @@ describe("default theme contrast", () => {
       css.indexOf(".greyui-window-frame {"),
       css.indexOf(".greyui-window-frame::before"),
     );
+    const frameSurfaceRule = css.slice(
+      css.indexOf(".greyui-window-frame::before"),
+      css.indexOf('.greyui-window[data-active="false"] .greyui-window-frame'),
+    );
     const bodyRule = css.slice(
       css.indexOf(".greyui-window-body {"),
       css.indexOf(".greyui-window-content {"),
     );
 
     expect(rootRule).not.toContain("box-shadow:");
-    expect(frameRule).toContain("box-shadow:");
+    expect(frameRule).toContain("padding: calc(var(--greyui-tab-height) + 3px) 3px 3px;");
+    expect(frameRule).toContain("box-shadow: none;");
+    expect(frameSurfaceRule).toContain("var(--greyui-window-shadow)");
     expect(css).toMatch(/\.greyui-window-frame::before\s*\{[\s\S]*?border:/);
     expect(bodyRule).not.toContain("border:");
     expect(bodyRule).not.toContain("box-shadow:");
