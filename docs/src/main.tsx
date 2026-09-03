@@ -809,6 +809,10 @@ function App() {
                     Use explicit header, action-row, or chrome modes only when the layout should not
                     adapt.
                   </li>
+                  <li>
+                    Floating chrome joins its title tab to the frame rail. Stacked chrome keeps a
+                    full-width title bar inside the outer frame.
+                  </li>
                   <li>Menu popups clamp to the available viewport at narrow widths.</li>
                 </ul>
               </Guidance>

@@ -1139,16 +1139,18 @@
 }
 
 .greyui-window-frame {
+  --greyui-window-shadow: 3px 3px 6px rgb(0 0 0 / 22%);
+
   position: relative;
   display: grid;
   isolation: isolate;
   min-width: 0;
   max-width: 100%;
   box-sizing: border-box;
-  padding: var(--greyui-tab-height) 3px 3px;
+  padding: calc(var(--greyui-tab-height) + 3px) 3px 3px;
   border: 0;
   background: transparent;
-  box-shadow: 3px 3px 6px rgb(0 0 0 / 22%);
+  box-shadow: none;
 }
 
 .greyui-window-frame::before {
@@ -1160,13 +1162,15 @@
   background: var(--greyui-panel);
   box-shadow:
     inset 1px 1px 0 var(--greyui-border-light),
-    inset -1px -1px 0 var(--greyui-border-dark);
+    inset -1px -1px 0 var(--greyui-border-dark),
+    var(--greyui-window-shadow);
   pointer-events: none;
 }
 
 .greyui-window[data-active="false"] .greyui-window-frame {
+  --greyui-window-shadow: 2px 2px 4px rgb(0 0 0 / 18%);
+
   opacity: 0.94;
-  box-shadow: 2px 2px 4px rgb(0 0 0 / 18%);
 }
 
 .greyui-window[data-collapsed="true"] .greyui-window-frame {

@@ -108,7 +108,49 @@ for (const viewport of viewports) {
         "position",
         "absolute",
       );
+      await expectFloatingFrameRail(suite, 520);
+      await expectFloatingFrameRail(suite, 640);
+      await expectFloatingFrameRail(suite, 820);
+      await expectStackedTitleJoin(suite, 280);
+      await expectStackedTitleJoin(suite, 760);
     }
+  });
+}
+
+async function expectFloatingFrameRail(suite: Locator, width: number) {
+  const geometry = await windowGeometry(suite, width);
+
+  expect(geometry.framePaddingTop).toBe(geometry.tabHeight + 3);
+  expect(geometry.bodyTop - geometry.tabBottom).toBeCloseTo(3, 5);
+}
+
+async function expectStackedTitleJoin(suite: Locator, width: number) {
+  const geometry = await windowGeometry(suite, width);
+
+  expect(geometry.bodyTop - geometry.tabBottom).toBeCloseTo(0, 5);
+}
+
+async function windowGeometry(suite: Locator, width: number) {
+  return suite.locator(`[data-regression-width='${width}']`).evaluate((fixture) => {
+    const frame = fixture.querySelector<HTMLElement>(".greyui-window-frame");
+    const tab = fixture.querySelector<HTMLElement>(".greyui-window-tab");
+    const body = fixture.querySelector<HTMLElement>(".greyui-window-body");
+    if (frame === null || tab === null || body === null) {
+      throw new Error(
+        `Missing Window geometry for ${fixture.dataset.regressionWidth ?? "unknown"}`,
+      );
+    }
+
+    const frameStyle = getComputedStyle(frame);
+    const tabRect = tab.getBoundingClientRect();
+    const bodyRect = body.getBoundingClientRect();
+
+    return {
+      bodyTop: bodyRect.top,
+      framePaddingTop: Number.parseFloat(frameStyle.paddingTop),
+      tabBottom: tabRect.bottom,
+      tabHeight: tabRect.height,
+    };
   });
 }
 
