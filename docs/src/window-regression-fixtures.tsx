@@ -29,7 +29,7 @@ function RegressionCase({ children, label, state, width }: RegressionCaseProps) 
       style={style}
     >
       <figcaption>
-        <strong>{width}px container</strong>
+        <strong>Up to {width}px</strong>
         <span>{label}</span>
       </figcaption>
       {children}
@@ -202,7 +202,7 @@ export function WindowRegressionFixtures() {
               </Menu.Popup>
             </Menu.Root>
           </Window.MenuBar>
-          <RegressionContent headerLayout="inline" actionLayout="stacked" />
+          <RegressionContent actionLayout="stacked" />
           <Window.StatusBar data-regression-contained>
             <Window.StatusBar.Item grow>2 items</Window.StatusBar.Item>
             <Window.StatusBar.Light state="ready" label="Application ready" />
@@ -210,7 +210,7 @@ export function WindowRegressionFixtures() {
         </Window>
       </RegressionCase>
 
-      <RegressionCase width={820} state="active" label="Automatic chrome above the breakpoint">
+      <RegressionCase width={820} state="active" label="Automatic chrome">
         <Window title="Wide automatic window" data-regression-frame="window">
           <RegressionContent />
           <Window.StatusBar data-regression-contained>Wide layout</Window.StatusBar>

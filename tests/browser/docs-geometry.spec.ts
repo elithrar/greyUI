@@ -8,7 +8,7 @@ const viewports = [
 ] as const;
 
 for (const viewport of viewports) {
-  test(`window fixtures stay contained at ${viewport.width}px`, async ({ page }) => {
+  test(`window fixtures stay contained at ${viewport.width}px`, async ({ page }, testInfo) => {
     await page.setViewportSize(viewport);
     await page.goto("/");
 
@@ -58,6 +58,10 @@ for (const viewport of viewports) {
       return messages;
     });
 
+    await suite.locator("[data-regression-width='760']").screenshot({
+      path: testInfo.outputPath("application-window.png"),
+    });
+    expect(await headerTextOverlaps(page)).toEqual([]);
     expect(failures).toEqual([]);
 
     const windowSurfaceFailures = await page.evaluate(() => {
@@ -305,4 +309,46 @@ async function expectViewportContainment(page: Page, popup: Locator) {
   expect(box!.y).toBeGreaterThanOrEqual(0);
   expect(box!.x + box!.width).toBeLessThanOrEqual(viewport!.width);
   expect(box!.y + box!.height).toBeLessThanOrEqual(viewport!.height);
+}
+
+test("window headers adapt across responsive breakpoints", async ({ page }) => {
+  await page.goto("/");
+  for (const width of [
+    360, 375, 393, 414, 428, 519, 520, 521, 619, 620, 621, 767, 769, 820, 1024, 1440,
+  ]) {
+    // Resize sequentially to exercise transitions in the same mounted components.
+    // eslint-disable-next-line no-await-in-loop
+    await page.setViewportSize({ width, height: 900 });
+    // eslint-disable-next-line no-await-in-loop
+    expect(await headerTextOverlaps(page), `Header overlap at ${width}px`).toEqual([]);
+    // eslint-disable-next-line no-await-in-loop
+    expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(
+      width,
+    );
+  }
+});
+
+async function headerTextOverlaps(page: Page) {
+  return page.locator(".greyui-window-header-layout").evaluateAll((headers) =>
+    headers.flatMap((header) => {
+      const description = header.querySelector(".greyui-window-description");
+      const actions = header.querySelector(".greyui-window-actions");
+      if (!description || !actions || !description.getClientRects().length) return [];
+      const bounds = actions.getBoundingClientRect();
+      const range = document.createRange();
+      range.selectNodeContents(description);
+      const overlaps = [...range.getClientRects()].some(
+        (line) =>
+          line.left < bounds.right &&
+          line.right > bounds.left &&
+          line.top < bounds.bottom &&
+          line.bottom > bounds.top,
+      );
+      return overlaps
+        ? [
+            `Description overlaps actions in ${header.closest(".greyui-window")?.querySelector(".greyui-window-title")?.textContent}`,
+          ]
+        : [];
+    }),
+  );
 }
