@@ -11,7 +11,10 @@ export function DialogTrigger({ className = "", ...props }: TriggerProps) {
   return <DialogPrimitive.Trigger className={`greyui-button ${className}`.trim()} {...props} />;
 }
 
-type PopupProps = Omit<ComponentProps<typeof DialogPrimitive.Popup>, "className" | "children"> & {
+type PopupProps = Omit<
+  ComponentProps<typeof DialogPrimitive.Popup>,
+  "className" | "children" | "title"
+> & {
   className?: string;
   children?: ReactNode;
   title: ReactNode;

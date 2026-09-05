@@ -128,6 +128,7 @@ export function DesktopDemos() {
   return (
     <>
       <Demo title="Toolbar">
+        <small>Groups wrap to fit. Use vertical orientation for stacked actions.</small>
         <Toolbar.Root aria-label="Document toolbar">
           <Toolbar.Group>
             <Toolbar.Button>New</Toolbar.Button>
@@ -144,6 +145,7 @@ export function DesktopDemos() {
 
       <div className="docs-grid-2 docs-component-grid">
         <Demo title="Slider">
+          <small>Callbacks infer a number for one thumb or an array for a range.</small>
           <div className="docs-stack docs-control-fill">
             <Slider.Root defaultValue={65}>
               <Slider.Label>Volume</Slider.Label>
@@ -319,8 +321,10 @@ export function KumoPatternDemos() {
           icon={<span className="docs-empty-folder" />}
           title="No ROM loaded"
           description="Open a binary image to inspect its calibration tables."
-          contents={<Button size="sm">Open ROM…</Button>}
-        />
+        >
+          <Button size="sm">Open ROM…</Button>
+        </Empty>
+        <small>Place actions in children; an explicit contents prop takes precedence.</small>
       </Demo>
 
       <Demo title="Loaders">
@@ -459,8 +463,8 @@ export function IntegrationDemos() {
 
       <Demo title="Segmented meter">
         <div className="docs-stack docs-control-fill">
-          <span>Trail surface · 34 mi</span>
-          <SegmentedMeter label="Trail surface" max={34} segments={routeSegments} />
+          <span>Surveyed trail surface · 34 of 40 mi</span>
+          <SegmentedMeter label="Surveyed trail surface" max={40} segments={routeSegments} />
         </div>
       </Demo>
 

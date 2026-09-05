@@ -8,13 +8,26 @@ type AutocompleteRootImplementation = <ItemValue>(
 
 // SAFETY: Base UI 1.7 implements Root with Root.Props<ItemValue>; its public
 // overloads narrow `items` only to improve flat/grouped inference at call sites.
-const renderAutocompleteRoot = AutocompletePrimitive.Root as AutocompleteRootImplementation;
+const AutocompleteRootPrimitive = AutocompletePrimitive.Root as AutocompleteRootImplementation;
 
+export function AutocompleteRoot<Items extends readonly { items: readonly unknown[] }[]>(
+  props: Omit<AutocompletePrimitive.Root.Props<Items[number]["items"][number]>, "items"> & {
+    items: Items;
+  },
+): ReactElement;
+export function AutocompleteRoot<ItemValue>(
+  props: Omit<AutocompletePrimitive.Root.Props<ItemValue>, "items"> & {
+    items?: readonly ItemValue[] | undefined;
+  },
+): ReactElement;
+export function AutocompleteRoot<ItemValue>(
+  props: AutocompletePrimitive.Root.Props<ItemValue>,
+): ReactElement;
 export function AutocompleteRoot<ItemValue>({
   openOnInputClick = true,
   ...props
 }: AutocompletePrimitive.Root.Props<ItemValue>) {
-  return renderAutocompleteRoot({ openOnInputClick, ...props });
+  return <AutocompleteRootPrimitive<ItemValue> openOnInputClick={openOnInputClick} {...props} />;
 }
 
 type WithClassName<T> = Omit<T, "className"> & { className?: string };

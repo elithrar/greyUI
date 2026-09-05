@@ -6,10 +6,12 @@ export interface EmptyProps extends Omit<ComponentPropsWithoutRef<"div">, "title
   title: ReactNode;
   description?: ReactNode;
   commandLine?: string;
+  /** Content below the description. Takes precedence over children when supplied. */
   contents?: ReactNode;
 }
 
 export function Empty({
+  children,
   className = "",
   commandLine,
   contents,
@@ -19,6 +21,7 @@ export function Empty({
   title,
   ...props
 }: EmptyProps) {
+  const resolvedContents = contents === undefined ? children : contents;
   return (
     <div
       data-greyui-component="empty"
@@ -42,7 +45,9 @@ export function Empty({
       {commandLine !== undefined ? (
         <code className="greyui-empty-command">$ {commandLine}</code>
       ) : null}
-      {contents !== undefined ? <div className="greyui-empty-contents">{contents}</div> : null}
+      {resolvedContents !== undefined ? (
+        <div className="greyui-empty-contents">{resolvedContents}</div>
+      ) : null}
     </div>
   );
 }

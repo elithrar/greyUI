@@ -10,7 +10,11 @@
     "exactOptionalPropertyTypes": true,
     "skipLibCheck": true,
     "allowImportingTsExtensions": false,
-    "types": ["vite/client", "node", "vitest/globals"]
+    "types": ["vite/client", "node", "vitest/globals"],
+    "paths": {
+      "greyui": ["./src/index.ts"],
+      "greyui/components/*": ["./src/components/*"]
+    }
   },
   "include": [
     "src",

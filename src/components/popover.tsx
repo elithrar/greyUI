@@ -11,7 +11,10 @@ export function PopoverTrigger({ className = "", ...props }: TriggerProps) {
   return <PopoverPrimitive.Trigger className={`greyui-button ${className}`.trim()} {...props} />;
 }
 
-type PopupProps = Omit<ComponentProps<typeof PopoverPrimitive.Popup>, "className" | "children"> & {
+type PopupProps = Omit<
+  ComponentProps<typeof PopoverPrimitive.Popup>,
+  "className" | "children" | "title"
+> & {
   className?: string;
   children?: ReactNode;
   title?: ReactNode;

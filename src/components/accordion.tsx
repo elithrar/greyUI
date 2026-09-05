@@ -3,12 +3,12 @@ import { Accordion as AccordionPrimitive } from "@base-ui/react/accordion";
 
 type WithClassName<T> = Omit<T, "className"> & { className?: string };
 
-export function AccordionRoot({
+export function AccordionRoot<Value>({
   className = "",
   ...props
-}: WithClassName<ComponentProps<typeof AccordionPrimitive.Root>>) {
+}: WithClassName<ComponentProps<typeof AccordionPrimitive.Root<Value>>>) {
   return (
-    <AccordionPrimitive.Root
+    <AccordionPrimitive.Root<Value>
       data-greyui-component="accordion"
       className={`greyui-accordion ${className}`.trim()}
       {...props}
