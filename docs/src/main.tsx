@@ -33,6 +33,11 @@ import {
   IntegrationDemos,
   KumoPatternDemos,
 } from "./next-components";
+import {
+  TabRenderingExamples,
+  ToolbarRenderingExamples,
+  MeterRenderingExamples,
+} from "./rendering-examples";
 import { GREYUI_VERSION } from "./version";
 import { WindowRegressionFixtures } from "./window-regression-fixtures";
 import "./docs.css";
@@ -488,6 +493,7 @@ function App() {
               }
             >
               <DesktopDemos />
+              <ToolbarRenderingExamples />
             </Section>
 
             <Section
@@ -522,6 +528,7 @@ function App() {
                 </ul>
               </Guidance>
               <FeedbackDemos />
+              <MeterRenderingExamples />
             </Section>
 
             <Section
@@ -579,6 +586,7 @@ function App() {
                   ]}
                 />
               </Demo>
+              <TabRenderingExamples />
             </Section>
 
             <Section
