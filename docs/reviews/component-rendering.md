@@ -1,105 +1,57 @@
-# Component rendering review and plan
+# Component rendering review
 
-## Visual analysis before implementation
+## Confirmed defects and plan
 
 Baseline: PR #32 at `9c671aca473e2b6e38ea03f2cd74177074fa750d`.
-Reviewed rendered examples at 1280, 768, 390, and 320 pixels: buttons, fields,
-selection controls, disclosures, sliders, progress, meters, content patterns, tabs,
-overlays, tables, and windows. Compared the existing bevels, inset surfaces, typography,
-and control density with the rendered WorkbenchOS interface.
+Reviewed the rendered docs at 1280, 768, 390, and 320px before changing component code.
+Compared existing bevels, surfaces, typography, and control density with WorkbenchOS.
 
-Added docs fixtures to expose existing components in less-covered states before changing
-component code. Captures and DOM measurements confirmed:
+| Finding                                                        | Baseline evidence                                                                                                    | Fix                                                                                                                                                        |
+| -------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| SegmentedMeter overstates partial capacity                     | At 320px, a 50/100 value fills the entire 257px inner track. Zero-value segments leave a 1px divider.                | Size segments against the resolved maximum, leave unused capacity visible, and omit zero-value spans. Use an inset divider that does not consume capacity. |
+| Tabs ignore vertical orientation and overflow with long labels | Vertical tabs render horizontally. A 280px label escapes 259px of available content, widening the document to 324px. | Add scoped orientation layout and constrain labels. Preserve nested tab orientation and keyboard handling.                                                 |
+| Disabled tabs look enabled                                     | Base UI sets data-disabled and aria-disabled, while the CSS only matches native :disabled.                           | Match the actual state attribute for disabled styling and hover exclusion.                                                                                 |
+| Toolbar groups overflow narrow containers                      | A button and input produce a 301px scroll width inside a 204–216px toolbar.                                          | Let groups wrap and controls shrink within their toolbar; stack vertical groups.                                                                           |
 
-| Priority | Finding                                                          | Evidence                                                                                                                                                                                  | Planned change                                                                                                                                                  |
-| -------- | ---------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| High     | SegmentedMeter misrepresents partial capacity                    | At 320px, segments occupy the entire 257px inner track for a 50/100 value. The adjacent Meter correctly shows half full. An empty segmented meter still has a 1px divider.                | Size segments against the resolved maximum and leave unused capacity visible. Suppress zero-value segments without changing the accessible numeric summary.     |
-| High     | Tabs do not follow vertical orientation and long labels overflow | Vertical tabs share the same top coordinate and lay out horizontally. An unbroken label is 280px wide inside 259px of available content; the document grows to 324px at a 320px viewport. | Add orientation-specific layout, wrap long labels within their available width, and retain Base UI selection and keyboard handling.                             |
-| Medium   | Tab content has no visible panel boundary                        | Active content appears directly on the surrounding gray canvas even though the docs describe an inset document panel.                                                                     | Add a modest inset panel using existing document, border, and bevel tokens; keep focus-visible treatment and hidden panels correct.                             |
-| High     | Toolbar groups overflow narrow containers                        | A group containing Open document and Search has a 301px scroll width inside a 204–216px toolbar. The screenshot shows the input extending beyond the surface.                             | Let groups wrap and shrink within their toolbar. Let the input shrink when necessary while keeping normal control geometry. Respect vertical group orientation. |
+The plan was to reproduce these defects, make scoped fixes, then check rendered results,
+keyboard behavior, neighboring controls, package output, and responsive containment.
+The existing maximum normalization, numeric ARIA values, public props, and exports remain
+unchanged. Disabled tabs remain focusable without becoming selected.
 
-The range and vertical Slider fixtures rendered correctly, including track dimensions and
-range fill. Existing progress, input, checkbox, radio, switch, banner, loader, breadcrumb,
-and window examples showed no new reason for a visual change in this pass.
+## Docs re-review and correction
 
-The state review also confirmed that disabled tabs render with full opacity: Base UI sets
-`data-disabled` and `aria-disabled`, while the stylesheet only targets native `:disabled`.
-Extend the disabled and hover selectors to match the actual state attribute. Preserve the
-existing ability to focus disabled tabs without activating them.
+The first implementation also added white inset tab panels and prominent edge-case demos.
+Those were poor documentation choices: artificial labels and placeholder content added
+clutter, while the inset surface made static content resemble an input. Docs copy alone
+was not sufficient justification for changing every consumer's panel appearance.
 
-## Implementation and validation plan
+| Area reviewed                                                                 | Final decision                                                                                                                                                                                                                                                                               |
+| ----------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Tabs                                                                          | Remove the added vertical, nested, and long-label demos from the main page. Restore the original undecorated panel and horizontal spacing. Keep one existing example, mark Advanced disabled, and correct the intro. Retain the functional orientation, wrapping, disabled, and focus fixes. |
+| Meter                                                                         | Remove the added capacity comparison and empty-track demo. Show partial capacity in the existing segmented-meter example: 34 of 40 miles surveyed. Keep the ordinary Meter example for its distinct API.                                                                                     |
+| Toolbar                                                                       | Remove the added narrow and vertical demos. Keep the existing toolbar with one short note about wrapping and orientation.                                                                                                                                                                    |
+| Autocomplete and Fieldset                                                     | Keep grouped suggestions and the inherited disabled Switch in existing examples. They demonstrate useful behavior without adding another demo card.                                                                                                                                          |
+| Select, RadioGroup, Slider, Accordion, ToggleGroup, Empty, and overlay titles | Keep the brief API guidance and changes inside existing examples. These explain callback types, slot content, or precedence without repeating the component.                                                                                                                                 |
 
-1. Add focused geometry and interaction regressions for meter proportions, zero values,
-   vertical tabs, long labels, toolbar containment, and keyboard operation. Confirm that
-   the regressions fail on the baseline rendering.
-2. Implement the smallest shared changes in SegmentedMeter, Tabs CSS, and Toolbar CSS.
-   Keep public names, value semantics, palette, and existing control geometry.
-3. Keep representative examples in their normal docs sections with brief usage guidance.
-   Check related horizontal, vertical, disabled, selected, focused, and narrow states.
-4. Review before/after captures at all four viewport widths. Exercise tab navigation,
-   input focus, and overlay positioning. Check meter geometry against numeric values.
-5. Run `npm run check`, the full browser suite, both builds, and `npm run pack:check`.
-   Review the final diff and update PR #32 with the rendering findings and results.
-
-## Self-review of the plan
-
-- Meter widths must include borders in their allocated proportions; zero-value segments
-  must not steal pixels. Preserve the behavior when max is omitted or smaller than the sum.
-- Vertical tabs must remain usable in narrow parent containers as well as narrow viewports.
-  Test nested tabs so parent orientation styles cannot accidentally restyle a child set.
-- An inset panel must not override Base UI's hidden state or make inactive panels visible.
-- Toolbar wrapping must preserve keyboard order and work without turning every toolbar
-  input into a full-width field on desktop.
-- Avoid changing global control rules: test adjacent controls and the existing window and
-  overlay suite after the scoped CSS changes.
-
-## Implemented result
-
-- Segments use a percentage of the resolved maximum without flex growth. The divider
-  is an inset shadow, so it no longer consumes capacity. At 320px, the 257px inner
-  track renders the 20/100 and 30/100 segments at 51.39px and 77.09px; the remainder
-  stays empty. Zero-value segments draw no fill or divider. Numeric ARIA values and
-  the existing maximum normalization remain unchanged.
-- Tabs now support vertical layout, wrap labels, show the documented inset surface,
-  and distinguish disabled tabs. Direct-child orientation selectors preserve nested
-  horizontal tabs. Arrow keys move focus, Enter activates, and disabled tabs remain
-  focusable without becoming selected, matching the existing Base UI contract.
-- Toolbar groups wrap within constrained containers and stack in vertical toolbars.
-  Buttons and inputs stay inside the available width; arrow-key focus still reaches
-  the input. The narrow fixture's scroll width now equals its 204–216px width.
-- Added permanent docs examples for partial and empty capacity, vertical and nested
-  tabs, long labels, narrow toolbars, and vertical toolbars. No public props or exports
-  were added or removed.
-
-## Before and after
-
-These captures use a 320px viewport. The final docs add usage guidance and separate the
-meter and toolbar examples; the component values and narrow-container cases are retained.
-
-| Tabs before                                                                                                     | Tabs after                                                                                          |
-| --------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------- |
-| ![Horizontal rendering despite vertical orientation, and an overflowing long label](images/tabs-before-320.png) | ![Vertical tabs, disabled treatment, contained labels, and inset panels](images/tabs-after-320.png) |
-
-| Meter and toolbar before                                                                                           | Meter after                                                         | Toolbar after                                                                             |
-| ------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------- | ----------------------------------------------------------------------------------------- |
-| ![A half-full meter drawn full, an empty divider, and an overflowing toolbar](images/meter-toolbar-before-320.png) | ![Correct half-full and empty capacity](images/meter-after-320.png) | ![Contained narrow controls and vertically stacked actions](images/toolbar-after-320.png) |
+Move the synthetic meter, tab, and toolbar cases to `tests/browser/fixtures/rendering.tsx`.
+The browser tests load them through a development-only HTML entry under `docs/__tests__`.
+The main docs do not import them, and the production build still uses only `index.html`.
+Remove the superseded screenshot gallery so it does not present the reverted design as
+an approved result. The original captures remain in the earlier PR commit.
 
 ## Validation
 
-- Reproduced incorrect meter proportions, tab layout/overflow, and toolbar containment
-  before the source changes. Confirmed disabled-tab opacity separately during the state
-  pass. Corrected test assumptions about Base UI manual tab activation and focusable
-  disabled tabs rather than changing their interaction contract.
-- Inspected before/after renders at 1280, 768, 390, and 320px, including existing adjacent
-  controls and the added fixtures. The document has no horizontal overflow at any width.
-  Checked nested tab selection, disabled activation, toolbar input entry and keyboard
-  navigation. Geometry comparisons read related bounds in one frame to avoid smooth-scroll
-  movement between measurements.
+- Inspected the simplified docs at 1280, 768, 390, and 320px: tabs, toolbar, meters,
+  fields, selection controls, grouped controls, application patterns, and overlays.
+  The public docs have no horizontal overflow. Tab selection still works.
 - `npm run check`: formatting, lint, typecheck, and all 54 unit tests pass.
-- `npm run test:browser`: all 23 tests pass, including 12 new rendering/interaction
-  regressions and the existing window, popup containment, and overlay page-shift checks.
-- `npm run build`, `npm run build:docs`, and `npm run pack:check`: pass, including
-  emitted declaration consumers, SSR imports, package budgets, and dry-run packaging.
-- Browser validation used the temporary Chromium executable described in the TypeScript
-  review; no browser dependency was added. Other browser engines were not exercised.
-  npm emits the environment's existing unknown `http-proxy` configuration warning.
+- `npm run test:browser`: all 23 tests pass, including 12 isolated rendering/interaction
+  regressions and the existing public-docs, window, and overlay checks.
+- `npm run build`, `npm run build:docs`, and `npm run pack:check`: pass.
+- A separate clean docs build under `/tmp/grayui-simplified-docs-build` confirms that
+  neither the development entry nor the synthetic fixture content ships in production.
+  The managed checkout retained unused assets from a previous build; the generated
+  index references the current assets.
+- Browser coverage is Chromium only, using the temporary executable described in the
+  TypeScript review. No dependency was added. npm emits the environment's existing
+  unknown `http-proxy` configuration warning.

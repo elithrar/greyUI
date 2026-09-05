@@ -33,11 +33,6 @@ import {
   IntegrationDemos,
   KumoPatternDemos,
 } from "./next-components";
-import {
-  TabRenderingExamples,
-  ToolbarRenderingExamples,
-  MeterRenderingExamples,
-} from "./rendering-examples";
 import { GREYUI_VERSION } from "./version";
 import { WindowRegressionFixtures } from "./window-regression-fixtures";
 import "./docs.css";
@@ -493,7 +488,6 @@ function App() {
               }
             >
               <DesktopDemos />
-              <ToolbarRenderingExamples />
             </Section>
 
             <Section
@@ -528,7 +522,6 @@ function App() {
                 </ul>
               </Guidance>
               <FeedbackDemos />
-              <MeterRenderingExamples />
             </Section>
 
             <Section
@@ -562,7 +555,7 @@ function App() {
             <Section
               id="tabs"
               title="Tabs"
-              intro="Tabs use beveled triggers and an inset white panel for the active view. Window title tabs use the separate yellow/grey active state."
+              intro="Switch between related views. Use vertical orientation for a side list."
             >
               <Demo title="Related views">
                 <Tabs
@@ -582,11 +575,11 @@ function App() {
                       value: "advanced",
                       label: "Advanced",
                       content: <p>Integration settings.</p>,
+                      disabled: true,
                     },
                   ]}
                 />
               </Demo>
-              <TabRenderingExamples />
             </Section>
 
             <Section

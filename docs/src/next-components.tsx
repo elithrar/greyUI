@@ -128,6 +128,7 @@ export function DesktopDemos() {
   return (
     <>
       <Demo title="Toolbar">
+        <small>Groups wrap to fit. Use vertical orientation for stacked actions.</small>
         <Toolbar.Root aria-label="Document toolbar">
           <Toolbar.Group>
             <Toolbar.Button>New</Toolbar.Button>
@@ -462,8 +463,8 @@ export function IntegrationDemos() {
 
       <Demo title="Segmented meter">
         <div className="docs-stack docs-control-fill">
-          <span>Trail surface · 34 mi</span>
-          <SegmentedMeter label="Trail surface" max={34} segments={routeSegments} />
+          <span>Surveyed trail surface · 34 of 40 mi</span>
+          <SegmentedMeter label="Surveyed trail surface" max={40} segments={routeSegments} />
         </div>
       </Demo>
 

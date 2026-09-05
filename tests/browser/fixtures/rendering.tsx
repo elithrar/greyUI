@@ -1,4 +1,6 @@
-import { Meter, SegmentedMeter, Tabs, Toolbar } from "../../src";
+import { createRoot } from "react-dom/client";
+import "../../../docs/src/docs.css";
+import { Meter, SegmentedMeter, Tabs, Toolbar } from "../../../src";
 
 const reviewTabs = [
   { value: "general", label: "General", content: "Compact controls and system defaults." },
@@ -128,3 +130,13 @@ export function ToolbarRenderingExamples() {
     </div>
   );
 }
+
+const root = document.getElementById("root");
+if (!root) throw new Error("Missing fixture root");
+createRoot(root).render(
+  <main className="docs-main">
+    <TabRenderingExamples />
+    <MeterRenderingExamples />
+    <ToolbarRenderingExamples />
+  </main>,
+);
