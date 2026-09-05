@@ -3,12 +3,12 @@ import { Slider as SliderPrimitive } from "@base-ui/react/slider";
 
 type WithClassName<T> = Omit<T, "className"> & { className?: string };
 
-export function SliderRoot({
+export function SliderRoot<Value extends number | readonly number[]>({
   className = "",
   ...props
-}: WithClassName<ComponentProps<typeof SliderPrimitive.Root>>) {
+}: WithClassName<ComponentProps<typeof SliderPrimitive.Root<Value>>>) {
   return (
-    <SliderPrimitive.Root
+    <SliderPrimitive.Root<Value>
       data-greyui-component="slider"
       className={`greyui-slider ${className}`.trim()}
       {...props}

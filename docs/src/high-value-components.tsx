@@ -1,6 +1,29 @@
-import { Accordion, Autocomplete, Checkbox, CheckboxGroup, Fieldset, ToggleGroup } from "../../src";
+import {
+  Accordion,
+  Autocomplete,
+  Checkbox,
+  CheckboxGroup,
+  Fieldset,
+  Switch,
+  ToggleGroup,
+} from "../../src";
 
-const suggestions = ["BeOS R5", "Haiku", "Zeta", "NewOS"];
+const suggestions = [
+  {
+    label: "BeOS family",
+    items: [
+      { id: "beos", name: "BeOS R5" },
+      { id: "haiku", name: "Haiku" },
+    ],
+  },
+  {
+    label: "Related systems",
+    items: [
+      { id: "zeta", name: "Zeta" },
+      { id: "newos", name: "NewOS" },
+    ],
+  },
+];
 
 function ComponentDemo({ name, children }: { name: string; children: React.ReactNode }) {
   return (
@@ -17,6 +40,7 @@ export function HighValueComponentDemos() {
   return (
     <div className="docs-high-value-grid">
       <ComponentDemo name="ToggleGroup">
+        <small>Value arrays preserve their string union in onValueChange.</small>
         <ToggleGroup.Root aria-label="Editor options" defaultValue={["grid"]}>
           <ToggleGroup.Item value="grid">Grid</ToggleGroup.Item>
           <ToggleGroup.Item value="snap">Snap</ToggleGroup.Item>
@@ -29,7 +53,7 @@ export function HighValueComponentDemos() {
 
       <ComponentDemo name="Autocomplete">
         <div className="docs-high-value-stack">
-          <Autocomplete.Root items={suggestions}>
+          <Autocomplete.Root items={suggestions} itemToStringValue={(item) => item.name}>
             <Autocomplete.InputGroup>
               <Autocomplete.Input aria-label="Operating system" placeholder="Type any value…" />
               <Autocomplete.Clear />
@@ -38,20 +62,30 @@ export function HighValueComponentDemos() {
             <Autocomplete.Popup width="content">
               <Autocomplete.Empty>No matching suggestion</Autocomplete.Empty>
               <Autocomplete.List>
-                {(item: string) => (
-                  <Autocomplete.Item key={item} value={item}>
-                    <Autocomplete.ItemText>{item}</Autocomplete.ItemText>
-                    <Autocomplete.ItemIndicator />
-                  </Autocomplete.Item>
+                {(group: (typeof suggestions)[number]) => (
+                  <Autocomplete.Group key={group.label} items={group.items}>
+                    <Autocomplete.GroupLabel>{group.label}</Autocomplete.GroupLabel>
+                    <Autocomplete.Collection>
+                      {(item: (typeof group.items)[number]) => (
+                        <Autocomplete.Item key={item.id} value={item}>
+                          <Autocomplete.ItemText>{item.name}</Autocomplete.ItemText>
+                          <Autocomplete.ItemIndicator />
+                        </Autocomplete.Item>
+                      )}
+                    </Autocomplete.Collection>
+                  </Autocomplete.Group>
                 )}
               </Autocomplete.List>
             </Autocomplete.Popup>
           </Autocomplete.Root>
-          <small>Suggestions assist entry; free-form values remain valid.</small>
+          <small>
+            Grouped items infer the item type in callbacks; free-form values remain valid.
+          </small>
         </div>
       </ComponentDemo>
 
       <ComponentDemo name="Accordion">
+        <small>onValueChange follows the type of value or defaultValue.</small>
         <Accordion.Root defaultValue={["general"]}>
           <Accordion.Item value="general">
             <Accordion.Header>
@@ -95,6 +129,7 @@ export function HighValueComponentDemos() {
             <Fieldset.Legend>Managed settings</Fieldset.Legend>
             <CheckboxGroup aria-label="Managed settings">
               <Checkbox value="policy" label="Enforce policy" />
+              <Switch label="Managed autosave" disabled={false} />
             </CheckboxGroup>
           </Fieldset.Root>
           <Fieldset.Root variant="plain" aria-label="Export options">

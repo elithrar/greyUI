@@ -8,7 +8,10 @@ export interface RadioOption {
   disabled?: boolean;
 }
 
-type PrimitiveProps = Omit<ComponentProps<typeof RadioGroupPrimitive>, "className" | "children">;
+type PrimitiveProps = Omit<
+  ComponentProps<typeof RadioGroupPrimitive<string>>,
+  "className" | "children"
+>;
 
 export interface RadioGroupProps extends PrimitiveProps {
   className?: string;

@@ -43,7 +43,7 @@
     "test:browser": "playwright test",
     "check": "npm run format:check && npm run lint && npm run typecheck && npm test",
     "perf:package": "node scripts/package-audit.mjs",
-    "pack:check": "node scripts/package-audit.mjs && npm pack --dry-run",
+    "pack:check": "tsc -p tsconfig.package.json --noEmit && node scripts/package-audit.mjs && npm pack --dry-run",
     "deploy:docs": "npm run build:docs && wrangler deploy --config docs/wrangler.jsonc",
     "verify:docs": "npm run build:docs && wrangler deploy --dry-run --config docs/wrangler.jsonc"
   },

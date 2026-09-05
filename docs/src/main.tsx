@@ -393,6 +393,10 @@ function App() {
                   </label>
                 </Demo>
                 <Demo title="Select">
+                  <small>
+                    Use a string value, or a string array with multiple. Callbacks follow that
+                    choice.
+                  </small>
                   <Select
                     label="Theme"
                     defaultValue="beos"
@@ -415,6 +419,10 @@ function App() {
               intro="Checkboxes, radios, and switches use compact system-control sizing. Base UI handles state and keyboard behavior."
             >
               <Demo title="Checkbox, radio and switch">
+                <small>
+                  Radio options and onValueChange use strings. Switch inherits disabled Fieldset
+                  state.
+                </small>
                 <div className="docs-selection-grid">
                   <div className="docs-stack">
                     <Checkbox defaultChecked label="Show decoded values" />
@@ -618,10 +626,11 @@ function App() {
                 </Demo>
 
                 <Demo title="Popover">
+                  <small>Use React content in title for formatted headings.</small>
                   <Popover.Root>
                     <Popover.Trigger>Details…</Popover.Trigger>
                     <Popover.Popup
-                      title="Build information"
+                      title={<span>Build information</span>}
                       description="Base UI handles popover behavior; greyUI supplies the theme."
                     >
                       <Popover.Close className="greyui-button" type="button">
@@ -632,11 +641,12 @@ function App() {
                 </Demo>
 
                 <Demo title="Dialogs">
+                  <small>Popup titles accept React content and provide the accessible name.</small>
                   <div className="docs-row">
                     <Dialog.Root>
                       <Dialog.Trigger>Open dialog…</Dialog.Trigger>
                       <Dialog.Popup
-                        title="Enable edit mode"
+                        title={<span>Enable edit mode</span>}
                         description="Apply to save the changes."
                       >
                         <div className="docs-dialog-actions">
@@ -651,7 +661,7 @@ function App() {
                     <AlertDialog.Root>
                       <AlertDialog.Trigger>Discard…</AlertDialog.Trigger>
                       <AlertDialog.Popup
-                        title="Discard changes?"
+                        title={<span>Discard changes?</span>}
                         description="This action cannot be undone."
                       >
                         <div className="docs-dialog-actions">

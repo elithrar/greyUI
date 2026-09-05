@@ -8,7 +8,10 @@ export interface SelectOption {
   disabled?: boolean;
 }
 
-type RootProps = Omit<ComponentProps<typeof SelectPrimitive.Root>, "items" | "children">;
+type RootProps<Multiple extends boolean | undefined = false> = Omit<
+  SelectPrimitive.Root.Props<string, Multiple>,
+  "items" | "children"
+>;
 type TriggerProps = Omit<
   ComponentProps<typeof SelectPrimitive.Trigger>,
   "aria-label" | "aria-labelledby" | "children" | "className"
@@ -47,9 +50,10 @@ type SelectAccessibleName =
       "aria-labelledby": string;
     };
 
-export type SelectProps = RootProps & SelectCommonProps & SelectAccessibleName;
+export type SelectProps<Multiple extends boolean | undefined = boolean | undefined> =
+  RootProps<Multiple> & SelectCommonProps & SelectAccessibleName;
 
-export function Select({
+export function Select<Multiple extends boolean | undefined = false>({
   "aria-label": ariaLabel,
   "aria-labelledby": ariaLabelledBy,
   className = "",
@@ -60,7 +64,7 @@ export function Select({
   positionerProps,
   triggerProps,
   ...rootProps
-}: SelectProps) {
+}: SelectProps<Multiple>) {
   const container = useLayerContainer("menu");
   const triggerAccessibleNameProps =
     ariaLabel !== undefined
@@ -70,7 +74,7 @@ export function Select({
         : {};
 
   return (
-    <SelectPrimitive.Root items={options} {...rootProps}>
+    <SelectPrimitive.Root<string, Multiple> items={options} {...rootProps}>
       <div data-greyui-component="select" className={`greyui-select-field ${className}`.trim()}>
         {label !== undefined ? (
           <SelectPrimitive.Label className="greyui-field-label">{label}</SelectPrimitive.Label>

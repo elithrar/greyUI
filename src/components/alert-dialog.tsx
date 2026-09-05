@@ -15,7 +15,7 @@ export function AlertDialogTrigger({ className = "", ...props }: TriggerProps) {
 
 type PopupProps = Omit<
   ComponentProps<typeof AlertDialogPrimitive.Popup>,
-  "className" | "children"
+  "className" | "children" | "title"
 > & {
   className?: string;
   children?: ReactNode;

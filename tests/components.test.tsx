@@ -703,7 +703,7 @@ describe("accessibility contracts", () => {
   it("uses dedicated chrome for dialogs and alert dialogs", () => {
     const dialogRender = render(
       <Dialog.Root defaultOpen>
-        <Dialog.Popup title="Enable edit mode">Content</Dialog.Popup>
+        <Dialog.Popup title={<span>Enable edit mode</span>}>Content</Dialog.Popup>
       </Dialog.Root>,
     );
 
@@ -715,7 +715,7 @@ describe("accessibility contracts", () => {
 
     render(
       <AlertDialog.Root defaultOpen>
-        <AlertDialog.Popup title="Discard changes?">Content</AlertDialog.Popup>
+        <AlertDialog.Popup title={<span>Discard changes?</span>}>Content</AlertDialog.Popup>
       </AlertDialog.Root>,
     );
 

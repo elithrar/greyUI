@@ -4,12 +4,12 @@ import { ToggleGroup as ToggleGroupPrimitive } from "@base-ui/react/toggle-group
 
 type WithClassName<T> = Omit<T, "className"> & { className?: string };
 
-export function ToggleGroupRoot({
+export function ToggleGroupRoot<Value extends string>({
   className = "",
   ...props
-}: WithClassName<ComponentProps<typeof ToggleGroupPrimitive>>) {
+}: WithClassName<ComponentProps<typeof ToggleGroupPrimitive<Value>>>) {
   return (
-    <ToggleGroupPrimitive
+    <ToggleGroupPrimitive<Value>
       data-greyui-component="toggle-group"
       className={`greyui-toggle-group ${className}`.trim()}
       {...props}

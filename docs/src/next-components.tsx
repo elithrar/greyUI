@@ -144,6 +144,7 @@ export function DesktopDemos() {
 
       <div className="docs-grid-2 docs-component-grid">
         <Demo title="Slider">
+          <small>Callbacks infer a number for one thumb or an array for a range.</small>
           <div className="docs-stack docs-control-fill">
             <Slider.Root defaultValue={65}>
               <Slider.Label>Volume</Slider.Label>
@@ -319,8 +320,10 @@ export function KumoPatternDemos() {
           icon={<span className="docs-empty-folder" />}
           title="No ROM loaded"
           description="Open a binary image to inspect its calibration tables."
-          contents={<Button size="sm">Open ROM…</Button>}
-        />
+        >
+          <Button size="sm">Open ROM…</Button>
+        </Empty>
+        <small>Place actions in children; an explicit contents prop takes precedence.</small>
       </Demo>
 
       <Demo title="Loaders">
